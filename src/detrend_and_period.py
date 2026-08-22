@@ -17,7 +17,14 @@ EPOCH_REFIT_MAX_SHIFT_DURATIONS = 0.5
 # Highest integer multiple the de-aliaser will climb to. Uncapping is not an
 # option: from a 0.5 d peak with max_period = span/3, every multiple up to ~970
 # stays in range, and each costs a BLS zoom.
-DEALIAS_MAX_MULTIPLE = 25
+
+# Kept at 10 rather than 25: an upward multiple is adopted on a mere 0.98 x
+# base-power tie (see the acceptance test below), so every extra multiple is
+# another chance for a wide, few-epoch box to tie a real signal and win. At 25,
+# Kepler-186e (P=22.4076 d, max_mes 18.0 over 49 events) was de-aliased to its
+# 17th multiple, P=379.1 d, which holds 1 event and fails the >=3-event rule -
+# the planet was then lost outright. At 10 it survives.
+DEALIAS_MAX_MULTIPLE = 10
 
 
 def rank_independent_bls_candidates(
