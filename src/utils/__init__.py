@@ -7,6 +7,13 @@ from .compute_secondary_depth_snr import compute_secondary_depth_snr
 from .interp_cdpp import interp_cdpp
 from .parse_confirmed_csv import parse_confirmed_csv
 from .target_names import host_star_name
+from .label_candidates import (
+    label_candidate_rows,
+    summarize_labels,
+    CANDIDATE_LABEL_CONFIRMED,
+    CANDIDATE_LABEL_FALSE_POSITIVE,
+    CANDIDATE_LABEL_UNKNOWN,
+)
 from .compare_extracted_confirmed import (
     compare_extracted_confirmed,
     find_confirmed_csv,
@@ -24,4 +31,9 @@ __all__ = [
     "host_star_name",
     "compare_extracted_confirmed",
     "find_confirmed_csv",
+    "label_candidate_rows",
+    "summarize_labels",
+    "CANDIDATE_LABEL_CONFIRMED",
+    "CANDIDATE_LABEL_FALSE_POSITIVE",
+    "CANDIDATE_LABEL_UNKNOWN",
 ]

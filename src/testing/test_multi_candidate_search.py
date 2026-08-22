@@ -25,7 +25,9 @@ from detrend_and_period import (  # noqa: E402
 )
 from extract_feats import (  # noqa: E402
     _candidate_passes_mes,
+    _collect_false_candidates,
     _deep_events,
+    _latest_measurements,
     _period_already_accepted,
     _periodic_mask,
     _unexplained_deep_event_mask,
@@ -40,6 +42,7 @@ def _features(period, mes, t0=0.5, duration=0.1):
         "t0": float(t0),
         "duration_days": float(duration),
         "max_mes": float(mes),
+        "detection_status": "accepted",
     }
 
 
@@ -562,6 +565,96 @@ class SubthresholdRecoveryTests(unittest.TestCase):
 
         # 10.0 is 2x the accepted 5.0, so it describes the same signal.
         self.assertEqual([row["period_days"] for row in rows], [5.0])
+
+
+class FalseCandidateOutputTests(unittest.TestCase):
+    """Peaks the search declined, emitted on request as negative examples."""
+
+    def _run(self, queue, include_false_candidates, max_candidates=1):
+        time = np.arange(0.0, 60.0, 0.02)
+        flux = np.ones(time.size)
+        remaining = list(queue)
+
+        def fake_single(t, f, **kwargs):
+            period, mes = remaining.pop(0)
+            return (
+                _features(period, mes),
+                {"search_candidates": [{"period": period}], "n_mes_events": 6},
+                None,
+            )
+
+        with patch(
+            "extract_feats._extract_single_candidate_from_arrays",
+            side_effect=fake_single,
+        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", max_candidates):
+            with contextlib.redirect_stdout(io.StringIO()):
+                return extract_features_from_arrays(
+                    time, flux, include_false_candidates=include_false_candidates
+                )
+
+    def test_rejects_are_withheld_by_default(self):
+        self.assertEqual(self._run([(14.4488, 2.0)], False), [])
+
+    def test_rejects_are_emitted_and_marked_when_asked(self):
+        rows = self._run([(14.4488, 2.0)], True)
+
+        self.assertEqual(len(rows), 1)
+        self.assertAlmostEqual(rows[0]["period_days"], 14.4488)
+        self.assertEqual(rows[0]["detection_status"], "rejected")
+        self.assertEqual(rows[0]["is_provisional_detection"], 1.0)
+
+    def test_detections_are_unchanged_by_the_flag(self):
+        """The flag must not perturb what the search accepts or masks."""
+        queue = [(5.0, 12.0), (17.0, 2.0)]
+        detections = self._run(queue, False, max_candidates=2)
+        with_negatives = self._run(queue, True, max_candidates=2)
+
+        accepted = [
+            row for row in with_negatives if row["detection_status"] == "accepted"
+        ]
+        self.assertEqual(accepted, detections)
+        self.assertEqual(
+            [row["period_days"] for row in with_negatives], [5.0, 17.0]
+        )
+
+    def test_a_recovered_row_is_not_repeated_as_a_false_candidate(self):
+        # 6.5 clears the recovery bar, so it is reported as provisional and must
+        # not also appear as a reject.
+        rows = self._run([(14.4488, 6.5)], True)
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["detection_status"], "provisional")
+
+    def test_repeated_measurements_of_one_ephemeris_collapse_to_the_latest(self):
+        """The last measurement is the least contaminated, so it is the one kept."""
+        rejects = [
+            (_features(9.0, 2.0), {}),
+            (_features(9.0, 2.0, t0=0.55), {}),
+        ]
+
+        latest = _latest_measurements(rejects)
+
+        self.assertEqual(len(latest), 1)
+        self.assertAlmostEqual(latest[0][0]["t0"], 0.55)
+
+    def test_a_reject_harmonic_of_a_later_detection_is_not_emitted(self):
+        """A 10 d reject is the 5 d planet a later iteration went on to accept."""
+        collected = _collect_false_candidates(
+            [(_features(10.0, 2.0), {})], [], [_features(5.0, 12.0)]
+        )
+
+        self.assertEqual(collected, [])
+
+    def test_harmonic_duplicates_are_emitted_as_their_own_status(self):
+        collected = _collect_false_candidates(
+            [], [_features(7.0, 9.0)], [_features(5.0, 12.0)]
+        )
+
+        self.assertEqual(len(collected), 1)
+        self.assertEqual(
+            collected[0]["detection_status"], "harmonic_duplicate"
+        )
+        self.assertEqual(collected[0]["is_provisional_detection"], 1.0)
 
 
 class PeriodSearchRangeTests(unittest.TestCase):

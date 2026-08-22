@@ -17,6 +17,8 @@ from utils import (
     compute_odd_even_depth_ratio,
     compute_ingress_egress_asymmetry,
     compute_secondary_depth_snr,
+    label_candidate_rows,
+    summarize_labels,
 )
 from per_trans_stat import per_transit_stats_simple
 
@@ -72,6 +74,16 @@ HARMONIC_DEDUP_RATIOS = (2, 3)
 # the way an accepted false positive does.
 RECOVERY_MES_THRESHOLD = 6.0
 MAX_RECOVERED_CANDIDATES = 2
+
+# How a row came to be in the output. Only accepted rows are detections; the
+# others are emitted solely when the caller asks for false candidates, and none
+# of them ever masked a cadence. Strings rather than the numeric convention used
+# by the two columns below, because nothing coerces them: the comparison tool
+# only touches columns the confirmed CSV also carries.
+DETECTION_STATUS_ACCEPTED = "accepted"
+DETECTION_STATUS_PROVISIONAL = "provisional"
+DETECTION_STATUS_REJECTED = "rejected"
+DETECTION_STATUS_HARMONIC_DUPLICATE = "harmonic_duplicate"
 
 
 def _extract_single_candidate_from_arrays(
@@ -354,6 +366,9 @@ def _extract_single_candidate_from_arrays(
     # comparison tool's float coercion both stay well behaved.
     feats["mes_threshold_used"] = float(MES_DETECTION_THRESHOLD)
     feats["is_provisional_detection"] = 0.0
+    # Overwritten by the caller for anything that does not end up an accepted
+    # detection, so the column is present and correct on every emitted row.
+    feats["detection_status"] = DETECTION_STATUS_ACCEPTED
 
     total_time = time.time() - start_time
     print(f"Feature extraction completed in {total_time:.2f} seconds")
@@ -805,6 +820,67 @@ def _reconcile_accepted_harmonic(
     return measured_features, measured_info, "adopted"
 
 
+def _latest_measurements(measured_rejects):
+    """Collapse repeated measurements of one ephemeris down to the last one.
+
+    Later measurements have more gapping applied, so they are the least
+    contaminated by deeper signals still standing in the series.
+    """
+    latest = []
+    for features, info in measured_rejects:
+        replaced = False
+        for index, (previous_features, _previous_info) in enumerate(latest):
+            if _same_ephemeris(features, previous_features):
+                latest[index] = (features, info)
+                replaced = True
+                break
+        if not replaced:
+            latest.append((features, info))
+    return latest
+
+
+def _collect_false_candidates(measured_rejects, harmonic_duplicates, reported_rows):
+    """Every measured peak the search declined, as negative-example rows.
+
+    Only fully measured candidates are eligible: the provisional screen's
+    four-key stubs never enter ``measured_rejects``, so each returned row
+    carries the complete feature schema and is directly comparable to a
+    detection. Nothing here ever masked a cadence.
+
+    ``reported_rows`` is everything already going into the output - accepted
+    detections and provisional recoveries - so a peak that describes a planet
+    the run already reported is not emitted a second time under a different
+    verdict.
+    """
+    emitted = list(reported_rows)
+    collected = []
+
+    def _claim(features, status):
+        if _period_already_accepted(features, emitted):
+            return
+        if any(_same_ephemeris(features, previous) for previous in emitted):
+            return
+        row = dict(features)
+        row["detection_status"] = status
+        # It cleared no detection bar and masked nothing, which is exactly what
+        # this column has always meant.
+        row["is_provisional_detection"] = 1.0
+        collected.append(row)
+        emitted.append(row)
+
+    for features, _info in _latest_measurements(measured_rejects):
+        _claim(features, DETECTION_STATUS_REJECTED)
+    for features in harmonic_duplicates:
+        _claim(features, DETECTION_STATUS_HARMONIC_DUPLICATE)
+
+    if collected:
+        print(
+            f"Emitting {len(collected)} false candidate(s) alongside "
+            f"{len(reported_rows)} reported detection(s)"
+        )
+    return collected
+
+
 def _recover_subthreshold_candidates(
     measured_rejects,
     accepted_rows,
@@ -822,18 +898,7 @@ def _recover_subthreshold_candidates(
     screen's four-key stubs never enter it, so a recovered row always carries
     the complete feature schema.
     """
-    latest = []
-    for features, info in measured_rejects:
-        # Later measurements of an ephemeris have more gapping applied, so they
-        # are the least contaminated by deeper signals still in the series.
-        replaced = False
-        for index, (previous_features, _previous_info) in enumerate(latest):
-            if _same_ephemeris(features, previous_features):
-                latest[index] = (features, info)
-                replaced = True
-                break
-        if not replaced:
-            latest.append((features, info))
+    latest = _latest_measurements(measured_rejects)
 
     eligible = []
     for features, info in latest:
@@ -849,6 +914,7 @@ def _recover_subthreshold_candidates(
         row = dict(features)
         row["mes_threshold_used"] = float(threshold)
         row["is_provisional_detection"] = 1.0
+        row["detection_status"] = DETECTION_STATUS_PROVISIONAL
         recovered.append(row)
         print(
             f"Recovered provisional candidate: P={row['period_days']:.6f} d, "
@@ -889,7 +955,15 @@ def _quick_candidate_diagnostics(time, flux, hint, gap_mask=None):
 
 
 def extract_features_from_arrays(
-    tTime, flux, verbose=False, refine_duration=True, use_tls=False, mask_eclipses=False
+    tTime,
+    flux,
+    verbose=False,
+    refine_duration=True,
+    use_tls=False,
+    mask_eclipses=False,
+    include_false_candidates=False,
+    label_output_candidates=False,
+    confirmed_rows=None,
 ):
     """Iteratively extract MES-qualified transit candidates from one light curve.
 
@@ -902,6 +976,16 @@ def extract_features_from_arrays(
     A candidate whose period nearly matches an already-accepted one is treated
     as a duplicate regardless of phase: imperfectly masked deep transits can
     resurface at the same period with a drifted epoch in a later iteration.
+
+    ``include_false_candidates`` additionally returns every peak the search
+    measured and declined, so a training set can be built from the negatives
+    the run produced rather than from detections alone. They are marked by
+    ``detection_status`` and never masked anything, so the detections are
+    bit-for-bit what they would have been with the flag off.
+
+    ``label_output_candidates`` stamps ``candidate_label`` on each returned row
+    by pairing its period against ``confirmed_rows`` (a DataFrame or a path to
+    a confirmed CSV). Without a catalog every row is labelled ``UNKNOWN``.
     """
     time_values = np.asarray(tTime)
     flux_values = np.asarray(flux)
@@ -913,6 +997,9 @@ def extract_features_from_arrays(
     active = np.ones(time_values.size, dtype=bool)
     accepted_rows = []
     rejected_ephemerides = []
+    # Candidates that cleared the MES gate but resolved onto a planet already
+    # reported. They masked nothing, so they are only ever output as negatives.
+    harmonic_duplicates = []
     # Only the fully measured rejects, so the recovery pass never has to deal
     # with the provisional screen's four-key stubs.
     measured_rejects = []
@@ -1054,6 +1141,7 @@ def extract_features_from_arrays(
         )
         if verdict == "duplicate":
             rejected_ephemerides.append(dict(accepted))
+            harmonic_duplicates.append(dict(accepted))
             continue
 
         accepted_rows.append(accepted)
@@ -1095,10 +1183,24 @@ def extract_features_from_arrays(
             )
             break
 
-    return sorted(
+    # Deliberately outside the loop: recovery above runs only where the search
+    # stopped for want of signal, but the budget exits (candidate cap, mask
+    # fraction) leave just as many measured negatives behind.
+    if include_false_candidates:
+        accepted_rows.extend(
+            _collect_false_candidates(
+                measured_rejects, harmonic_duplicates, accepted_rows
+            )
+        )
+
+    rows = sorted(
         accepted_rows,
         key=lambda row: float(row.get("period_days", np.inf)),
     )
+    if label_output_candidates:
+        rows = label_candidate_rows(rows, confirmed_rows)
+        print(f"Candidate labels: {summarize_labels(rows)}")
+    return rows
 
 
 def extract_all_features_from_csv(
@@ -1107,6 +1209,9 @@ def extract_all_features_from_csv(
     refine_duration=True,
     use_tls=False,
     mask_eclipses=False,
+    include_false_candidates=False,
+    label_output_candidates=False,
+    confirmed_rows=None,
     include_ml_cutouts=False,
 ):
     """Extract candidate feature rows from a light-curve CSV."""
@@ -1134,12 +1239,22 @@ def extract_all_features_from_csv(
         refine_duration=refine_duration,
         use_tls=use_tls,
         mask_eclipses=mask_eclipses,
+        include_false_candidates=include_false_candidates,
+        label_output_candidates=label_output_candidates,
+        confirmed_rows=confirmed_rows,
     )
     return feature_rows
 
 
 def extract_features_from_lightcurve(
-    lc, verbose=False, refine_duration=True, use_tls=False, mask_eclipses=False
+    lc,
+    verbose=False,
+    refine_duration=True,
+    use_tls=False,
+    mask_eclipses=False,
+    include_false_candidates=False,
+    label_output_candidates=False,
+    confirmed_rows=None,
 ):
     """Extract candidate feature rows from a LightCurve object."""
     time = lc.time.value
@@ -1153,6 +1268,9 @@ def extract_features_from_lightcurve(
         refine_duration=refine_duration,
         use_tls=use_tls,
         mask_eclipses=mask_eclipses,
+        include_false_candidates=include_false_candidates,
+        label_output_candidates=label_output_candidates,
+        confirmed_rows=confirmed_rows,
     )
 
     # Add stellar radius information if available

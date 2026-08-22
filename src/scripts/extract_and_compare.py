@@ -5,6 +5,10 @@ Usage (from ``src/testing`` with the project venv active)::
 
     python extract_and_compare.py Kepler-5
     python extract_and_compare.py HAT-P-7 --mission Kepler --download-all
+
+Pass ``--include-false-candidates --label-output-candidates`` to build training
+data: the CSV then also carries the peaks the search measured and declined, each
+row labelled CONFIRMED / FALSE-POSITIVE / UNKNOWN against the confirmed catalog.
 """
 
 from __future__ import annotations
@@ -85,6 +89,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Mask eclipses in the light curve",
     )
     parser.add_argument(
+        "--include-false-candidates",
+        action="store_true",
+        help=(
+            "Also write the candidates the search measured and rejected, marked "
+            "by detection_status. They mask nothing, so the detections are "
+            "unchanged. Useful for building negative ML training examples."
+        ),
+    )
+    parser.add_argument(
+        "--label-output-candidates",
+        action="store_true",
+        help=(
+            "Add a candidate_label column: CONFIRMED when the row's period pairs "
+            "with a confirmed planet for this star, FALSE-POSITIVE when it pairs "
+            "with none, UNKNOWN when no confirmed CSV is available"
+        ),
+    )
+    parser.add_argument(
         "--out-dir",
         type=Path,
         default=REPO_ROOT / "data" / "extracted",
@@ -111,6 +133,22 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"\n=== Extract & compare: {star} ({args.mission}) ===\n")
 
+    # Resolved before the extraction rather than after it: labelling needs the
+    # catalog while the rows are still in memory, and a star with no confirmed
+    # data is worth reporting before a long download and search rather than
+    # after one.
+    confirmed_path = find_confirmed_csv(star, args.confirmed_dir)
+    if confirmed_path is None:
+        note = (
+            " Candidates will be labelled UNKNOWN."
+            if args.label_output_candidates
+            else ""
+        )
+        print(
+            f"No confirmed CSV for {star} in {args.confirmed_dir} "
+            f"(expected `{star}-confirmed.csv`).{note}\n"
+        )
+
     lc = download_and_clean_lightcurve(
         target=star,
         mission=args.mission,
@@ -127,6 +165,9 @@ def main(argv: list[str] | None = None) -> int:
         refine_duration=args.refine_duration,
         use_tls=args.use_tls,
         mask_eclipses=args.mask_eclipses,
+        include_false_candidates=args.include_false_candidates,
+        label_output_candidates=args.label_output_candidates,
+        confirmed_rows=confirmed_path,
     )
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
@@ -134,15 +175,11 @@ def main(argv: list[str] | None = None) -> int:
     save_features(feats, star, str(extracted_path), verbose=verbose)
     print(f"\nExtracted features saved to: {extracted_path}")
 
-    confirmed_path = find_confirmed_csv(star, args.confirmed_dir)
     if confirmed_path is None:
-        print(
-            f"\nNo confirmed CSV for {star} in {args.confirmed_dir} "
-            f"(expected `{star}-confirmed.csv`). Skipping comparison."
-        )
+        print("\nNo confirmed catalog for this star; skipping comparison.")
         return 0
 
-    print(f"Comparing against confirmed catalog: {confirmed_path}\n")
+    print(f"\nComparing against confirmed catalog: {confirmed_path}\n")
     compare_extracted_confirmed(extracted_path, confirmed_path)
     return 0
 

@@ -75,6 +75,7 @@ EXPECTED_ARRAY_FEATURE_KEYS = [
     "planet_radius_rjup",
     "mes_threshold_used",
     "is_provisional_detection",
+    "detection_status",
 ]
 
 

@@ -37,6 +37,24 @@ PERIOD_MATCH_TOLERANCE = 0.02
 ALIAS_MAX_NUMERATOR = 5
 ALIAS_MAX_DENOMINATOR = 5
 
+# ``detection_status`` values that represent something the pipeline actually
+# reported as a transit (see ``extract_feats.DETECTION_STATUS_*``). Rows carrying
+# any other status were emitted deliberately as negatives, and grading them here
+# would report each one as an unmatched false positive and bury the real result.
+DETECTION_STATUSES = ("accepted", "provisional")
+
+
+def _detections_only(rows: pd.DataFrame) -> pd.DataFrame:
+    """Drop rows the pipeline emitted as false candidates.
+
+    A CSV without a ``detection_status`` column predates the flag and is all
+    detections by construction, so it passes through untouched.
+    """
+    if "detection_status" not in rows.columns:
+        return rows
+    keep = rows["detection_status"].astype(str).isin(DETECTION_STATUSES)
+    return rows[keep].reset_index(drop=True)
+
 
 def _load_feature_rows(path: str | Path) -> pd.DataFrame:
     df = pd.read_csv(path)
@@ -418,6 +436,7 @@ def compare_extracted_confirmed(
     confirmed_path: str | Path,
     *,
     print_report: bool = True,
+    detections_only: bool = True,
 ) -> pd.DataFrame:
     """Compare candidate rows from extracted and confirmed CSVs.
 
@@ -430,6 +449,10 @@ def compare_extracted_confirmed(
         onto a neighbour.
     print_report:
         If True, print a prettified percentage-difference report.
+    detections_only:
+        If True (default), rows the extraction emitted as false candidates are
+        excluded, so the report grades only what the pipeline claimed to have
+        detected. Set False to grade every row in the file.
 
     Returns
     -------
@@ -445,6 +468,14 @@ def compare_extracted_confirmed(
 
     extracted_rows = _load_feature_rows(extracted_path)
     confirmed_rows = _load_feature_rows(confirmed_path)
+    if detections_only:
+        graded = _detections_only(extracted_rows)
+        if print_report and len(graded) < len(extracted_rows):
+            print(
+                f"Excluding {len(extracted_rows) - len(graded)} false candidate "
+                f"row(s) from the comparison; grading {len(graded)} detection(s).\n"
+            )
+        extracted_rows = graded
     matches = match_candidate_rows(extracted_rows, confirmed_rows)
     paired = [m for m in matches if m["kind"] in ("direct", "alias")]
 
