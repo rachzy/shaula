@@ -1,0 +1,2 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes
+Kepler-908b,1.340596782,2454965.24549,0.06868333333333333,1.6484,0.0001075,0.009466,0.007,89.94,6.299,0.0,0.10348826835578552,1.125,7.200995,45.450558
