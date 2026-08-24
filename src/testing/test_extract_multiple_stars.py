@@ -16,7 +16,7 @@ SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-from extract_multiple_labeled_stars import (  # noqa: E402
+from extract_multiple_stars import (  # noqa: E402
     STARS,
     Star,
     _extract_one,
@@ -89,10 +89,12 @@ class RunBatchTests(unittest.TestCase):
             (out_dir / "Kepler-7_20260101.csv").write_text("target\n")
 
             with patch(
-                "extract_multiple_labeled_stars.extract_and_compare.main"
+                "extract_multiple_stars.extract_and_compare.main"
             ) as mock_main:
                 succeeded, skipped, failed = run_batch(
                     [Star("Kepler-7", "test")],
+                    include_false_candidates=True,
+                    label_output_candidates=True,
                     out_dir=out_dir,
                     confirmed_dir=confirmed_dir,
                 )
@@ -105,11 +107,13 @@ class RunBatchTests(unittest.TestCase):
             out_dir, confirmed_dir = self._dirs(tmp)
 
             with patch(
-                "extract_multiple_labeled_stars.extract_and_compare.main"
+                "extract_multiple_stars.extract_and_compare.main"
             ) as mock_main:
                 mock_main.return_value = 0
                 succeeded, skipped, failed = run_batch(
                     [Star("Kepler-8", "test")],
+                    include_false_candidates=True,
+                    label_output_candidates=True,
                     out_dir=out_dir,
                     confirmed_dir=confirmed_dir,
                 )
@@ -129,11 +133,13 @@ class RunBatchTests(unittest.TestCase):
             out_dir, confirmed_dir = self._dirs(tmp)
 
             with patch(
-                "extract_multiple_labeled_stars.extract_and_compare.main"
+                "extract_multiple_stars.extract_and_compare.main"
             ) as mock_main:
                 mock_main.return_value = 0
                 run_batch(
                     [Star("TOI-178", "tess", mission="TESS")],
+                    include_false_candidates=True,
+                    label_output_candidates=True,
                     out_dir=out_dir,
                     confirmed_dir=confirmed_dir,
                 )
@@ -151,11 +157,13 @@ class RunBatchTests(unittest.TestCase):
                 return 0
 
             with patch(
-                "extract_multiple_labeled_stars.extract_and_compare.main",
+                "extract_multiple_stars.extract_and_compare.main",
                 side_effect=fake_main,
             ) as mock_main:
                 succeeded, skipped, failed = run_batch(
                     [Star("Kepler-9", "test"), Star("Kepler-10", "test")],
+                    include_false_candidates=True,
+                    label_output_candidates=True,
                     out_dir=out_dir,
                     confirmed_dir=confirmed_dir,
                 )
@@ -168,11 +176,13 @@ class RunBatchTests(unittest.TestCase):
             out_dir, confirmed_dir = self._dirs(tmp)
 
             with patch(
-                "extract_multiple_labeled_stars.extract_and_compare.main"
+                "extract_multiple_stars.extract_and_compare.main"
             ) as mock_main:
                 mock_main.return_value = 0
                 succeeded, _skipped, _failed = run_batch(
                     [Star("Kepler-8b", "test")],
+                    include_false_candidates=True,
+                    label_output_candidates=True,
                     out_dir=out_dir,
                     confirmed_dir=confirmed_dir,
                 )
@@ -192,7 +202,7 @@ class WorkerTests(unittest.TestCase):
 
         buffer = io.StringIO()
         with patch(
-            "extract_multiple_labeled_stars.extract_and_compare.main",
+            "extract_multiple_stars.extract_and_compare.main",
             side_effect=noisy,
         ), contextlib.redirect_stdout(buffer):
             star, ok, output = _extract_one((Star("Kepler-8", "test"), "Kepler-8", []))
@@ -204,7 +214,7 @@ class WorkerTests(unittest.TestCase):
 
     def test_a_worker_reports_failure_instead_of_raising(self):
         with patch(
-            "extract_multiple_labeled_stars.extract_and_compare.main",
+            "extract_multiple_stars.extract_and_compare.main",
             side_effect=RuntimeError("boom"),
         ):
             star, ok, output = _extract_one((Star("Kepler-9", "test"), "Kepler-9", []))
@@ -241,14 +251,19 @@ class ParallelRunBatchTests(unittest.TestCase):
             # mock, and the scheduling is what's under test here, not the
             # extraction.
             with patch(
-                "extract_multiple_labeled_stars._extract_one",
+                "extract_multiple_stars._extract_one",
                 side_effect=fake_extract_one,
             ), patch(
-                "extract_multiple_labeled_stars.ProcessPoolExecutor",
+                "extract_multiple_stars.ProcessPoolExecutor",
                 _InlineExecutor,
             ):
                 succeeded, skipped, failed = run_batch(
-                    entries, out_dir=out_dir, confirmed_dir=confirmed_dir, workers=3
+                    entries,
+                    include_false_candidates=True,
+                    label_output_candidates=True,
+                    out_dir=out_dir,
+                    confirmed_dir=confirmed_dir,
+                    workers=3,
                 )
 
         self.assertEqual(sorted(succeeded), ["Kepler-10", "Kepler-8"])
@@ -261,12 +276,14 @@ class ParallelRunBatchTests(unittest.TestCase):
             (out_dir / "Kepler-8_20260101.csv").write_text("target\n")
 
             with patch(
-                "extract_multiple_labeled_stars._extract_one"
+                "extract_multiple_stars._extract_one"
             ) as mock_worker, patch(
-                "extract_multiple_labeled_stars.ProcessPoolExecutor", _InlineExecutor
+                "extract_multiple_stars.ProcessPoolExecutor", _InlineExecutor
             ):
                 succeeded, skipped, failed = run_batch(
                     [Star("Kepler-8", "test")],
+                    include_false_candidates=True,
+                    label_output_candidates=True,
                     out_dir=out_dir,
                     confirmed_dir=confirmed_dir,
                     workers=3,
@@ -303,25 +320,57 @@ class _InlineExecutor:
 
 class ArgParsingTests(unittest.TestCase):
     def test_workers_defaults_to_serial(self):
-        self.assertEqual(parse_args([]).workers, 1)
+        args = parse_args(
+            ["--include-false-candidates", "--label-output-candidates"]
+        )
+        self.assertEqual(args.workers, 1)
 
     def test_workers_is_configurable(self):
-        self.assertEqual(parse_args(["--workers", "3"]).workers, 3)
+        args = parse_args(
+            [
+                "--workers",
+                "3",
+                "--no-include-false-candidates",
+                "--no-label-output-candidates",
+            ]
+        )
+        self.assertEqual(args.workers, 3)
+        self.assertFalse(args.include_false_candidates)
+        self.assertFalse(args.label_output_candidates)
+
+    def test_candidate_options_must_be_selected(self):
+        with self.assertRaises(SystemExit):
+            parse_args([])
 
 
 class BuildArgvTests(unittest.TestCase):
-    def test_the_labelling_flags_are_always_present(self):
+    def test_selected_candidate_flags_are_forwarded(self):
         argv = build_argv(
             Star("TOI-178", "tess", mission="TESS"),
             "TOI-178",
             Path("/out"),
             Path("/confirmed"),
+            True,
+            True,
             [],
         )
         self.assertEqual(argv[0], "TOI-178")
         self.assertIn("--include-false-candidates", argv)
         self.assertIn("--label-output-candidates", argv)
         self.assertEqual(argv[argv.index("--mission") + 1], "TESS")
+
+    def test_unlabelled_stars_do_not_receive_the_labelling_flag(self):
+        argv = build_argv(
+            Star("TOI-178", "tess", mission="TESS"),
+            "TOI-178",
+            Path("/out"),
+            Path("/confirmed"),
+            True,
+            False,
+            [],
+        )
+        self.assertIn("--include-false-candidates", argv)
+        self.assertNotIn("--label-output-candidates", argv)
 
 
 if __name__ == "__main__":

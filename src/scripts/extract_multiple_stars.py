@@ -18,9 +18,8 @@ here does resolve.
 
 Labels come from ``data/confirmed/``; ``find_confirmed_csv`` already auto-fetches
 a missing Kepler CSV from the NASA Exoplanet Archive, so no pre-seeding is needed
-for the Kepler entries. That fetch is Kepler-only, so the TESS entries below
-currently label UNKNOWN and are useful as unlabelled feature rows until
-``get_literature_data`` grows TESS support.
+for the Kepler entries. That fetch is Kepler-only, so labelled TESS rows below
+currently receive UNKNOWN until ``get_literature_data`` grows TESS support.
 
 Usage (from ``src/scripts`` with the project venv active)::
 
@@ -66,14 +65,51 @@ class Star:
 # `n` = confirmed planets, `depth` in ppm, `P` in days, `Teff` in K,
 # `R*` in solar radii, `Kp`/`V` magnitude, `MES` = koi_max_mult_ev.
 STARS: list[Star] = [
-    Star("Kepler-10", "high-multiplicity"),
-    Star("Kepler-14", "high-multiplicity"),
-    Star("Kepler-22", "high-multiplicity"),
-    Star("Kepler-36", "high-multiplicity"),
-    Star("Kepler-11", "high-multiplicity"),
-    Star("Kepler-10", "high-multiplicity"),
-    Star("Kepler-10", "high-multiplicity"),
-    Star("Kepler-10", "high-multiplicity"),
+    # -- High multiplicity: many true transits in a single light curve --------
+    # Only two Kepler hosts have >=6 confirmed KOI planets, and both are
+    # already extracted, so the rest of this group is the 5-planet tier.
+    Star("Kepler-90", "high-multiplicity"),   # n=7, 7.0-331.6 d, the deepest KOI stack
+    Star("Kepler-11", "high-multiplicity"),   # n=6, 10.3-118.4 d, coplanar low-density
+    Star("Kepler-444", "high-multiplicity"),  # n=5, 3.6-9.7 d, Kp=8.72, triple star
+    Star("Kepler-80", "high-multiplicity"),   # n=5, 1.0-9.5 d, resonant chain
+    Star("Kepler-102", "high-multiplicity"),  # n=5, 5.3-27.5 d, Kp=11.49
+    Star("Kepler-62", "high-multiplicity"),   # n=5, 5.7-267.3 d, wide period spread
+    Star("Kepler-33", "high-multiplicity"),   # n=5, 5.7-41.0 d
+    Star("Kepler-20", "high-multiplicity"),   # n=5, 3.7-77.6 d, mixed radii
+    # -- Mixed-scale systems: huge depth dynamic range inside one star --------
+    Star("Kepler-37", "mixed-scale"),   # n=4, depth 12.2-610.4, Kp=9.71, sub-Mercury
+    Star("Kepler-89", "mixed-scale"),   # n=4, depth 126.3-5612.8, 43x range
+    Star("Kepler-167", "mixed-scale"),  # n=4, 4.4-1071.2 d, cold Jupiter + 3 small
+    # -- Deep hot Jupiters: saturated, unambiguous positives ------------------
+    Star("Kepler-45", "deep-hot-jupiter"),  # depth 36912, P=2.46 d, M dwarf host
+    Star("Kepler-17", "deep-hot-jupiter"),  # depth 20824, P=1.49 d, spot crossings
+    Star("Kepler-71", "deep-hot-jupiter"),  # depth 21341, P=3.91 d
+    # -- Shallow / near-threshold: the hard positives a model must not miss ---
+    Star("Kepler-408", "near-threshold"),   # depth 30.7, Kp=8.77, brightest host here
+    Star("Kepler-1972", "near-threshold"),  # n=2, depth 17.1-22.2, MES 9.78
+    Star("Kepler-452", "near-threshold"),   # depth 189.9, P=384.8 d, MES 7.60
+    # -- Long period / few transits: sparse-event regime ----------------------
+    Star("Kepler-421", "long-period"),   # P=704.96 d
+    Star("Kepler-1704", "long-period"),  # P=988.88 d
+    Star("Kepler-849", "long-period"),   # P=394.62 d
+    # -- Cool M dwarf hosts: small stars, deep transits, red noise ------------
+    Star("Kepler-42", "m-dwarf"),   # n=3, Teff=3292, R*=0.148, ultra-short periods
+    Star("Kepler-296", "m-dwarf"),  # n=5, Teff=3526, binary M dwarf pair
+    Star("Kepler-32", "m-dwarf"),   # n=5, Teff=3731
+    Star("Kepler-138", "m-dwarf"),  # n=3, Teff=3846, Kp=12.92, TTV-rich
+    # -- Evolved / hot hosts: strong stellar variability, granulation ---------
+    Star("Kepler-91", "evolved-host"),  # R*=6.22 red giant, Teff=4604
+    Star("Kepler-56", "evolved-host"),  # n=2, R*=4.36 subgiant, misaligned
+    Star("Kepler-432", "evolved-host"), # R*=4.16 giant
+    Star("Kepler-13", "evolved-host"),  # Teff=9107 A star, Kp=9.96, depth 4591
+    # -- Stellar multiples: the classic false-positive breeding ground --------
+    # Blended companion light dilutes depth, so these stress exactly the
+    # signals an eclipsing-binary false positive imitates.
+    Star("Kepler-908", "binary-host"),  # triple, depth 107.5, Kp=11.52
+    Star("Kepler-411", "binary-host"),  # n=3, binary, 3.0-58.0 d
+    Star("Kepler-14", "binary-host"),   # close binary, diluted hot Jupiter, P=6.79 d
+    Star("Kepler-25", "binary-host"),   # n=2, binary, Kp=10.73, TTV pair
+    Star("Kepler-68", "binary-host"),   # n=2, binary, depth 55.0-346.5, Kp=10.00
     # TODO: Implement a `pscomppars` based query for `get_literature_data` to properly fetch TESS Data
     # # (Kepler-444 and Kepler-296 above are also multiple-star systems.)
     # # -- TESS: different cadence, bandpass, and systematics -------------------
@@ -243,9 +279,7 @@ def run_batch(
             try:
                 extract_and_compare.main(argv)
                 succeeded.append(star)
-            except (
-                Exception
-            ) as exc:  # noqa: BLE001 - one failure must not stop the batch
+            except Exception as exc:  # noqa: BLE001 - one failure must not stop the batch
                 print(f"\n!!! Extraction failed for {star}: {exc!r} !!!\n")
                 failed.append(star)
         return succeeded, skipped, failed
@@ -272,7 +306,8 @@ def run_batch(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Run the extraction pipeline over the STARS list defined " "in this module."
+            "Run the extraction pipeline over the STARS list defined "
+            "in this module."
         )
     )
     parser.add_argument(
