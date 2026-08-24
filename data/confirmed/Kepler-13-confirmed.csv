@@ -1,0 +1,2 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes
+Kepler-13b,1.763587535,2454953.5659254,0.13203208333333333,3.16877,0.0045906,0.064717,0.512,82.71,4.0378,0.0,1.9109644036042468,3.031,480.48666,6790.604

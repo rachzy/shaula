@@ -43,6 +43,14 @@ ALIAS_MAX_DENOMINATOR = 5
 # would report each one as an unmatched false positive and bury the real result.
 DETECTION_STATUSES = ("accepted", "provisional")
 
+# Characters that may separate a host-star name from the rest of a filename
+# stem. A confirmed CSV belongs to the star only when one of these follows the
+# name; see :func:`_is_confirmed_stem_for`.
+CONFIRMED_STEM_SEPARATORS = "-_. "
+# Markers identifying the remainder of a stem as a confirmed table. ``confimed``
+# is the historical typo, kept so files written under it still resolve.
+CONFIRMED_STEM_MARKERS = ("confirm", "confimed")
+
 
 def _detections_only(rows: pd.DataFrame) -> pd.DataFrame:
     """Drop rows the pipeline emitted as false candidates.
@@ -549,6 +557,27 @@ def compare_extracted_confirmed(
     return result
 
 
+def _is_confirmed_stem_for(stem: str, star_name: str) -> bool:
+    """True when ``stem`` names ``star_name``'s confirmed table, not a neighbour's.
+
+    A bare prefix test is wrong: ``Kepler-42`` is a prefix of ``Kepler-421``, so
+    it silently resolves Kepler-42 to Kepler-421's catalog and every real planet
+    is then graded against the wrong star's periods. The star name must be
+    followed by a separator, which is the same guard ``get_literature_data``
+    applies to its KOI query (``like 'kepler-42 %'``).
+    """
+    stem = stem.strip()
+    if len(stem) <= len(star_name):
+        return False
+    if stem[: len(star_name)].casefold() != star_name.casefold():
+        return False
+    remainder = stem[len(star_name) :]
+    if remainder[0] not in CONFIRMED_STEM_SEPARATORS:
+        return False
+    folded = remainder.casefold()
+    return any(marker in folded for marker in CONFIRMED_STEM_MARKERS)
+
+
 def find_confirmed_csv(
     star_name: str,
     confirmed_dir: str | Path,
@@ -557,6 +586,9 @@ def find_confirmed_csv(
     mission: str = "Kepler",
 ) -> Path | None:
     """Return the confirmed candidate table for a host star.
+
+    Only a file naming this exact star is accepted - a neighbouring star whose
+    name merely extends it is not a fallback, it is a different star.
 
     If no confirmed CSV exists yet, this falls back to fetching literature
     data for the star from the KOI dataset (see ``get_literature_data.py``)
@@ -575,11 +607,13 @@ def find_confirmed_csv(
             if path.is_file():
                 return path
 
-        # Last resort: any file whose stem starts with the star name and mentions confirm.
+        # Last resort: any spelling of this star's name followed by "confirm".
+        # iterdir rather than glob so star names containing glob metacharacters
+        # are compared literally.
         matches = sorted(
             p
-            for p in confirmed_dir.glob(f"{star_name}*")
-            if p.is_file() and "confirm" in p.stem.lower()
+            for p in confirmed_dir.iterdir()
+            if p.is_file() and _is_confirmed_stem_for(p.stem, star_name)
         )
         if matches:
             return matches[0]
