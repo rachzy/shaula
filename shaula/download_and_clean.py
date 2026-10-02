@@ -1,14 +1,15 @@
-import lightkurve as lk
 from pathlib import Path
-from typing import Optional, Tuple, Union
-from .save import save_lightkurve
+
+import lightkurve as lk
 from numpy import inf
 
+from .paths import lightcurve_cache_dir
+from .save import save_lightkurve
 
 # 1 - Dowload and clean light curve
 
 
-def default_product_selection(mission: str) -> Tuple[Optional[str], Optional[str]]:
+def default_product_selection(mission: str) -> tuple[str | None, str | None]:
     """Return a consistent official product and exposure class per mission."""
     mission_key = str(mission).strip().casefold()
     if mission_key == "kepler":
@@ -21,8 +22,8 @@ def default_product_selection(mission: str) -> Tuple[Optional[str], Optional[str
 
 
 def _normalize_exptime(
-    exptime: Optional[Union[str, float]],
-) -> Optional[Union[str, float]]:
+    exptime: str | float | None,
+) -> str | float | None:
     """Let CLI callers pass either Lightkurve classes or seconds."""
     if not isinstance(exptime, str):
         return exptime
@@ -43,7 +44,9 @@ def download_and_clean_lightcurve(
     savePath: str = None,
     verbose: bool = False,
     author: str = None,
-    exptime: Optional[Union[str, float]] = None,
+    exptime: str | float | None = None,
+    *,
+    cache_dir: Path | str | None = None,
 ):
     """Download one consistent light-curve product class and clean it.
 
@@ -52,8 +55,7 @@ def download_and_clean_lightcurve(
     ``download_all`` so stitching cannot mix exposure times or pipeline
     authors.
     """
-    data_dir = Path(__file__).resolve().parent.parent / "data" / "lightkurve"
-    data_dir.mkdir(parents=True, exist_ok=True)
+    lightcurve_cache_dir(cache_dir)
 
     if verbose:
         print(f"Downloading light curve for {target} from {mission}...")
