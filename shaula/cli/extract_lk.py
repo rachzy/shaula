@@ -4,8 +4,8 @@
 Optionally saves the downloaded light-curve data before feature extraction.
 
 Usage (from repo root with venv active):
-  python src/cli/extract_lk.py --target HAT-P-7 --mission Kepler --out-features out/hatp7_features.csv
-  python src/cli/extract_lk.py --target HAT-P-7 --mission Kepler --download-all --out-features out/hatp7_features.csv
+  shaula-extract-lk --target HAT-P-7 --mission Kepler --out-features out/hatp7_features.csv
+  shaula-extract-lk --target HAT-P-7 --mission Kepler --download-all --out-features out/hatp7_features.csv
 """
 
 import argparse

@@ -161,7 +161,7 @@ def parse_confirmed_csv(
 
 
 def _default_confirmed_dir() -> Path:
-    # src/utils/parse_confirmed_csv.py → repo root → data/confirmed
+    # shaula/utils/parse_confirmed_csv.py → repo root → data/confirmed
     return Path(__file__).resolve().parents[2] / "data" / "confirmed"
 
 

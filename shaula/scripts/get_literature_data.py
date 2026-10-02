@@ -6,11 +6,11 @@ Kepler Objects of Interest (KOI) "cumulative" table for every confirmed
 planet of a host star and writing them out in the same wide format already
 used by the hand-built confirmed CSVs.
 
-Usage (from ``src/scripts`` with the project venv active)::
+Usage (from the repo root with the project venv active)::
 
-    python get_literature_data.py Kepler-5
-    python get_literature_data.py Kepler-11b
-    python get_literature_data.py Kepler-90 --out-dir /tmp/confirmed
+    python -m shaula.scripts.get_literature_data Kepler-5
+    python -m shaula.scripts.get_literature_data Kepler-11b
+    python -m shaula.scripts.get_literature_data Kepler-90 --out-dir /tmp/confirmed
 
 Only ``--mission Kepler`` (the default) is implemented today; the flag exists
 so K2/TESS support can be added later without changing the CLI surface.

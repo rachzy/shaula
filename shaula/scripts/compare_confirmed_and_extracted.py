@@ -4,10 +4,10 @@
 Rows in both files are sorted by orbital period and matched by position. The
 confirmed ``target`` column supplies the planet name displayed in reports.
 
-Usage (from ``src/testing`` with the project venv active)::
+Usage (from the repo root with the project venv active)::
 
-    python compare_confirmed_and_extracted.py
-    python compare_confirmed_and_extracted.py --verbose
+    python -m shaula.scripts.compare_confirmed_and_extracted
+    python -m shaula.scripts.compare_confirmed_and_extracted --verbose
 """
 
 from __future__ import annotations

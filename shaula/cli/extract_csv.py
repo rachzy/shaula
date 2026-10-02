@@ -4,10 +4,10 @@
 #!/usr/bin/env python3
 """
 Extract features from an exo-style CSV (LABEL + FLUX1..FLUXN) using the
-array-based pipeline functions in src/pipeline.py.
+array-based pipeline functions in shaula/extract_feats.py (extract_features_from_arrays).
 
 Usage (from repo root with venv active):
-  python pre_processing/helpers/extract_csv.py \
+  shaula-extract-csv \
     --csv pre_processing/data/exoTrain.csv \
     --out pre_processing/batch_results.csv \
     --cadence-min 30 --label-col LABEL --flux-prefix FLUX --max-rows 128 --workers 8

@@ -21,9 +21,9 @@ a missing Kepler CSV from the NASA Exoplanet Archive, so no pre-seeding is neede
 for the Kepler entries. That fetch is Kepler-only, so labelled TESS rows below
 currently receive UNKNOWN until ``get_literature_data`` grows TESS support.
 
-Usage (from ``src/scripts`` with the project venv active)::
+Usage (from the repo root with the project venv active)::
 
-    python extract_multiple_stars.py \\
+    python -m shaula.scripts.extract_multiple_stars \\
         --include-false-candidates --label-output-candidates
 
 Edit the ``STARS`` list below to change which stars are processed.

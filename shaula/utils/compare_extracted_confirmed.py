@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Compare extracted pipeline features against confirmed catalog values."""
+"""Compare extracted pipeline features against confirmed catalog values.
+
+Usage (from the repo root with the project venv active)::
+
+    python -m shaula.utils.compare_extracted_confirmed --help
+"""
 
 from __future__ import annotations
 

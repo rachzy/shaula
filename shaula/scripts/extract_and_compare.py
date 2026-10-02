@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Extract candidate features for a star and compare against confirmed values.
 
-Usage (from ``src/testing`` with the project venv active)::
+Usage (from the repo root with the project venv active)::
 
-    python extract_and_compare.py Kepler-5
-    python extract_and_compare.py HAT-P-7 --mission Kepler --download-all
+    python -m shaula.scripts.extract_and_compare Kepler-5
+    python -m shaula.scripts.extract_and_compare HAT-P-7 --mission Kepler --download-all
 
 Pass ``--include-false-candidates --label-output-candidates`` to build training
 data: the CSV then also carries the peaks the search measured and declined, each
