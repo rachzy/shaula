@@ -55,6 +55,7 @@ def download_and_clean_lightcurve(
     ``download_all`` so stitching cannot mix exposure times or pipeline
     authors.
     """
+    # Redirect lightkurve's download cache before the first search.
     lightcurve_cache_dir(cache_dir)
 
     if verbose:
