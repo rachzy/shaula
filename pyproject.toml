@@ -19,6 +19,10 @@ dependencies = [
     "statsmodels>=0.14",
 ]
 
+[project.optional-dependencies]
+tls = ["transitleastsquares>=1.32"]
+parallel = ["threadpoolctl>=3.5"]
+
 [project.scripts]
 shaula-extract-lk = "shaula.cli.extract_lk:main"
 shaula-extract-csv = "shaula.cli.extract_csv:main"
