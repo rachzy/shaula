@@ -38,6 +38,9 @@ def stubbed(monkeypatch):
 
     def fake_features(lc, **kwargs):
         calls["features"] = kwargs
+        progress = kwargs.get("progress")
+        if progress is not None:
+            progress(ProgressEvent(stage="period_search", message="candidate 1"))
         return [{"period_days": 3.5, "MES": 12.0}]
 
     monkeypatch.setattr(api, "download_and_clean_lightcurve", fake_download)
@@ -69,6 +72,16 @@ def test_emits_known_stages_in_order_ending_with_done(stubbed):
 
     order = [STAGES.index(e.stage) for e in seen]
     assert order == sorted(order), f"stages went backwards: {[e.stage for e in seen]}"
+
+
+def test_every_declared_stage_is_actually_emitted(stubbed):
+    """STAGES is a contract: a stage that never fires is a lie to the caller."""
+    seen: list[ProgressEvent] = []
+    extract("Kepler-11", "Kepler", progress=seen.append)
+
+    emitted = {event.stage for event in seen}
+    never_fired = set(STAGES) - emitted
+    assert never_fired == set(), f"declared but never emitted: {sorted(never_fired)}"
 
 
 def test_callback_exception_propagates_unchanged(stubbed):

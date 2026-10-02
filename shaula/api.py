@@ -12,11 +12,9 @@ from .download_and_clean import download_and_clean_lightcurve
 from .extract_feats import extract_features_from_lightcurve
 
 STAGES: tuple[str, ...] = (
-    "resolving",
     "downloading",
     "detrending",
     "period_search",
-    "extracting",
     "done",
 )
 
@@ -88,7 +86,6 @@ def extract(
     )
 
     _emit(progress, "detrending", "Detrending and searching for periods")
-    _emit(progress, "extracting", "Extracting candidate features")
     rows = extract_features_from_lightcurve(
         lc,
         use_tls=use_tls,
