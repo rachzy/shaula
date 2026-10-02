@@ -8,26 +8,14 @@ Usage (from repo root with venv active):
   python src/cli/extract_lk.py --target HAT-P-7 --mission Kepler --download-all --out-features out/hatp7_features.csv
 """
 
-import os
-import sys
 import argparse
 from typing import Optional, Union
 
-THIS_DIR = os.path.dirname(__file__)
-SRC_DIR = os.path.join(THIS_DIR, "src")
-if SRC_DIR not in sys.path:
-    sys.path.append(SRC_DIR)
-
-# Add the parent directory to sys.path to import pipeline
-parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
-
-from extract_feats import extract_features_from_lightcurve
-from download_and_clean import download_and_clean_lightcurve
-from save import save_features
-from extract_feats import extract_all_features_from_csv
-from utils.target_names import host_star_name
+from ..extract_feats import extract_features_from_lightcurve
+from ..download_and_clean import download_and_clean_lightcurve
+from ..save import save_features
+from ..extract_feats import extract_all_features_from_csv
+from ..utils.target_names import host_star_name
 
 
 def run_lightkurve_extraction(

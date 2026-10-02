@@ -20,14 +20,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-THIS_DIR = Path(__file__).resolve().parent
-SRC_DIR = THIS_DIR.parent
-REPO_ROOT = SRC_DIR.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from utils.compare_extracted_confirmed import (  # noqa: E402
+from ..utils.compare_extracted_confirmed import (
     compare_extracted_confirmed,
     find_confirmed_csv,
 )

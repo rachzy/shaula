@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import contextlib
 import io
-import sys
 import tempfile
 import unittest
 from collections import Counter
@@ -12,11 +11,7 @@ from concurrent.futures import Future
 from pathlib import Path
 from unittest.mock import patch
 
-SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
-if str(SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_DIR))
-
-from extract_multiple_stars import (  # noqa: E402
+from ..scripts.extract_multiple_stars import (
     STARS,
     Star,
     _extract_one,
@@ -89,7 +84,7 @@ class RunBatchTests(unittest.TestCase):
             (out_dir / "Kepler-7_20260101.csv").write_text("target\n")
 
             with patch(
-                "extract_multiple_stars.extract_and_compare.main"
+                "shaula.scripts.extract_multiple_stars.extract_and_compare.main"
             ) as mock_main:
                 succeeded, skipped, failed = run_batch(
                     [Star("Kepler-7", "test")],
@@ -107,7 +102,7 @@ class RunBatchTests(unittest.TestCase):
             out_dir, confirmed_dir = self._dirs(tmp)
 
             with patch(
-                "extract_multiple_stars.extract_and_compare.main"
+                "shaula.scripts.extract_multiple_stars.extract_and_compare.main"
             ) as mock_main:
                 mock_main.return_value = 0
                 succeeded, skipped, failed = run_batch(
@@ -133,7 +128,7 @@ class RunBatchTests(unittest.TestCase):
             out_dir, confirmed_dir = self._dirs(tmp)
 
             with patch(
-                "extract_multiple_stars.extract_and_compare.main"
+                "shaula.scripts.extract_multiple_stars.extract_and_compare.main"
             ) as mock_main:
                 mock_main.return_value = 0
                 run_batch(
@@ -157,7 +152,7 @@ class RunBatchTests(unittest.TestCase):
                 return 0
 
             with patch(
-                "extract_multiple_stars.extract_and_compare.main",
+                "shaula.scripts.extract_multiple_stars.extract_and_compare.main",
                 side_effect=fake_main,
             ) as mock_main:
                 succeeded, skipped, failed = run_batch(
@@ -176,7 +171,7 @@ class RunBatchTests(unittest.TestCase):
             out_dir, confirmed_dir = self._dirs(tmp)
 
             with patch(
-                "extract_multiple_stars.extract_and_compare.main"
+                "shaula.scripts.extract_multiple_stars.extract_and_compare.main"
             ) as mock_main:
                 mock_main.return_value = 0
                 succeeded, _skipped, _failed = run_batch(
@@ -202,7 +197,7 @@ class WorkerTests(unittest.TestCase):
 
         buffer = io.StringIO()
         with patch(
-            "extract_multiple_stars.extract_and_compare.main",
+            "shaula.scripts.extract_multiple_stars.extract_and_compare.main",
             side_effect=noisy,
         ), contextlib.redirect_stdout(buffer):
             star, ok, output = _extract_one((Star("Kepler-8", "test"), "Kepler-8", []))
@@ -214,7 +209,7 @@ class WorkerTests(unittest.TestCase):
 
     def test_a_worker_reports_failure_instead_of_raising(self):
         with patch(
-            "extract_multiple_stars.extract_and_compare.main",
+            "shaula.scripts.extract_multiple_stars.extract_and_compare.main",
             side_effect=RuntimeError("boom"),
         ):
             star, ok, output = _extract_one((Star("Kepler-9", "test"), "Kepler-9", []))
@@ -251,10 +246,10 @@ class ParallelRunBatchTests(unittest.TestCase):
             # mock, and the scheduling is what's under test here, not the
             # extraction.
             with patch(
-                "extract_multiple_stars._extract_one",
+                "shaula.scripts.extract_multiple_stars._extract_one",
                 side_effect=fake_extract_one,
             ), patch(
-                "extract_multiple_stars.ProcessPoolExecutor",
+                "shaula.scripts.extract_multiple_stars.ProcessPoolExecutor",
                 _InlineExecutor,
             ):
                 succeeded, skipped, failed = run_batch(
@@ -276,9 +271,9 @@ class ParallelRunBatchTests(unittest.TestCase):
             (out_dir / "Kepler-8_20260101.csv").write_text("target\n")
 
             with patch(
-                "extract_multiple_stars._extract_one"
+                "shaula.scripts.extract_multiple_stars._extract_one"
             ) as mock_worker, patch(
-                "extract_multiple_stars.ProcessPoolExecutor", _InlineExecutor
+                "shaula.scripts.extract_multiple_stars.ProcessPoolExecutor", _InlineExecutor
             ):
                 succeeded, skipped, failed = run_batch(
                     [Star("Kepler-8", "test")],

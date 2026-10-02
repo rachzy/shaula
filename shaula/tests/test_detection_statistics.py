@@ -7,20 +7,14 @@ from __future__ import annotations
 
 import contextlib
 import io
-import sys
 import unittest
-from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
 
-SRC_DIR = Path(__file__).resolve().parents[1]
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from cdpp import calculate_cdpp, duration_matched_statistics  # noqa: E402
-from extract_feats import extract_features_from_arrays  # noqa: E402
-from sesmes import compute_SES_MES, fold_statistics  # noqa: E402
+from ..cdpp import calculate_cdpp, duration_matched_statistics
+from ..extract_feats import extract_features_from_arrays
+from ..sesmes import compute_SES_MES, fold_statistics
 
 
 CADENCE_HOURS = 0.5
@@ -108,9 +102,9 @@ class DurationMatchedStatisticsTests(unittest.TestCase):
         }
 
         with patch(
-            "extract_feats.detrend_with_bls_mask",
+            "shaula.extract_feats.detrend_with_bls_mask",
             return_value=(flux, np.ones_like(flux), mask, bls_info),
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 1):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 1):
             with contextlib.redirect_stdout(io.StringIO()):
                 row = extract_features_from_arrays(time, flux)[0]
 

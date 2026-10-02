@@ -14,7 +14,6 @@ Usage (from repo root with venv active):
 """
 
 import os
-import sys
 import argparse
 from collections import OrderedDict
 
@@ -22,17 +21,7 @@ import numpy as np
 import pandas as pd
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-THIS_DIR = os.path.dirname(__file__)
-SRC_DIR = os.path.join(THIS_DIR, "src")
-if SRC_DIR not in sys.path:
-    sys.path.append(SRC_DIR)
-
-# Add the parent directory to sys.path to import pipeline
-parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
-
-from extract_feats import extract_features_from_arrays
+from ..extract_feats import extract_features_from_arrays
 
 # Desired final feature order for CSV outputs
 DESIRED_FEATURE_ORDER = [

@@ -5,12 +5,12 @@ from scipy.stats import binned_statistic
 from collections import OrderedDict
 from scipy.stats import skew, kurtosis
 
-from detrend_and_period import detrend_with_bls_mask
-from folded_binned_metrics import folded_binned_metrics
-from cdpp import calculate_cdpp
-from sesmes import compute_SES_MES, fold_statistics
-from utils.ephemeris import canonical_epoch
-from utils import (
+from .detrend_and_period import detrend_with_bls_mask
+from .folded_binned_metrics import folded_binned_metrics
+from .cdpp import calculate_cdpp
+from .sesmes import compute_SES_MES, fold_statistics
+from .utils.ephemeris import canonical_epoch
+from .utils import (
     scaling_and_metrics,
     interp_cdpp,
     compute_secondary_depth,
@@ -20,7 +20,7 @@ from utils import (
     label_candidate_rows,
     summarize_labels,
 )
-from per_trans_stat import per_transit_stats_simple
+from .per_trans_stat import per_transit_stats_simple
 
 
 MES_DETECTION_THRESHOLD = 7.1

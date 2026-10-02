@@ -13,16 +13,10 @@ from pathlib import Path
 
 import pandas as pd
 
-try:
-    from .compare_extracted_confirmed import (
-        PERIOD_MATCH_TOLERANCE,
-        match_candidate_rows,
-    )
-except ImportError:  # Allow direct execution: python src/utils/label_candidates.py
-    from compare_extracted_confirmed import (
-        PERIOD_MATCH_TOLERANCE,
-        match_candidate_rows,
-    )
+from .compare_extracted_confirmed import (
+    PERIOD_MATCH_TOLERANCE,
+    match_candidate_rows,
+)
 
 CANDIDATE_LABEL_CONFIRMED = "CONFIRMED"
 CANDIDATE_LABEL_FALSE_POSITIVE = "FALSE-POSITIVE"

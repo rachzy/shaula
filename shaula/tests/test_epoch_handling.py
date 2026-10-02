@@ -5,20 +5,14 @@ Regression tests for transit-epoch normalization and refinement.
 
 from __future__ import annotations
 
-import sys
 import unittest
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-SRC_DIR = Path(__file__).resolve().parents[1]
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from detrend_and_period import refine_transit_epoch  # noqa: E402
-from utils.compare_extracted_confirmed import compare_feature_rows  # noqa: E402
-from utils.ephemeris import (  # noqa: E402
+from ..detrend_and_period import refine_transit_epoch
+from ..utils.compare_extracted_confirmed import compare_feature_rows
+from ..utils.ephemeris import (
     align_catalog_epoch,
     canonical_epoch,
     epoch_phase_offset,

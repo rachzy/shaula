@@ -2,23 +2,18 @@
 
 from __future__ import annotations
 
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 import pandas as pd
 
-SRC_DIR = Path(__file__).resolve().parents[1]
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from save import save_features  # noqa: E402
-from utils.compare_extracted_confirmed import (  # noqa: E402
+from ..save import save_features
+from ..utils.compare_extracted_confirmed import (
     compare_extracted_confirmed,
     match_candidate_rows,
 )
-from utils.target_names import host_star_name  # noqa: E402
+from ..utils.target_names import host_star_name
 
 
 class CandidateCollectionTests(unittest.TestCase):

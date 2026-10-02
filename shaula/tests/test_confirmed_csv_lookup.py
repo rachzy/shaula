@@ -2,16 +2,11 @@
 
 from __future__ import annotations
 
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-SRC_DIR = Path(__file__).resolve().parents[1]
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from utils.compare_extracted_confirmed import (  # noqa: E402
+from ..utils.compare_extracted_confirmed import (
     _is_confirmed_stem_for,
     find_confirmed_csv,
 )

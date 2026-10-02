@@ -5,18 +5,13 @@ Regression tests for fetching confirmed-planet literature data from the KOI data
 
 from __future__ import annotations
 
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 import pandas as pd
 
-SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
-if str(SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_DIR))
-
-from get_literature_data import (  # noqa: E402
+from ..scripts.get_literature_data import (
     CONFIRMED_COLUMNS,
     LiteratureDataError,
     _build_koi_query,

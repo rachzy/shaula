@@ -44,7 +44,7 @@ Thumbs.db
 
 # Data
 */lightkurve
-src/data/feature_results/*
+shaula/data/feature_results/*
 # data/confirmed/*.csv
 # data/extracted/*.csv
 

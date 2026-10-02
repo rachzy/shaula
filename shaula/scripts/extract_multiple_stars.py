@@ -39,17 +39,10 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 
-THIS_DIR = Path(__file__).resolve().parent
-SRC_DIR = THIS_DIR.parent
-REPO_ROOT = SRC_DIR.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# Allow `python extract_multiple_stars.py` from src/scripts without
-# installing the package.
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-import extract_and_compare  # noqa: E402
-from utils.target_names import host_star_name  # noqa: E402
+from . import extract_and_compare
+from ..utils.target_names import host_star_name
 
 
 @dataclass(frozen=True)

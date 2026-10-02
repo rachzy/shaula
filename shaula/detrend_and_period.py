@@ -4,7 +4,7 @@ from scipy.interpolate import UnivariateSpline
 from astropy.timeseries import BoxLeastSquares
 from scipy.signal import find_peaks
 from scipy.stats import binned_statistic
-from utils.ephemeris import canonical_epoch, epoch_phase_offset
+from .utils.ephemeris import canonical_epoch, epoch_phase_offset
 
 MAX_GLOBAL_PERIODS = 20_000
 TARGET_POINT_PERIOD_EVALUATIONS = 200_000_000

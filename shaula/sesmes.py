@@ -1,6 +1,6 @@
 import numpy as np
 
-from cdpp import duration_matched_statistics
+from .cdpp import duration_matched_statistics
 
 # 5 - Compute coherent SES and MES
 

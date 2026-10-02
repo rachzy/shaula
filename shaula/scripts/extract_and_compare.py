@@ -14,26 +14,19 @@ row labelled CONFIRMED / FALSE-POSITIVE / UNKNOWN against the confirmed catalog.
 from __future__ import annotations
 
 import argparse
-import sys
 from datetime import datetime
 from pathlib import Path
 
-THIS_DIR = Path(__file__).resolve().parent
-SRC_DIR = THIS_DIR.parent
-REPO_ROOT = SRC_DIR.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# Allow `python extract_and_compare.py ...` from src/testing without installing the package.
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from download_and_clean import download_and_clean_lightcurve  # noqa: E402
-from extract_feats import extract_features_from_lightcurve  # noqa: E402
-from save import save_features  # noqa: E402
-from utils.compare_extracted_confirmed import (  # noqa: E402
+from ..download_and_clean import download_and_clean_lightcurve
+from ..extract_feats import extract_features_from_lightcurve
+from ..save import save_features
+from ..utils.compare_extracted_confirmed import (
     compare_extracted_confirmed,
     find_confirmed_csv,
 )
-from utils.target_names import host_star_name  # noqa: E402
+from ..utils.target_names import host_star_name
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

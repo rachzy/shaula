@@ -4,22 +4,17 @@ from __future__ import annotations
 
 import contextlib
 import io
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 import pandas as pd
 
-SRC_DIR = Path(__file__).resolve().parents[1]
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from utils.compare_extracted_confirmed import (  # noqa: E402
+from ..utils.compare_extracted_confirmed import (
     _detections_only,
     compare_extracted_confirmed,
 )
-from utils.label_candidates import (  # noqa: E402
+from ..utils.label_candidates import (
     label_candidate_rows,
     summarize_labels,
 )

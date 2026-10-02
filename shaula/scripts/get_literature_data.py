@@ -35,16 +35,10 @@ from urllib.parse import urlencode
 
 import pandas as pd
 
-THIS_DIR = Path(__file__).resolve().parent
-SRC_DIR = THIS_DIR.parent
-REPO_ROOT = SRC_DIR.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# Allow `python get_literature_data.py ...` from src/scripts without installing the package.
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from utils.ephemeris import MISSION_TIME_OFFSETS  # noqa: E402
-from utils.target_names import host_star_name  # noqa: E402
+from ..utils.ephemeris import MISSION_TIME_OFFSETS
+from ..utils.target_names import host_star_name
 
 DEFAULT_CONFIRMED_DIR = REPO_ROOT / "data" / "confirmed"
 

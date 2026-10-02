@@ -7,23 +7,17 @@ from __future__ import annotations
 
 import contextlib
 import io
-import sys
 import unittest
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import numpy as np
 
-SRC_DIR = Path(__file__).resolve().parents[1]
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
-from detrend_and_period import (  # noqa: E402
+from ..detrend_and_period import (
     detrend_with_bls_mask,
     rank_independent_bls_candidates,
 )
-from extract_feats import (  # noqa: E402
+from ..extract_feats import (
     _candidate_passes_mes,
     _collect_false_candidates,
     _deep_events,
@@ -33,7 +27,7 @@ from extract_feats import (  # noqa: E402
     _unexplained_deep_event_mask,
     extract_features_from_arrays,
 )
-from sesmes import compute_SES_MES, fold_statistics  # noqa: E402
+from ..sesmes import compute_SES_MES, fold_statistics
 
 
 def _features(period, mes, t0=0.5, duration=0.1):
@@ -139,12 +133,12 @@ class IterativeMaskingTests(unittest.TestCase):
             return features, info, None
 
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             side_effect=fake_single,
         ), patch(
-            "extract_feats._quick_candidate_diagnostics",
+            "shaula.extract_feats._quick_candidate_diagnostics",
             return_value={"max_mes": 9.0, "n_mes_events": 7},
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 3):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 3):
             with contextlib.redirect_stdout(io.StringIO()):
                 rows = extract_features_from_arrays(time, flux)
 
@@ -198,12 +192,12 @@ class IterativeMaskingTests(unittest.TestCase):
             return features, info, None
 
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             side_effect=fake_single,
         ), patch(
-            "extract_feats._quick_candidate_diagnostics",
+            "shaula.extract_feats._quick_candidate_diagnostics",
             return_value={"max_mes": 9.0, "n_mes_events": 7},
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 2):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 2):
             with contextlib.redirect_stdout(io.StringIO()):
                 rows = extract_features_from_arrays(time, flux)
 
@@ -234,9 +228,9 @@ class IterativeMaskingTests(unittest.TestCase):
             return (*results[len(seen) - 1], None)
 
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             side_effect=fake_single,
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 2):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 2):
             with contextlib.redirect_stdout(io.StringIO()):
                 extract_features_from_arrays(time, flux)
 
@@ -261,9 +255,9 @@ class IterativeMaskingTests(unittest.TestCase):
         )
 
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             return_value=failed,
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 2):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 2):
             with contextlib.redirect_stdout(io.StringIO()):
                 rows = extract_features_from_arrays(time, flux)
 
@@ -347,9 +341,9 @@ class HarmonicReconciliationTests(unittest.TestCase):
         statistics = self._statistics(time, flux)
         fake_single, calls = self._runner(statistics, first_period, first_epoch)
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             side_effect=fake_single,
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", iterations):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", iterations):
             with contextlib.redirect_stdout(io.StringIO()):
                 rows = extract_features_from_arrays(time, flux)
         return rows, calls
@@ -376,10 +370,10 @@ class HarmonicReconciliationTests(unittest.TestCase):
         statistics = self._statistics(time, flux)
         fake_single, calls = self._runner(statistics, self.PERIOD / 2.0)
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             side_effect=fake_single,
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 2), patch(
-            "extract_feats.HARMONIC_ADOPT_MARGIN", 1e9
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 2), patch(
+            "shaula.extract_feats.HARMONIC_ADOPT_MARGIN", 1e9
         ):
             with contextlib.redirect_stdout(io.StringIO()):
                 unreconciled_rows = extract_features_from_arrays(time, flux)
@@ -420,10 +414,10 @@ class HarmonicReconciliationTests(unittest.TestCase):
         statistics = self._statistics(time, flux)
         fake_single, _calls = self._runner(statistics, self.PERIOD / 2.0)
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             side_effect=fake_single,
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 1), patch(
-            "extract_feats.HARMONIC_ADOPT_MARGIN", 1e9
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 1), patch(
+            "shaula.extract_feats.HARMONIC_ADOPT_MARGIN", 1e9
         ):
             with contextlib.redirect_stdout(io.StringIO()):
                 rows = extract_features_from_arrays(time, flux)
@@ -488,9 +482,9 @@ class SubthresholdRecoveryTests(unittest.TestCase):
             )
 
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             side_effect=fake_single,
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 1):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 1):
             with contextlib.redirect_stdout(io.StringIO()) as out:
                 rows = extract_features_from_arrays(time, flux)
         return rows, out.getvalue()
@@ -511,7 +505,7 @@ class SubthresholdRecoveryTests(unittest.TestCase):
     def test_recovery_respects_its_limit(self):
         rows, _ = self._run([(3.0, 6.9)])
 
-        with patch("extract_feats.MAX_RECOVERED_CANDIDATES", 0):
+        with patch("shaula.extract_feats.MAX_RECOVERED_CANDIDATES", 0):
             empty, _ = self._run([(3.0, 6.9)])
         self.assertEqual(len(rows), 1)
         self.assertEqual(empty, [])
@@ -530,12 +524,12 @@ class SubthresholdRecoveryTests(unittest.TestCase):
         )
 
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             return_value=primary,
         ), patch(
-            "extract_feats._quick_candidate_diagnostics",
+            "shaula.extract_feats._quick_candidate_diagnostics",
             return_value={"max_mes": 1.0, "n_mes_events": 6},
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 1):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 1):
             with contextlib.redirect_stdout(io.StringIO()):
                 rows = extract_features_from_arrays(time, flux)
 
@@ -557,9 +551,9 @@ class SubthresholdRecoveryTests(unittest.TestCase):
             )
 
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             side_effect=fake_single,
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", 2):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 2):
             with contextlib.redirect_stdout(io.StringIO()):
                 rows = extract_features_from_arrays(time, flux)
 
@@ -584,9 +578,9 @@ class FalseCandidateOutputTests(unittest.TestCase):
             )
 
         with patch(
-            "extract_feats._extract_single_candidate_from_arrays",
+            "shaula.extract_feats._extract_single_candidate_from_arrays",
             side_effect=fake_single,
-        ), patch("extract_feats.MAX_TRANSIT_CANDIDATES", max_candidates):
+        ), patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", max_candidates):
             with contextlib.redirect_stdout(io.StringIO()):
                 return extract_features_from_arrays(
                     time, flux, include_false_candidates=include_false_candidates
@@ -670,7 +664,7 @@ class PeriodSearchRangeTests(unittest.TestCase):
             captured.setdefault("max_period", float(np.max(periods)))
             raise RuntimeError("stop after the global grid is built")
 
-        with patch("detrend_and_period.BoxLeastSquares") as bls_cls:
+        with patch("shaula.detrend_and_period.BoxLeastSquares") as bls_cls:
             bls_cls.return_value = SimpleNamespace(power=fake_power)
             with contextlib.redirect_stdout(io.StringIO()):
                 with self.assertRaises(RuntimeError):

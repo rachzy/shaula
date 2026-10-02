@@ -1,7 +1,7 @@
 import lightkurve as lk
 from pathlib import Path
 from typing import Optional, Tuple, Union
-from save import save_lightkurve
+from .save import save_lightkurve
 from numpy import inf
 
 

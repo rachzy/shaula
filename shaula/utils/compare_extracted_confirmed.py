@@ -4,19 +4,14 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from fractions import Fraction
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-try:
-    from .target_names import host_star_name
-    from .ephemeris import align_catalog_epoch
-except ImportError:  # Allow direct execution: python src/utils/compare_extracted_confirmed.py
-    from target_names import host_star_name
-    from ephemeris import align_catalog_epoch
+from .ephemeris import align_catalog_epoch
+from .target_names import host_star_name
 
 # Columns where a large mismatch is often expected (different conventions / units).
 KNOWN_CAVEATS = {
@@ -637,12 +632,8 @@ def _fetch_missing_confirmed_csv(
     (missing module, network error, no matching KOI rows, ...) degrades to
     the pre-existing "no confirmed CSV" behavior instead of raising.
     """
-    scripts_dir = Path(__file__).resolve().parents[1] / "scripts"
-    if str(scripts_dir) not in sys.path:
-        sys.path.insert(0, str(scripts_dir))
-
     try:
-        from get_literature_data import LiteratureDataError, get_literature_data
+        from ..scripts.get_literature_data import LiteratureDataError, get_literature_data
     except ImportError as exc:
         print(f"Could not import get_literature_data to auto-fetch {star_name}: {exc}")
         return None
