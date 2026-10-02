@@ -1,0 +1,156 @@
+"""The public extract() entrypoint and its progress contract."""
+
+from __future__ import annotations
+
+import contextlib
+import io
+from typing import ClassVar
+from unittest.mock import patch
+
+import numpy as np
+import pytest
+
+from .. import api
+from ..api import STAGES, ExtractionResult, ProgressEvent, extract
+from ..extract_feats import extract_features_from_arrays
+
+
+class _FakeLightCurve:
+    """Stands in for a lightkurve LightCurve; extract() only passes it through."""
+
+    meta: ClassVar[dict] = {}
+
+
+@pytest.fixture
+def stubbed(monkeypatch):
+    """Replace the two heavy calls with recorders."""
+    calls = {}
+
+    def fake_download(target, mission, sigma_upper=5.0, all=False, **kwargs):
+        calls["download"] = {
+            "target": target,
+            "mission": mission,
+            "sigma_upper": sigma_upper,
+            "all": all,
+            "cache_dir": kwargs.get("cache_dir"),
+        }
+        return _FakeLightCurve()
+
+    def fake_features(lc, **kwargs):
+        calls["features"] = kwargs
+        return [{"period_days": 3.5, "MES": 12.0}]
+
+    monkeypatch.setattr(api, "download_and_clean_lightcurve", fake_download)
+    monkeypatch.setattr(api, "extract_features_from_lightcurve", fake_features)
+    return calls
+
+
+def test_returns_features_and_version(stubbed):
+    result = extract("Kepler-11", "Kepler")
+    assert isinstance(result, ExtractionResult)
+    assert result.features == [{"period_days": 3.5, "MES": 12.0}]
+    assert result.target == "Kepler-11"
+    assert result.mission == "Kepler"
+    assert result.shaula_version
+
+
+def test_works_without_a_progress_callback(stubbed):
+    result = extract("Kepler-11", "Kepler", progress=None)
+    assert len(result.features) == 1
+
+
+def test_emits_known_stages_in_order_ending_with_done(stubbed):
+    seen: list[ProgressEvent] = []
+    extract("Kepler-11", "Kepler", progress=seen.append)
+
+    assert seen, "extract() emitted no progress events"
+    assert all(e.stage in STAGES for e in seen)
+    assert seen[-1].stage == "done"
+
+    order = [STAGES.index(e.stage) for e in seen]
+    assert order == sorted(order), f"stages went backwards: {[e.stage for e in seen]}"
+
+
+def test_callback_exception_propagates_unchanged(stubbed):
+    class Cancelled(Exception):
+        pass
+
+    def cancel(event: ProgressEvent) -> None:
+        raise Cancelled(event.stage)
+
+    with pytest.raises(Cancelled):
+        extract("Kepler-11", "Kepler", progress=cancel)
+
+
+def test_download_failure_surfaces_with_its_message(monkeypatch):
+    def failing_download(*args, **kwargs):
+        raise ValueError("No Kepler light curves found for 'Nope'")
+
+    monkeypatch.setattr(api, "download_and_clean_lightcurve", failing_download)
+
+    with pytest.raises(ValueError, match="No Kepler light curves found"):
+        extract("Nope", "Kepler")
+
+
+def test_passes_parameters_through_to_the_downloader(stubbed):
+    extract("Kepler-11", "TESS", sigma_clip=3.0, download_all=True)
+    assert stubbed["download"]["mission"] == "TESS"
+    assert stubbed["download"]["sigma_upper"] == 3.0
+    assert stubbed["download"]["all"] is True
+
+
+def test_period_search_events_fire_during_extraction(monkeypatch):
+    """The callback must fire inside extraction, not only at its boundaries."""
+
+    def fake_download(*args, **kwargs):
+        return _FakeLightCurve()
+
+    def fake_features(lc, progress=None, **kwargs):
+        for index in range(3):
+            progress(
+                ProgressEvent(
+                    stage="period_search",
+                    message=f"candidate {index}",
+                )
+            )
+        return [{"period_days": 1.0}]
+
+    monkeypatch.setattr(api, "download_and_clean_lightcurve", fake_download)
+    monkeypatch.setattr(api, "extract_features_from_lightcurve", fake_features)
+
+    seen: list[ProgressEvent] = []
+    extract("Kepler-11", "Kepler", progress=seen.append)
+
+    searching = [e for e in seen if e.stage == "period_search"]
+    assert len(searching) >= 3
+
+
+def test_real_candidate_loop_emits_period_search_events():
+    """Exercise the real hook in extract_features_from_arrays.
+
+    Mirrors the pattern in test_detection_statistics: the BLS detrend is
+    stubbed so the real candidate loop runs in well under a second.
+    """
+    cadence = 0.5 / 24.0
+    time = np.arange(0.0, 60.0, cadence)
+    flux = np.ones_like(time)
+    period, epoch, duration = 5.0, 2.0, 4.0 / 24.0
+    phase = np.mod(time - epoch + 0.5 * period, period) - 0.5 * period
+    mask = np.abs(phase) <= duration / 2.0
+    flux[mask] -= 2e-3
+    bls_info = {"best_period": period, "t0": epoch, "best_duration": duration}
+
+    seen: list[ProgressEvent] = []
+    with (
+        patch(
+            "shaula.extract_feats.detrend_with_bls_mask",
+            return_value=(flux, np.ones_like(flux), mask, bls_info),
+        ),
+        patch("shaula.extract_feats.MAX_TRANSIT_CANDIDATES", 1),
+        contextlib.redirect_stdout(io.StringIO()),
+    ):
+        extract_features_from_arrays(time, flux, progress=seen.append)
+
+    searching = [e for e in seen if e.stage == "period_search"]
+    assert searching, "no period_search event from the real candidate loop"
+    assert "1" in searching[0].message

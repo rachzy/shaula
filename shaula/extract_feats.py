@@ -964,6 +964,8 @@ def extract_features_from_arrays(
     include_false_candidates=False,
     label_output_candidates=False,
     confirmed_rows=None,
+    *,
+    progress=None,
 ):
     """Iteratively extract MES-qualified transit candidates from one light curve.
 
@@ -1007,6 +1009,18 @@ def extract_features_from_arrays(
     for iteration in range(MAX_TRANSIT_CANDIDATES):
         if np.sum(active) < MIN_SEARCH_POINTS:
             break
+        if progress is not None:
+            # Local import: api imports this module, so a top-level import
+            # would be circular. An exception from the callback is a
+            # cancellation request and must propagate.
+            from .api import ProgressEvent
+
+            progress(
+                ProgressEvent(
+                    stage="period_search",
+                    message=f"Evaluating candidate {iteration + 1}",
+                )
+            )
         print(
             f"\n=== Transit search iteration {iteration + 1} "
             f"({np.sum(active):,} active cadences) ==="
@@ -1255,6 +1269,8 @@ def extract_features_from_lightcurve(
     include_false_candidates=False,
     label_output_candidates=False,
     confirmed_rows=None,
+    *,
+    progress=None,
 ):
     """Extract candidate feature rows from a LightCurve object."""
     time = lc.time.value
@@ -1271,6 +1287,7 @@ def extract_features_from_lightcurve(
         include_false_candidates=include_false_candidates,
         label_output_candidates=label_output_candidates,
         confirmed_rows=confirmed_rows,
+        progress=progress,
     )
 
     # Add stellar radius information if available
