@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "shaula"
+version = "0.1.0"
+description = "Light-curve transit photometry feature extraction for exoplanet candidate screening"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11,<3.15"
+dependencies = [
+    "lightkurve>=2.6",
+    "astropy>=7.0",
+    "astroquery>=0.4.11",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "scipy>=1.13",
+    "statsmodels>=0.14",
+]
+
+[project.scripts]
+shaula-extract-lk = "shaula.cli.extract_lk:main"
+shaula-extract-csv = "shaula.cli.extract_csv:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["shaula"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["shaula"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["B905"]
+
+[tool.pytest.ini_options]
+testpaths = ["shaula/tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]
