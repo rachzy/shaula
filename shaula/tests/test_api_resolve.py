@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from .. import api
-from ..api import ResolvedTarget, TargetNotFound, resolve
+from ..api import ResolvedTarget, TargetNotFound, _catalog_id_from_target_name, resolve
 
 
 def _row(**overrides):
@@ -79,3 +79,45 @@ def test_unsupported_mission_raises(monkeypatch):
 
     with pytest.raises(ValueError, match="Hubble"):
         resolve("Kepler-186", "Hubble")
+
+
+@pytest.mark.parametrize(
+    ("target_name", "expected"),
+    [
+        ("kplr008120608", "8120608"),
+        ("KPLR008120608", "8120608"),
+        ("ktwo201111557", "201111557"),
+        ("251848941", "251848941"),
+        ("kplr000000001", "1"),
+    ],
+)
+def test_catalog_id_normalisation(target_name, expected):
+    assert _catalog_id_from_target_name(target_name) == expected
+
+
+@pytest.mark.parametrize("target_name", ["kplr000000000", "000", "", "kplr"])
+def test_target_name_with_no_identifier_raises(target_name):
+    with pytest.raises(ValueError, match="no catalogue identifier"):
+        _catalog_id_from_target_name(target_name)
+
+
+def test_unusable_identifier_raises_target_not_found(monkeypatch):
+    monkeypatch.setattr(
+        api,
+        "_search_target",
+        lambda q, m: [{"target_name": "kplr000000000", "s_ra": 1.0, "s_dec": 2.0}],
+    )
+
+    with pytest.raises(TargetNotFound, match="unusable identifier"):
+        resolve("Kepler-186", "Kepler")
+
+
+def test_non_finite_coordinates_raise_target_not_found(monkeypatch):
+    monkeypatch.setattr(
+        api,
+        "_search_target",
+        lambda q, m: [{"target_name": "kplr008120608", "s_ra": float("nan"), "s_dec": 2.0}],
+    )
+
+    with pytest.raises(TargetNotFound, match="non-finite coordinates"):
+        resolve("Kepler-186", "Kepler")

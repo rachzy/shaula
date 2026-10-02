@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -110,7 +111,7 @@ MISSION_CATALOGS: dict[str, str] = {
     "TESS": "TIC",
 }
 
-_TARGET_NAME_PREFIXES = (("kplr", "KIC"), ("ktwo", "EPIC"))
+_TARGET_NAME_PREFIXES = ("kplr", "ktwo")
 
 
 class TargetNotFound(Exception):
@@ -142,18 +143,24 @@ def _search_target(query: str, mission: str):
     return lk.search_lightcurve(query, mission=mission).table
 
 
-def _catalog_id_from_target_name(target_name: str, catalog: str) -> str:
+def _catalog_id_from_target_name(target_name: str) -> str:
     """Strip lightkurve's mission prefix and zero padding from an identifier.
 
     lightkurve reports Kepler targets as ``kplr008120608`` and K2 targets as
     ``ktwo201111557``, while TESS targets are already a bare TIC number.
+
+    Raises:
+        ValueError: when nothing identifying survives the stripping.
     """
     name = str(target_name).strip()
-    for prefix, _ in _TARGET_NAME_PREFIXES:
+    for prefix in _TARGET_NAME_PREFIXES:
         if name.lower().startswith(prefix):
             name = name[len(prefix) :]
             break
-    return name.lstrip("0") or "0"
+    identifier = name.lstrip("0")
+    if not identifier:
+        raise ValueError(f"no catalogue identifier in target name {target_name!r}")
+    return identifier
 
 
 def resolve(query: str, mission: str = "Kepler") -> ResolvedTarget:
@@ -175,10 +182,25 @@ def resolve(query: str, mission: str = "Kepler") -> ResolvedTarget:
         )
 
     row = table[0]
+    try:
+        catalog_id = _catalog_id_from_target_name(row["target_name"])
+    except ValueError as error:
+        raise TargetNotFound(
+            f"{query!r} resolved to an unusable identifier: {error}"
+        ) from error
+
+    ra_deg = float(row["s_ra"])
+    dec_deg = float(row["s_dec"])
+    if not (math.isfinite(ra_deg) and math.isfinite(dec_deg)):
+        raise TargetNotFound(
+            f"{query!r} resolved to non-finite coordinates "
+            f"(ra={ra_deg!r}, dec={dec_deg!r})."
+        )
+
     return ResolvedTarget(
         catalog=catalog,
-        catalog_id=_catalog_id_from_target_name(row["target_name"], catalog),
-        ra_deg=float(row["s_ra"]),
-        dec_deg=float(row["s_dec"]),
+        catalog_id=catalog_id,
+        ra_deg=ra_deg,
+        dec_deg=dec_deg,
         display_name=star,
     )
