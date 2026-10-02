@@ -35,7 +35,7 @@ In order to know what to look for and what to calculate in this data, we use the
 
 ### Pipeline vs confirmed catalog (sanity check)
 
-Against a small set of confirmed Kepler planets, we compare features written to `data/extracted/` with catalog values in `data/confirmed/` using `src/testing/compare_confirmed_and_extracted.py`. Files are keyed by host star and contain one row per transit candidate. Rows are paired by `period_days` proximity, including small integer aliases (a candidate recovered at `P/3` is labelled as such rather than reported as an unrelated detection); confirmed planets with no extracted counterpart and extracted candidates matching no catalog period are listed separately instead of being forced onto a neighbouring row. Confirmed files retain a `target` column for the planet label; extracted files do not require one. Each table cell is the percent difference `((extracted − confirmed) / |confirmed|) × 100`, sorted by match quality.
+Against a small set of confirmed Kepler planets, we compare features written to `data/extracted/` with catalog values in `data/confirmed/` using `shaula/scripts/compare_confirmed_and_extracted.py`. Files are keyed by host star and contain one row per transit candidate. Rows are paired by `period_days` proximity, including small integer aliases (a candidate recovered at `P/3` is labelled as such rather than reported as an unrelated detection); confirmed planets with no extracted counterpart and extracted candidates matching no catalog period are listed separately instead of being forced onto a neighbouring row. Confirmed files retain a `target` column for the planet label; extracted files do not require one. Each table cell is the percent difference `((extracted − confirmed) / |confirmed|) × 100`, sorted by match quality.
 
 | Candidate   | period_days | depth_mean_per_transit | duration_hours | max_ses | max_mes | duration_days | planet_radius_rjup |       t0 | mean_match_no_t0 |
 | ----------- | ----------: | ---------------------: | -------------: | ------: | ------: | ------------: | -----------------: | -------: | ---------------: |
@@ -120,7 +120,7 @@ With that, we're ready to throw it into our pipeline!
 
 ### 3. Pass the light curve into feature extraction
 
-`extract_features_from_lightcurve` in `src/extract_feats.py` reads time and flux from the Lightkurve object and delegates to the same path as CSV input. Every extraction entry point returns a list with one feature dictionary per MES-qualified transit candidate, sorted by period.
+`extract_features_from_lightcurve` in `shaula/extract_feats.py` reads time and flux from the Lightkurve object and delegates to the same path as CSV input. Every extraction entry point returns a list with one feature dictionary per MES-qualified transit candidate, sorted by period.
 
 ```python
 time = lc.time.value
@@ -185,7 +185,7 @@ re-detrending pass.
 
 ### 4. Detrending and period search
 
-`detrend_with_bls_mask` in `src/detrend_and_period.py` runs first: Box Least Squares (BLS), optional TLS refinement, iterative detrending, and transit masking. After detrending, it repeats a fixed-period/fixed-duration BLS phase fit and canonicalizes `t0` to the first predicted transit in the data interval. That refit is bounded to half a transit duration: BLS reports the best phase anywhere in the fold, so a shallow candidate measured while a deeper signal is still unmasked would otherwise be relocated onto it — measured on Kepler-90i, the unconstrained refit landed 55 durations from the truth, reading Kepler-90g and h instead. When the fit lands outside the window the phase is re-picked inside it. It returns detrended flux plus `best_period`, `t0`, and transit duration used everywhere below.
+`detrend_with_bls_mask` in `shaula/detrend_and_period.py` runs first: Box Least Squares (BLS), optional TLS refinement, iterative detrending, and transit masking. After detrending, it repeats a fixed-period/fixed-duration BLS phase fit and canonicalizes `t0` to the first predicted transit in the data interval. That refit is bounded to half a transit duration: BLS reports the best phase anywhere in the fold, so a shallow candidate measured while a deeper signal is still unmasked would otherwise be relocated onto it — measured on Kepler-90i, the unconstrained refit landed 55 durations from the truth, reading Kepler-90g and h instead. When the fit lands outside the window the phase is re-picked inside it. It returns detrended flux plus `best_period`, `t0`, and transit duration used everywhere below.
 
 The period search runs from 0.5 days up to a third of the observing baseline, which is the longest period that can still show the three transits a detection requires. There is no additional flat ceiling: over Kepler's ~1460 day baseline a 200 day one made every longer-period planet unsearchable by construction (Kepler-90g at 210.6 d and h at 331.6 d, for instance), and their unmodeled transits then fed the spurious candidates the deep-event sweep above now removes.
 
@@ -197,11 +197,11 @@ flux_detr, trend, mask_transit, bls_info = detrend_with_bls_mask(
 
 ### 5. Scaling metrics
 
-`scaling_and_metrics` in `src/utils/scaling_and_metrics.py` standardizes the detrended flux and records summary statistics (mean, standard deviation, skewness, kurtosis, outlier resistance) into the feature dict.
+`scaling_and_metrics` in `shaula/utils/scaling_and_metrics.py` standardizes the detrended flux and records summary statistics (mean, standard deviation, skewness, kurtosis, outlier resistance) into the feature dict.
 
 ### 6. Folded and binned metrics
 
-`folded_binned_metrics` in `src/folded_binned_metrics.py` folds the series in phase at the BLS period and `t0`, builds a median phase profile, estimates a transit width in phase, then computes:
+`folded_binned_metrics` in `shaula/folded_binned_metrics.py` folds the series in phase at the BLS period and `t0`, builds a median phase profile, estimates a transit width in phase, then computes:
 
 - **Cadence** from median short time steps (fed into CDPP later).
 - **`local_noise`**: robust scatter (MAD) using out-of-transit points.
@@ -216,13 +216,13 @@ binned = folded_binned_metrics(
 
 ### 7. Per-transit statistics
 
-`per_transit_stats_simple` in `src/per_trans_stat.py` walks each transit epoch, estimates a baseline outside the transit window, and collects per-transit depths and the number of samples actually inside each transit. Those median-based measurements remain inputs to the depth and shape features; SES/MES now use the duration-matched time series described below.
+`per_transit_stats_simple` in `shaula/per_trans_stat.py` walks each transit epoch, estimates a baseline outside the transit window, and collects per-transit depths and the number of samples actually inside each transit. Those median-based measurements remain inputs to the depth and shape features; SES/MES now use the duration-matched time series described below.
 
 **Execution order vs. in-file labels:** Inside `extract_features_from_arrays`, this block runs _before_ CDPP even though `per_trans_stat.py` is tagged `# 6` and `cdpp.py` is `# 4`. Treat the `# N` lines in source files as module tags, not strict pipeline ordering.
 
 ### 8. CDPP
 
-`calculate_cdpp` in `src/cdpp.py` builds box-template depth series lasting 3 h, 6 h, and 12 h. It estimates a robust, time-dependent uncertainty in a local window spanning 30 template durations, retains correlated noise measured at the transit timescale, deweights partial coverage, and prevents the BLS transit windows from contaminating the noise model. Each CDPP feature is the median valid local uncertainty in ppm. These values are a time-domain duration-matched approximation, not an exact reproduction of Kepler's adaptive wavelet whitening.
+`calculate_cdpp` in `shaula/cdpp.py` builds box-template depth series lasting 3 h, 6 h, and 12 h. It estimates a robust, time-dependent uncertainty in a local window spanning 30 template durations, retains correlated noise measured at the transit timescale, deweights partial coverage, and prevents the BLS transit windows from contaminating the noise model. Each CDPP feature is the median valid local uncertainty in ppm. These values are a time-domain duration-matched approximation, not an exact reproduction of Kepler's adaptive wavelet whitening.
 
 ```python
 cdpp = calculate_cdpp(
@@ -235,7 +235,7 @@ cdpp = calculate_cdpp(
 
 ### 9. SES, MES, and remaining shape / vetting features
 
-`compute_SES_MES` in `src/sesmes.py` evaluates the exact BLS duration at every eligible cadence. For each measurement it constructs a local depth uncertainty and the coherent matched-filter components `N = depth / uncertainty²`, `D = 1 / uncertainty²`, and `SES = N / sqrt(D)`. `max_ses` is the largest positive cadence-level SES. `MES` folds `N` and `D` at the final BLS ephemeris, while `max_mes` searches only a nearby phase window at that fixed period and duration. `SES_mean` and related per-transit features summarize the exact-ephemeris event SES values. These are scientifically coherent time-domain approximations, not numerical reproductions of Kepler TPS wavelet statistics or a full MES period search.
+`compute_SES_MES` in `shaula/sesmes.py` evaluates the exact BLS duration at every eligible cadence. For each measurement it constructs a local depth uncertainty and the coherent matched-filter components `N = depth / uncertainty²`, `D = 1 / uncertainty²`, and `SES = N / sqrt(D)`. `max_ses` is the largest positive cadence-level SES. `MES` folds `N` and `D` at the final BLS ephemeris, while `max_mes` searches only a nearby phase window at that fixed period and duration. `SES_mean` and related per-transit features summarize the exact-ephemeris event SES values. These are scientifically coherent time-domain approximations, not numerical reproductions of Kepler TPS wavelet statistics or a full MES period search.
 
 This change replaces the previous root-sum-square `MES` and global-CDPP SES semantics without changing the saved column names. Existing extracted CSVs and trained artifacts should be regenerated before they are compared or combined with new output.
 
@@ -243,27 +243,25 @@ The same extraction pass then adds folded **v-shape** metrics, **secondary eclip
 
 ## How to run the project
 
-1. **Python environment** — Use Python 3.9+ (or whatever your stack expects), create a virtual environment, and install dependencies:
+1. **Python environment** — Install the project and its dependencies with [uv](https://docs.astral.sh/uv/) (this creates `.venv` and installs `shaula` in editable mode):
 
    ```bash
-   python -m venv .venv
-   source .venv/bin/activate   # Windows: .venv\Scripts\activate
-   pip install -r src/requirements.txt
+   uv sync
    ```
 
 ### CLI
 
-From the repository root, run the CLI so `src` stays on the import path:
+Run the installed console script:
 
 ```bash
-python src/cli/extract_lk.py --target HAT-P-7 --mission Kepler --out-features out/hatp7_features.csv
+uv run shaula-extract-lk --target HAT-P-7 --mission Kepler --out-features out/hatp7_features.csv
 ```
 
 Use `--input-lightkurve path/to.csv` instead of `--target` if you already have a saved light curve file. Optional flags include `--mission` (e.g. `TESS`), `--author`, `--exptime`, `--sigma-clip`, `--download-all`, `--out-lightkurve` to write the downloaded/cleaned curve, and `--quiet`.
 
 ### Notebooks
 
-Exploratory workflows live under `src/` (for example `lightcurve_analysis.ipynb`). The script `src/cli/extract_csv.py` is marked deprecated but may still reflect the batch CSV feature layout.
+Exploratory workflows live under `shaula/` (for example `lightcurve_analysis.ipynb`). The script `shaula/cli/extract_csv.py` is marked deprecated but may still reflect the batch CSV feature layout.
 
 You need network access when downloading data through Lightkurve; first-time use may also pull mission-specific calibration dependencies.
 
