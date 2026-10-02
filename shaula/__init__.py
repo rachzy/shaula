@@ -9,7 +9,10 @@ from .api import (  # noqa: E402  (version must be defined before api imports it
     ExtractionResult,
     ProgressCallback,
     ProgressEvent,
+    ResolvedTarget,
+    TargetNotFound,
     extract,
+    resolve,
 )
 
 __all__ = [
@@ -17,6 +20,9 @@ __all__ = [
     "ExtractionResult",
     "ProgressCallback",
     "ProgressEvent",
+    "ResolvedTarget",
+    "TargetNotFound",
     "__version__",
     "extract",
+    "resolve",
 ]

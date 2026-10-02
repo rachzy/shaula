@@ -10,6 +10,7 @@ from typing import Any
 from . import __version__
 from .download_and_clean import download_and_clean_lightcurve
 from .extract_feats import extract_features_from_lightcurve
+from .utils.target_names import host_star_name
 
 STAGES: tuple[str, ...] = (
     "downloading",
@@ -100,4 +101,84 @@ def extract(
         mission=mission,
         features=features,
         shaula_version=__version__,
+    )
+
+
+MISSION_CATALOGS: dict[str, str] = {
+    "Kepler": "KIC",
+    "K2": "EPIC",
+    "TESS": "TIC",
+}
+
+_TARGET_NAME_PREFIXES = (("kplr", "KIC"), ("ktwo", "EPIC"))
+
+
+class TargetNotFound(Exception):
+    """No catalog entry matched the requested target."""
+
+
+@dataclass(frozen=True)
+class ResolvedTarget:
+    """A target pinned to an exact catalog identifier.
+
+    ``catalog_id`` is the cache key Antares uses, so it must be the catalog's
+    own identifier and never a rounded coordinate.
+    """
+
+    catalog: str
+    catalog_id: str
+    ra_deg: float
+    dec_deg: float
+    display_name: str
+
+
+def _search_target(query: str, mission: str):
+    """Ask lightkurve to resolve a name, returning its search-result table.
+
+    Isolated behind one function so tests can replace it without a network.
+    """
+    import lightkurve as lk
+
+    return lk.search_lightcurve(query, mission=mission).table
+
+
+def _catalog_id_from_target_name(target_name: str, catalog: str) -> str:
+    """Strip lightkurve's mission prefix and zero padding from an identifier.
+
+    lightkurve reports Kepler targets as ``kplr008120608`` and K2 targets as
+    ``ktwo201111557``, while TESS targets are already a bare TIC number.
+    """
+    name = str(target_name).strip()
+    for prefix, _ in _TARGET_NAME_PREFIXES:
+        if name.lower().startswith(prefix):
+            name = name[len(prefix) :]
+            break
+    return name.lstrip("0") or "0"
+
+
+def resolve(query: str, mission: str = "Kepler") -> ResolvedTarget:
+    """Resolve a name or designation to an exact catalogue identifier."""
+    if mission not in MISSION_CATALOGS:
+        raise ValueError(
+            f"Unsupported mission {mission!r}; expected one of "
+            f"{sorted(MISSION_CATALOGS)}."
+        )
+
+    catalog = MISSION_CATALOGS[mission]
+    star = host_star_name(query)
+
+    table = _search_target(star, mission)
+    if table is None or len(table) == 0:
+        raise TargetNotFound(
+            f"No {mission} light curves found for {query!r}, so it has no "
+            f"{catalog} identifier this pipeline can use."
+        )
+
+    row = table[0]
+    return ResolvedTarget(
+        catalog=catalog,
+        catalog_id=_catalog_id_from_target_name(row["target_name"], catalog),
+        ra_deg=float(row["s_ra"]),
+        dec_deg=float(row["s_dec"]),
+        display_name=star,
     )
