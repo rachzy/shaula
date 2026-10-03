@@ -33,6 +33,8 @@ def stubbed(monkeypatch):
             "mission": mission,
             "sigma_upper": sigma_upper,
             "all": all,
+            "author": kwargs.get("author"),
+            "exptime": kwargs.get("exptime"),
             "cache_dir": kwargs.get("cache_dir"),
         }
         return _FakeLightCurve()
@@ -106,11 +108,27 @@ def test_download_failure_surfaces_with_its_message(monkeypatch):
         extract("Nope", "Kepler")
 
 
-def test_passes_parameters_through_to_the_downloader(stubbed):
-    extract("Kepler-11", "TESS", sigma_clip=3.0, download_all=True)
+def test_passes_parameters_through_to_the_downloader(stubbed, monkeypatch, tmp_path):
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name, *a, **k: object())
+    extract(
+        "Kepler-11",
+        "TESS",
+        sigma_clip=3.0,
+        download_all=True,
+        author="QLP",
+        exptime=120,
+        use_tls=True,
+        mask_eclipses=True,
+        cache_dir=tmp_path,
+    )
     assert stubbed["download"]["mission"] == "TESS"
     assert stubbed["download"]["sigma_upper"] == 3.0
     assert stubbed["download"]["all"] is True
+    assert stubbed["download"]["author"] == "QLP"
+    assert stubbed["download"]["exptime"] == 120
+    assert stubbed["download"]["cache_dir"] == tmp_path
+    assert stubbed["features"]["use_tls"] is True
+    assert stubbed["features"]["mask_eclipses"] is True
 
 
 def test_period_search_events_fire_during_extraction(monkeypatch):

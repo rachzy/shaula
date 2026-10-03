@@ -229,8 +229,13 @@ def resolve(query: str, mission: str = "Kepler") -> ResolvedTarget:
             f"{query!r} resolved to an unusable identifier: {error}"
         ) from error
 
-    ra_deg = float(row["s_ra"])
-    dec_deg = float(row["s_dec"])
+    try:
+        ra_deg = float(row["s_ra"])
+        dec_deg = float(row["s_dec"])
+    except (TypeError, ValueError) as error:
+        raise TargetNotFound(
+            f"{query!r} resolved to unreadable coordinates: {error}"
+        ) from error
     if not (math.isfinite(ra_deg) and math.isfinite(dec_deg)):
         raise TargetNotFound(
             f"{query!r} resolved to non-finite coordinates "

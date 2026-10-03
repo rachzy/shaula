@@ -122,15 +122,31 @@ def test_unusable_identifier_raises_target_not_found(monkeypatch):
         resolve("Kepler-186", "Kepler")
 
 
-def test_non_finite_coordinates_raise_target_not_found(monkeypatch):
-    monkeypatch.setattr(
-        api,
-        "_search_target",
-        lambda q, m: [{"target_name": "kplr008120608", "s_ra": float("nan"), "s_dec": 2.0}],
-    )
+@pytest.mark.parametrize(
+    "coords",
+    [
+        {"s_ra": float("nan"), "s_dec": 2.0},
+        {"s_ra": 1.0, "s_dec": float("nan")},
+        {"s_ra": float("inf"), "s_dec": 2.0},
+        {"s_ra": None, "s_dec": 2.0},
+        {"s_ra": 1.0, "s_dec": None},
+    ],
+    ids=["nan-ra", "nan-dec", "inf", "none-ra", "none-dec"],
+)
+def test_bad_coordinates_raise_target_not_found(monkeypatch, coords):
+    _stub(monkeypatch, [_row(**coords)])
 
-    with pytest.raises(TargetNotFound, match="non-finite coordinates"):
+    with pytest.raises(TargetNotFound, match="Kepler-186"):
         resolve("Kepler-186", "Kepler")
+
+
+def test_package_version_matches_installed_metadata():
+    """The version is embedded in the calling service's cache keys."""
+    import importlib.metadata
+
+    import shaula
+
+    assert importlib.metadata.version("shaula") == shaula.__version__
 
 
 @pytest.mark.parametrize(
