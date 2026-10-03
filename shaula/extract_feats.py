@@ -1,0 +1,1303 @@
+import os
+import time
+import numpy as np
+from scipy.stats import binned_statistic
+from collections import OrderedDict
+from scipy.stats import skew, kurtosis
+
+from .detrend_and_period import detrend_with_bls_mask
+from .folded_binned_metrics import folded_binned_metrics
+from .cdpp import calculate_cdpp
+from .sesmes import compute_SES_MES, fold_statistics
+from .utils.ephemeris import canonical_epoch
+from .utils import (
+    scaling_and_metrics,
+    interp_cdpp,
+    compute_secondary_depth,
+    compute_odd_even_depth_ratio,
+    compute_ingress_egress_asymmetry,
+    compute_secondary_depth_snr,
+    label_candidate_rows,
+    summarize_labels,
+)
+from .per_trans_stat import per_transit_stats_simple
+
+
+MES_DETECTION_THRESHOLD = 7.1
+PROVISIONAL_MES_THRESHOLD = 4.0
+MAX_TRANSIT_CANDIDATES = 12
+MAX_PEAKS_TO_VALIDATE = 20
+MAX_REFINED_PEAKS_PER_ITERATION = 6
+TRANSIT_MASK_WIDTH = 1.5
+MAX_CUMULATIVE_MASK_FRACTION = 0.5
+MIN_SEARCH_POINTS = 50
+MIN_OBSERVED_TRANSIT_EVENTS = 3
+PERIOD_DEDUP_TOLERANCE = 0.005
+MIN_SEARCH_PERIOD_DAYS = 0.5
+
+# Deep, unexplained single events are the raw material of spurious candidates:
+# BLS happily threads a box train through a handful of them and reports a high
+# MES for a period that no planet has. A cadence enters an event when it drops
+# below CORE_SIGMA, and the event then extends outward while flux stays below
+# EDGE_SIGMA so ingress/egress come along with the floor.
+DEEP_EVENT_CORE_SIGMA = 8.0
+DEEP_EVENT_EDGE_SIGMA = 3.0
+DEEP_EVENT_MIN_CADENCES = 3
+DEEP_EVENT_PAD_CADENCES = 2
+# An event this far from an accepted candidate's predicted transit centre is a
+# leftover of that candidate (drifted epoch, TTVs) rather than a new signal.
+DEEP_EVENT_RESIDUAL_WIDTH = 3.0
+# Two events belong to the same putative signal when their floors agree to
+# within this relative tolerance.
+DEEP_EVENT_DEPTH_GROUP_TOLERANCE = 0.5
+DEEP_EVENT_MAX_MASK_FRACTION = 0.1
+
+# A search that locks onto a harmonic reports a period that is wrong by a whole
+# factor, and - far worse here - masks the wrong windows: a P/2 alias covers
+# every real transit, so the planet can never be recovered afterwards. MES is
+# already the right discriminator. Folding a true-period signal at 2P drops half
+# its events, and at P/2 pads it with empty windows; either costs a factor
+# sqrt(2) in sum(N)/sqrt(sum(D)), so MES peaks at the true period.
+# Integer ratios only: Kepler-90d/e sit 2.6% from 3:2, so half-integer trials
+# would pit real planets against each other.
+HARMONIC_TRIAL_FACTORS = (2.0, 3.0, 0.5, 1.0 / 3.0)
+# Comfortably inside the ~1.41 moat above, comfortably outside percent-level
+# wobble, so adoption cannot oscillate. The measured Kepler-90b case is 1.57.
+HARMONIC_ADOPT_MARGIN = 1.15
+# Ratios treated as the same signal by the dedup. Stops at 3 deliberately:
+# Kepler-90i/d sit 3.4% from 4:1 and would collide if 4 were included.
+HARMONIC_DEDUP_RATIOS = (2, 3)
+
+# Signals below the detection threshold that the search nonetheless located and
+# measured. They are reported once the main loop has run out of signal, and
+# never mask anything, so a marginal row here cannot degrade another candidate
+# the way an accepted false positive does.
+RECOVERY_MES_THRESHOLD = 6.0
+MAX_RECOVERED_CANDIDATES = 2
+
+# How a row came to be in the output. Only accepted rows are detections; the
+# others are emitted solely when the caller asks for false candidates, and none
+# of them ever masked a cadence. Strings rather than the numeric convention used
+# by the two columns below, because nothing coerces them: the comparison tool
+# only touches columns the confirmed CSV also carries.
+DETECTION_STATUS_ACCEPTED = "accepted"
+DETECTION_STATUS_PROVISIONAL = "provisional"
+DETECTION_STATUS_REJECTED = "rejected"
+DETECTION_STATUS_HARMONIC_DUPLICATE = "harmonic_duplicate"
+
+
+def _extract_single_candidate_from_arrays(
+    tTime,
+    flux,
+    verbose=False,
+    refine_duration=True,
+    use_tls=False,
+    mask_eclipses=False,
+    candidate_hint=None,
+    gap_mask=None,
+    dealias=True,
+):
+    """Search and measure one candidate on the supplied light curve.
+
+    ``gap_mask`` marks cadences already claimed by accepted candidates. The
+    full series is still passed to the noise model alongside the mask, rather
+    than sliced down to the surviving cadences, so the removed windows do not
+    read as data gaps and fragment its segments.
+    """
+    start_time = time.time()
+    print("Starting feature extraction from arrays...")
+
+    feats = OrderedDict()
+
+    mask0 = np.isfinite(tTime) & np.isfinite(flux)
+    if np.sum(mask0) < 3:
+        raise ValueError("too few valid points")
+    time_arr = np.asarray(tTime)[mask0]
+    flux_arr = np.asarray(flux)[mask0]
+    if gap_mask is None:
+        gap_arr = np.zeros(time_arr.shape, dtype=bool)
+    else:
+        gap_arr = np.asarray(gap_mask, dtype=bool)[mask0]
+
+    print(f"Data loaded: {len(time_arr):,} valid points")
+    if np.any(gap_arr):
+        print(f"Gapped by accepted candidates: {int(np.sum(gap_arr)):,} cadences")
+    print(f"Time range: {time_arr.min():.2f} to {time_arr.max():.2f} days")
+    print(f"Flux range: {flux_arr.min():.6f} to {flux_arr.max():.6f}")
+
+    flux_detr_full, trend_full, mask_transit, bls_info = detrend_with_bls_mask(
+        time_arr,
+        flux_arr,
+        refine_duration=refine_duration,
+        use_tls=use_tls,
+        mask_eclipses=mask_eclipses,
+        candidate_hint=candidate_hint,
+        exclude_mask=gap_arr,
+        dealias=dealias,
+    )
+    # Fold- and median-based features filter non-finite samples, so blanking
+    # the gapped cadences gives them the same view they had when this function
+    # received a pre-sliced array. The noise model instead gets the intact
+    # series plus gap_arr, which is the whole point of the mask.
+    flux_features = flux_detr_full.copy()
+    flux_features[gap_arr] = np.nan
+    kept = ~gap_arr
+    period = float(bls_info.get("best_period", np.nan))
+    t0 = float(bls_info.get("t0", np.nan))
+    duration_days = float(bls_info.get("best_duration", np.nan))
+
+    print(
+        f"BLS results: P={period:.4f} days, T14={duration_days:.4f} days, t0={t0:.2f}"
+    )
+
+    # Kept for the caller's deep-event sweep: it needs a trend-free view of the
+    # same cadences to judge which leftover dips are real events.
+    bls_info["flux_detrended"] = flux_detr_full
+
+    feats["period_days"] = period
+    feats["t0"] = t0
+    feats["duration_days"] = duration_days
+    feats["duration_hours"] = duration_days * 24.0
+
+    print("Computing scaling metrics...")
+    # Compacted, not blanked: scaling_and_metrics imputes NaN to the median,
+    # which would pull scale_std and the shape moments toward zero.
+    flux_scaled, scaling_metrics = scaling_and_metrics(
+        time_arr[kept], flux_detr_full[kept].copy()
+    )
+    feats["scale_mean"] = scaling_metrics.get("mean", np.nan)
+    feats["scale_std"] = scaling_metrics.get("std", np.nan)
+    feats["scale_skewness"] = scaling_metrics.get("skewness", np.nan)
+    feats["scale_kurtosis"] = scaling_metrics.get("kurtosis", np.nan)
+    feats["scale_outlier_resistance"] = scaling_metrics.get(
+        "outlier_resistance", np.nan
+    )
+
+    binned = folded_binned_metrics(
+        time_arr, flux_features, period, t0, lags_hours=(1, 3, 6, 12, 24)
+    )
+    feats["local_noise"] = binned.get("local_noise", np.nan)
+    feats["depth_stability"] = binned.get("depth_stability", np.nan)
+    acf_l = binned.get("acf_lags", {})
+    feats["acf_lag_1h"] = acf_l.get(1, np.nan)
+    feats["acf_lag_3h"] = acf_l.get(3, np.nan)
+    feats["acf_lag_6h"] = acf_l.get(6, np.nan)
+    feats["acf_lag_12h"] = acf_l.get(12, np.nan)
+    feats["acf_lag_24h"] = acf_l.get(24, np.nan)
+    feats["cadence_hours"] = binned.get("cadence_hours", np.nan)
+
+    per = per_transit_stats_simple(time_arr, flux_features, period, t0, duration_days)
+    depths = per.get("depths", np.array([]))
+    npts_in_transit = per.get("npts_in_transit", np.array([]))
+    print(f"Per-transit analysis: {len(depths)} transits analyzed")
+    feats["depth_mean_per_transit"] = (
+        float(np.nanmean(depths)) if depths.size else np.nan
+    )
+    feats["depth_std_per_transit"] = float(np.nanstd(depths)) if depths.size else np.nan
+    feats["npts_transit_median"] = (
+        float(np.nanmedian(npts_in_transit)) if npts_in_transit.size else np.nan
+    )
+
+    print("Computing CDPP...")
+    cdpp = calculate_cdpp(
+        flux_detr_full,
+        cadence_hours=feats["cadence_hours"],
+        time=time_arr,
+        exclude_mask=mask_transit,
+        gap_mask=gap_arr,
+    )
+    feats["cdpp_3h"] = cdpp.get("cdpp_3h", np.nan)
+    feats["cdpp_6h"] = cdpp.get("cdpp_6h", np.nan)
+    feats["cdpp_12h"] = cdpp.get("cdpp_12h", np.nan)
+
+    duration_hours = feats["duration_hours"]
+    cdpp_interp = interp_cdpp(cdpp, duration_hours)
+    print("Computing SES/MES...")
+    sesmes = compute_SES_MES(
+        time_arr,
+        flux_detr_full,
+        period,
+        t0,
+        duration_days,
+        cadence_hours=feats["cadence_hours"],
+        transit_mask=mask_transit,
+        gap_mask=gap_arr,
+    )
+    SES_arr = sesmes.get("SES", np.array([]))
+    bls_info["n_mes_events"] = int(np.sum(np.isfinite(SES_arr)))
+    # Carries no period or epoch of its own, so the caller can re-fold it at
+    # trial harmonics without rebuilding the noise model.
+    bls_info["sesmes_statistics"] = sesmes.get("statistics")
+    MES_val = sesmes.get("MES", np.nan)
+    max_ses = sesmes.get("max_ses", np.nan)
+    max_mes = sesmes.get("max_mes", np.nan)
+    feats["SES_mean"] = float(np.nanmean(SES_arr)) if SES_arr.size else np.nan
+    feats["SES_std"] = float(np.nanstd(SES_arr)) if SES_arr.size else np.nan
+    feats["MES"] = float(MES_val)
+    feats["max_ses"] = float(max_ses)
+    feats["max_mes"] = float(max_mes)
+    print(
+        f"SES/MES computed: MES={MES_val:.2f}, "
+        f"max_ses={max_ses:.2f}, max_mes={max_mes:.2f}"
+    )
+
+    depth_mean = feats["depth_mean_per_transit"]
+    if np.isfinite(depth_mean) and np.isfinite(cdpp_interp) and cdpp_interp > 0:
+        feats["snr_global"] = float((depth_mean * 1e6) / cdpp_interp)
+    else:
+        feats["snr_global"] = np.nan
+
+    if SES_arr.size:
+        feats["snr_per_transit_mean"] = float(np.nanmean(SES_arr))
+        feats["snr_per_transit_std"] = float(np.nanstd(SES_arr))
+    else:
+        feats["snr_per_transit_mean"] = np.nan
+        feats["snr_per_transit_std"] = np.nan
+
+    resid_global_full = flux_features - np.nanmedian(flux_features)
+    feats["resid_rms_global"] = (
+        float(np.nanstd(resid_global_full))
+        if np.any(np.isfinite(resid_global_full))
+        else np.nan
+    )
+
+    try:
+        nbins = 200
+        phase = ((time_arr - t0) / period) % 1.0
+        phase = (phase + 0.5) % 1.0 - 0.5
+        bins = np.linspace(-0.5, 0.5, nbins + 1)
+        med_profile, _, _ = binned_statistic(
+            phase, flux_features, statistic="median", bins=bins
+        )
+        bin_centers = 0.5 * (bins[:-1] + bins[1:])
+        dur_phase = (duration_days / period) if (period > 0) else 0.05
+
+        center_mask = np.abs(bin_centers) < (0.25 * dur_phase)
+        shoulder_mask = (np.abs(bin_centers) > (0.5 * dur_phase)) & (
+            np.abs(bin_centers) < dur_phase
+        )
+
+        center_flux = (
+            np.nanmedian(med_profile[center_mask]) if np.any(center_mask) else np.nan
+        )
+        shoulder_flux = (
+            np.nanmedian(med_profile[shoulder_mask])
+            if np.any(shoulder_mask)
+            else np.nan
+        )
+
+        depth_for_shape = abs(feats["depth_mean_per_transit"])
+        num = shoulder_flux - center_flux
+
+        if (
+            np.isfinite(center_flux)
+            and np.isfinite(shoulder_flux)
+            and np.isfinite(depth_for_shape)
+            and depth_for_shape > 0
+        ):
+            feats["vshape_metric"] = max(0.0, num / depth_for_shape)
+        else:
+            feats["vshape_metric"] = np.nan
+    except Exception:
+        feats["vshape_metric"] = np.nan
+
+    feats["secondary_depth"] = compute_secondary_depth(
+        time_arr, flux_features, period, t0, duration_days
+    )
+
+    # CDPP-based secondary SNR (cadence-invariant, ppm-consistent)
+    cdpp_interp_for_duration = interp_cdpp(cdpp, duration_hours)
+    if (
+        np.isfinite(feats["secondary_depth"])
+        and np.isfinite(cdpp_interp_for_duration)
+        and cdpp_interp_for_duration > 0
+    ):
+        sec_snr = float((feats["secondary_depth"] * 1e6) / cdpp_interp_for_duration)
+    else:
+        sec_snr = np.nan
+    feats["secondary_depth_snr"] = sec_snr
+    feats["secondary_depth_snr_log"] = (
+        float(np.log1p(sec_snr)) if np.isfinite(sec_snr) else np.nan
+    )
+    feats["secondary_depth_snr_capped"] = (
+        float(np.clip(sec_snr, 0.0, 100.0)) if np.isfinite(sec_snr) else np.nan
+    )
+
+    # Step 4: Add EB/grazing discriminants
+    print("Computing EB/grazing discriminants...")
+    feats["odd_even_depth_ratio"] = compute_odd_even_depth_ratio(
+        time_arr, flux_features, period, t0, duration_days
+    )
+    feats["ingress_egress_asymmetry"] = compute_ingress_egress_asymmetry(
+        time_arr, flux_features, period, t0, duration_days
+    )
+    feats["secondary_depth_snr"] = compute_secondary_depth_snr(
+        time_arr, flux_features, period, t0, duration_days, feats["local_noise"]
+    )
+
+    print(
+        f"EB/Grazing features: odd_even_ratio={feats['odd_even_depth_ratio']:.3f}, "
+        f"asymmetry={feats['ingress_egress_asymmetry']:.3f}, "
+        f"sec_snr={feats['secondary_depth_snr']:.2f}"
+    )
+
+    finite_scaled = np.isfinite(flux_scaled)
+    if np.sum(finite_scaled) > 2:
+        feats["skewness_flux"] = float(skew(flux_scaled[finite_scaled]))
+        feats["kurtosis_flux"] = float(kurtosis(flux_scaled[finite_scaled]))
+    else:
+        feats["skewness_flux"] = np.nan
+        feats["kurtosis_flux"] = np.nan
+    feats["outlier_resistance"] = (
+        float(
+            np.sum(np.abs(flux_scaled[finite_scaled]) > 5) / np.sum(finite_scaled) * 100
+        )
+        if np.sum(finite_scaled) > 0
+        else np.nan
+    )
+
+    # Note: For CSV data, we don't have stellar radius information
+    feats["planet_radius_rearth"] = np.nan
+    feats["planet_radius_rjup"] = np.nan
+
+    # Which bar this row was judged against. Rows recovered below the detection
+    # threshold are reported but never mask data, so downstream consumers need
+    # to be able to tell them apart. Numeric so the CSV round-trip and the
+    # comparison tool's float coercion both stay well behaved.
+    feats["mes_threshold_used"] = float(MES_DETECTION_THRESHOLD)
+    feats["is_provisional_detection"] = 0.0
+    # Overwritten by the caller for anything that does not end up an accepted
+    # detection, so the column is present and correct on every emitted row.
+    feats["detection_status"] = DETECTION_STATUS_ACCEPTED
+
+    total_time = time.time() - start_time
+    print(f"Feature extraction completed in {total_time:.2f} seconds")
+    print(f"Total features extracted: {len(feats)}")
+
+    if verbose:
+        print("\n=== Extracted features (ordered) ===")
+        for k, v in feats.items():
+            print(f"{k}: {v}")
+
+    return feats, bls_info, mask_transit
+
+
+def _periodic_mask(time, period, t0, duration_days, width_factor=1.0):
+    if not (
+        np.isfinite(period)
+        and period > 0
+        and np.isfinite(t0)
+        and np.isfinite(duration_days)
+        and duration_days > 0
+    ):
+        return np.zeros(np.asarray(time).shape, dtype=bool)
+    phase_days = np.mod(np.asarray(time) - t0 + 0.5 * period, period) - 0.5 * period
+    return np.abs(phase_days) <= 0.5 * float(width_factor) * duration_days
+
+
+def _contiguous_runs(flags, time, max_gap):
+    """Return ``(start, stop)`` index pairs for each run of True in ``flags``.
+
+    A run is also broken by a time gap wider than ``max_gap``: consecutive
+    array indices can straddle a quarter boundary, and two dips on either side
+    of it are separate events, not one long one.
+    """
+    indices = np.flatnonzero(flags)
+    if indices.size == 0:
+        return []
+    time = np.asarray(time, dtype=float)
+    gap = np.diff(time[indices])
+    breaks = np.flatnonzero((np.diff(indices) > 1) | (gap > float(max_gap)))
+    starts = np.r_[0, breaks + 1]
+    stops = np.r_[breaks + 1, indices.size]
+    return [
+        (int(indices[s]), int(indices[e - 1]) + 1) for s, e in zip(starts, stops)
+    ]
+
+
+def _deep_events(time, flux, active):
+    """Locate deep dips among the cadences still available to the search.
+
+    Depths are measured against the robust baseline of the active series, so
+    the scale is the same one the detection statistics use. Each event must
+    hold at least ``DEEP_EVENT_MIN_CADENCES`` cadences below the core
+    threshold, which keeps isolated outliers and cosmic rays out.
+    """
+    time = np.asarray(time, dtype=float)
+    flux = np.asarray(flux, dtype=float)
+    active = np.asarray(active, dtype=bool)
+    usable = active & np.isfinite(time) & np.isfinite(flux)
+    if np.sum(usable) < 20:
+        return []
+
+    values = flux[usable]
+    baseline = float(np.nanmedian(values))
+    mad = float(np.nanmedian(np.abs(values - baseline)))
+    scatter = 1.4826 * mad
+    if not (np.isfinite(baseline) and np.isfinite(scatter) and scatter > 0):
+        return []
+
+    steps = np.diff(time[usable])
+    steps = steps[np.isfinite(steps) & (steps > 0)]
+    cadence = float(np.median(steps)) if steps.size else 0.02
+    max_gap = max(3.0 * cadence, 0.1)
+
+    core = usable & (flux < baseline - DEEP_EVENT_CORE_SIGMA * scatter)
+    edge = usable & (flux < baseline - DEEP_EVENT_EDGE_SIGMA * scatter)
+    if not np.any(core):
+        return []
+
+    events = []
+    for start, stop in _contiguous_runs(edge, time, max_gap):
+        span = slice(start, stop)
+        core_in_span = core[span] & usable[span]
+        if int(np.sum(core_in_span)) < DEEP_EVENT_MIN_CADENCES:
+            continue
+        floor = float(np.nanmedian(flux[span][core_in_span]))
+        depth = baseline - floor
+        if not (np.isfinite(depth) and depth > 0):
+            continue
+        events.append(
+            {
+                "start": start,
+                "stop": stop,
+                "center": float(np.nanmedian(time[span][usable[span]])),
+                "depth": depth,
+            }
+        )
+    return events
+
+
+def _explained_by_accepted(
+    center_time, accepted_rows, width_factor=DEEP_EVENT_RESIDUAL_WIDTH
+):
+    """True if ``center_time`` lands on a transit an accepted candidate predicts."""
+    for row in accepted_rows:
+        period = float(row.get("period_days", row.get("period", np.nan)))
+        t0 = float(row.get("t0", np.nan))
+        duration = float(row.get("duration_days", row.get("duration", np.nan)))
+        if not (
+            np.isfinite(period)
+            and period > 0
+            and np.isfinite(t0)
+            and np.isfinite(duration)
+            and duration > 0
+        ):
+            continue
+        phase = np.mod(center_time - t0 + 0.5 * period, period) - 0.5 * period
+        if abs(phase) <= 0.5 * float(width_factor) * duration:
+            return True
+    return False
+
+
+def _group_events_by_depth(events, tolerance=DEEP_EVENT_DEPTH_GROUP_TOLERANCE):
+    """Single-link events whose floors agree to within ``tolerance``."""
+    ordered = sorted(events, key=lambda event: event["depth"])
+    groups = []
+    current = []
+    for event in ordered:
+        if current:
+            previous = current[-1]["depth"]
+            reference = max(event["depth"], previous)
+            if reference > 0 and abs(event["depth"] - previous) > tolerance * reference:
+                groups.append(current)
+                current = []
+        current.append(event)
+    if current:
+        groups.append(current)
+    return groups
+
+
+def _unexplained_deep_event_mask(
+    time, flux, active, accepted_rows, min_events=MIN_OBSERVED_TRANSIT_EVENTS
+):
+    """Flag deep dips that no accepted candidate explains and no search can claim.
+
+    Run after an accepted candidate's own windows are removed. Two kinds of
+    leftover are withdrawn from the remaining search:
+
+    * events sitting on an accepted candidate's predicted transit, which are
+      that candidate's own transits escaping an epoch-drifted mask, and
+    * groups of similar-depth events too small to ever be detected on their
+      own, since a credible detection needs ``min_events`` transits.
+
+    Anything else is left alone: a group of ``min_events`` or more equal-depth
+    dips is a periodic signal a later iteration can still find, and masking it
+    would hide a real planet rather than a false alarm.
+    """
+    time = np.asarray(time, dtype=float)
+    active = np.asarray(active, dtype=bool)
+    removal = np.zeros(active.shape, dtype=bool)
+    events = _deep_events(time, flux, active)
+    if not events:
+        return removal
+
+    doomed = []
+    unclaimed = []
+    for event in events:
+        if _explained_by_accepted(event["center"], accepted_rows):
+            doomed.append(event)
+        else:
+            unclaimed.append(event)
+
+    residual_count = len(doomed)
+    spared = 0
+    for group in _group_events_by_depth(unclaimed):
+        if len(group) >= int(min_events):
+            spared += len(group)
+            continue
+        doomed.extend(group)
+
+    if not doomed:
+        return removal
+
+    for event in doomed:
+        start = max(0, event["start"] - DEEP_EVENT_PAD_CADENCES)
+        stop = min(removal.size, event["stop"] + DEEP_EVENT_PAD_CADENCES)
+        removal[start:stop] = True
+    removal &= active
+
+    fraction = float(np.sum(removal)) / float(max(1, active.size))
+    if fraction > DEEP_EVENT_MAX_MASK_FRACTION:
+        print(
+            f"Deep-event sweep would mask {fraction:.1%} of cadences "
+            f"(limit {DEEP_EVENT_MAX_MASK_FRACTION:.0%}); skipping"
+        )
+        return np.zeros(active.shape, dtype=bool)
+
+    print(
+        f"Deep-event sweep: {len(doomed)} event(s) removed "
+        f"({residual_count} residual of accepted candidates, "
+        f"{len(doomed) - residual_count} too few to be detectable), "
+        f"{spared} left for later iterations, "
+        f"{int(np.sum(removal)):,} cadences"
+    )
+    return removal
+
+
+def _same_ephemeris(first, second, period_tolerance=PERIOD_DEDUP_TOLERANCE):
+    first_period = float(first.get("period_days", first.get("period", np.nan)))
+    second_period = float(second.get("period_days", second.get("period", np.nan)))
+    first_t0 = float(first.get("t0", np.nan))
+    second_t0 = float(second.get("t0", np.nan))
+    first_duration = float(
+        first.get("duration_days", first.get("duration", np.nan))
+    )
+    second_duration = float(
+        second.get("duration_days", second.get("duration", np.nan))
+    )
+    if not (
+        np.isfinite(first_period)
+        and first_period > 0
+        and np.isfinite(second_period)
+        and second_period > 0
+    ):
+        return False
+    relative_period_difference = abs(first_period - second_period) / min(
+        first_period, second_period
+    )
+    if relative_period_difference >= period_tolerance:
+        return False
+    if not (np.isfinite(first_t0) and np.isfinite(second_t0)):
+        return True
+    reference_period = 0.5 * (first_period + second_period)
+    phase_difference = abs(
+        np.mod(first_t0 - second_t0 + 0.5 * reference_period, reference_period)
+        - 0.5 * reference_period
+    )
+    duration_tolerance = max(
+        value
+        for value in (first_duration, second_duration, 0.02)
+        if np.isfinite(value) and value > 0
+    )
+    return phase_difference <= duration_tolerance
+
+
+def _period_already_accepted(
+    candidate, accepted_rows, period_tolerance=PERIOD_DEDUP_TOLERANCE
+):
+    """True if ``candidate``'s period matches an accepted one, or a harmonic of it.
+
+    Checked on period alone, ignoring phase (unlike ``_same_ephemeris``). A
+    deep, many-cycle transit that survives masking imperfectly can resurface
+    in a later iteration at numerically the same true period but a drifted
+    epoch, since whatever residual structure escapes masking shifts from one
+    iteration to the next - a phase-agreement requirement misses these.
+    Two unrelated real transiting planets essentially never share a period
+    this closely, so period proximity alone is a safe duplicate signal here.
+
+    Integer harmonics count as the same signal, since a candidate at 2x or 1/2x
+    an accepted period describes that planet's transits rather than a new one.
+    Only ``HARMONIC_DEDUP_RATIOS`` are tested, at the same tight tolerance:
+    real systems occupy the near-resonant ratios this could otherwise swallow.
+    Kepler-90 alone has b/i at 2.06, i/d at 4.13 and d/e at 1.54, so 3:2 and
+    4:1 are deliberately absent and the tolerance must stay small enough to
+    leave those pairs untouched.
+    """
+    candidate_period = float(
+        candidate.get("period_days", candidate.get("period", np.nan))
+    )
+    if not (np.isfinite(candidate_period) and candidate_period > 0):
+        return False
+    ratios = [1.0]
+    for ratio in HARMONIC_DEDUP_RATIOS:
+        ratios.extend((float(ratio), 1.0 / float(ratio)))
+    for previous in accepted_rows:
+        previous_period = float(
+            previous.get("period_days", previous.get("period", np.nan))
+        )
+        if not (np.isfinite(previous_period) and previous_period > 0):
+            continue
+        for ratio in ratios:
+            expected = previous_period * ratio
+            if abs(candidate_period - expected) / expected < period_tolerance:
+                return True
+    return False
+
+
+def _candidate_passes_mes(
+    features,
+    diagnostics=None,
+    threshold=MES_DETECTION_THRESHOLD,
+    min_events=MIN_OBSERVED_TRANSIT_EVENTS,
+):
+    max_mes = float(features.get("max_mes", np.nan))
+    if diagnostics is None:
+        observed_events = min_events
+    else:
+        observed_events = int(diagnostics.get("n_mes_events", 0))
+    return (
+        np.isfinite(max_mes)
+        and max_mes >= float(threshold)
+        and observed_events >= int(min_events)
+    )
+
+
+def _score_harmonic(statistics, period, epoch, duration_days, reference_time):
+    """Best ``(max_mes, epoch, n_events)`` for one trial period."""
+    epoch = canonical_epoch(epoch, period, reference_time)
+    folded = fold_statistics(statistics, period, epoch, duration_days)
+    return float(folded["max_mes"]), epoch, int(folded["max_mes_n_events"])
+
+
+def _harmonic_trials(statistics, period, epoch, duration_days, span_days):
+    """Yield ``(max_mes, period, epoch, n_events)`` for each viable harmonic.
+
+    For an integer multiple the incumbent's transits split into that many
+    interleaved sub-trains and only one of them carries the real events, so
+    every starting sub-phase is tried. The MES phase scan cannot find these on
+    its own: it only spans +-T14/2, never a whole sub-period.
+    """
+    reference_time = float(statistics["time"][0])
+    for factor in HARMONIC_TRIAL_FACTORS:
+        trial_period = float(period) * float(factor)
+        if trial_period < MIN_SEARCH_PERIOD_DAYS:
+            continue
+        if trial_period > span_days / 3.0:
+            continue
+        if np.floor(span_days / trial_period) < MIN_OBSERVED_TRANSIT_EVENTS:
+            continue
+        if factor >= 1.0 and float(factor).is_integer():
+            sub_phases = [
+                float(epoch) + index * float(period)
+                for index in range(int(factor))
+            ]
+        else:
+            # Every transit of the longer period is also a transit of the
+            # shorter one, so the epoch carries over untouched.
+            sub_phases = [float(epoch)]
+        best = None
+        for sub_phase in sub_phases:
+            score, trial_epoch, n_events = _score_harmonic(
+                statistics, trial_period, sub_phase, duration_days, reference_time
+            )
+            if not np.isfinite(score) or n_events < MIN_OBSERVED_TRANSIT_EVENTS:
+                continue
+            if best is None or score > best[0]:
+                best = (score, trial_period, trial_epoch, n_events)
+        if best is not None:
+            yield best
+
+
+def _reconcile_accepted_harmonic(
+    time_values,
+    flux_values,
+    accepted,
+    accepted_info,
+    gap_mask,
+    accepted_rows,
+    *,
+    verbose=False,
+    refine_duration=True,
+    use_tls=False,
+    mask_eclipses=False,
+):
+    """Adopt the harmonic of an accepted candidate with the best MES.
+
+    Runs before the candidate is masked, because the damage a harmonic does is
+    done by its mask: a P/2 alias predicts a window over every real transit, so
+    once it is applied the planet cannot be recovered by any later iteration.
+
+    Returns ``(features, info, verdict)`` with verdict in ``kept``, ``adopted``
+    or ``duplicate``.
+    """
+    statistics = accepted_info.get("sesmes_statistics") if accepted_info else None
+    if statistics is None or statistics["time"].size == 0:
+        return accepted, accepted_info, "kept"
+
+    period = float(accepted.get("period_days", np.nan))
+    epoch = float(accepted.get("t0", np.nan))
+    duration_days = float(accepted.get("duration_days", np.nan))
+    if not (
+        np.isfinite(period)
+        and period > 0
+        and np.isfinite(epoch)
+        and np.isfinite(duration_days)
+        and duration_days > 0
+    ):
+        return accepted, accepted_info, "kept"
+
+    # Re-fold the incumbent rather than trusting its stored max_mes, so it and
+    # the trials are scored by the same statistics object at the same offset.
+    incumbent = float(
+        fold_statistics(statistics, period, epoch, duration_days)["max_mes"]
+    )
+    if not np.isfinite(incumbent):
+        return accepted, accepted_info, "kept"
+
+    span_days = float(np.nanmax(time_values) - np.nanmin(time_values))
+    trials = list(
+        _harmonic_trials(statistics, period, epoch, duration_days, span_days)
+    )
+    if not trials:
+        return accepted, accepted_info, "kept"
+
+    score, trial_period, trial_epoch, _events = max(trials, key=lambda t: t[0])
+    if score < HARMONIC_ADOPT_MARGIN * incumbent or score < MES_DETECTION_THRESHOLD:
+        return accepted, accepted_info, "kept"
+
+    if _period_already_accepted({"period_days": trial_period}, accepted_rows):
+        print(
+            f"Harmonic reconciliation: P={period:.6f} d resolves to "
+            f"{trial_period:.6f} d, already accepted - dropping as a duplicate"
+        )
+        return accepted, accepted_info, "duplicate"
+
+    print(
+        f"Harmonic reconciliation: P={period:.6f} d (max_mes={incumbent:.2f}) "
+        f"-> {trial_period:.6f} d (max_mes={score:.2f}); re-measuring"
+    )
+    # Every fold-derived feature was measured at the old period and is now
+    # wrong, so the row has to be rebuilt rather than patched. De-aliasing is
+    # off: it ranks on BLS power, which is what preferred the harmonic here.
+    measured_features, measured_info, _ = _extract_single_candidate_from_arrays(
+        time_values,
+        flux_values,
+        verbose=verbose,
+        refine_duration=refine_duration,
+        use_tls=use_tls,
+        mask_eclipses=mask_eclipses,
+        candidate_hint={
+            "period": trial_period,
+            "duration": duration_days,
+            "t0": trial_epoch,
+        },
+        gap_mask=gap_mask,
+        dealias=False,
+    )
+    measured_period = float(measured_features.get("period_days", np.nan))
+    drifted = (
+        not np.isfinite(measured_period)
+        or abs(measured_period - trial_period) / trial_period
+        >= PERIOD_DEDUP_TOLERANCE
+    )
+    if drifted or not _candidate_passes_mes(measured_features, measured_info):
+        print(
+            "Harmonic re-measure did not confirm the longer period; "
+            "keeping the original candidate"
+        )
+        return accepted, accepted_info, "kept"
+    return measured_features, measured_info, "adopted"
+
+
+def _latest_measurements(measured_rejects):
+    """Collapse repeated measurements of one ephemeris down to the last one.
+
+    Later measurements have more gapping applied, so they are the least
+    contaminated by deeper signals still standing in the series.
+    """
+    latest = []
+    for features, info in measured_rejects:
+        replaced = False
+        for index, (previous_features, _previous_info) in enumerate(latest):
+            if _same_ephemeris(features, previous_features):
+                latest[index] = (features, info)
+                replaced = True
+                break
+        if not replaced:
+            latest.append((features, info))
+    return latest
+
+
+def _collect_false_candidates(measured_rejects, harmonic_duplicates, reported_rows):
+    """Every measured peak the search declined, as negative-example rows.
+
+    Only fully measured candidates are eligible: the provisional screen's
+    four-key stubs never enter ``measured_rejects``, so each returned row
+    carries the complete feature schema and is directly comparable to a
+    detection. Nothing here ever masked a cadence.
+
+    ``reported_rows`` is everything already going into the output - accepted
+    detections and provisional recoveries - so a peak that describes a planet
+    the run already reported is not emitted a second time under a different
+    verdict.
+    """
+    emitted = list(reported_rows)
+    collected = []
+
+    def _claim(features, status):
+        if _period_already_accepted(features, emitted):
+            return
+        if any(_same_ephemeris(features, previous) for previous in emitted):
+            return
+        row = dict(features)
+        row["detection_status"] = status
+        # It cleared no detection bar and masked nothing, which is exactly what
+        # this column has always meant.
+        row["is_provisional_detection"] = 1.0
+        collected.append(row)
+        emitted.append(row)
+
+    for features, _info in _latest_measurements(measured_rejects):
+        _claim(features, DETECTION_STATUS_REJECTED)
+    for features in harmonic_duplicates:
+        _claim(features, DETECTION_STATUS_HARMONIC_DUPLICATE)
+
+    if collected:
+        print(
+            f"Emitting {len(collected)} false candidate(s) alongside "
+            f"{len(reported_rows)} reported detection(s)"
+        )
+    return collected
+
+
+def _recover_subthreshold_candidates(
+    measured_rejects,
+    accepted_rows,
+    threshold=RECOVERY_MES_THRESHOLD,
+    limit=MAX_RECOVERED_CANDIDATES,
+):
+    """Report measured peaks that missed the detection gate.
+
+    Called only once the search has stopped for want of signal. Nothing is
+    masked afterwards, which is what makes a looser bar safe here: an accepted
+    candidate costs an iteration slot and removes cadences from everything
+    found after it, while a recovered one costs a row.
+
+    ``measured_rejects`` holds only fully measured candidates. The provisional
+    screen's four-key stubs never enter it, so a recovered row always carries
+    the complete feature schema.
+    """
+    latest = _latest_measurements(measured_rejects)
+
+    eligible = []
+    for features, info in latest:
+        if not _candidate_passes_mes(features, info, threshold=threshold):
+            continue
+        if _period_already_accepted(features, accepted_rows):
+            continue
+        eligible.append((features, info))
+
+    eligible.sort(key=lambda item: float(item[0].get("max_mes", -np.inf)), reverse=True)
+    recovered = []
+    for features, _info in eligible[: int(limit)]:
+        row = dict(features)
+        row["mes_threshold_used"] = float(threshold)
+        row["is_provisional_detection"] = 1.0
+        row["detection_status"] = DETECTION_STATUS_PROVISIONAL
+        recovered.append(row)
+        print(
+            f"Recovered provisional candidate: P={row['period_days']:.6f} d, "
+            f"max_mes={float(row.get('max_mes', np.nan)):.2f} "
+            f"(below {MES_DETECTION_THRESHOLD:.1f}, reported but not masked)"
+        )
+    return recovered
+
+
+def _quick_candidate_diagnostics(time, flux, hint, gap_mask=None):
+    period = float(hint.get("period", np.nan))
+    duration = float(hint.get("duration", np.nan))
+    t0 = float(hint.get("t0", np.nan))
+    time = np.asarray(time, dtype=float)
+    flux = np.asarray(flux, dtype=float)
+    positive_steps = np.diff(time)
+    positive_steps = positive_steps[np.isfinite(positive_steps) & (positive_steps > 0)]
+    cadence_hours = (
+        float(np.median(positive_steps) * 24.0)
+        if positive_steps.size
+        else np.nan
+    )
+    transit_mask = _periodic_mask(time, period, t0, duration)
+    result = compute_SES_MES(
+        time,
+        flux,
+        period,
+        t0,
+        duration,
+        cadence_hours=cadence_hours,
+        transit_mask=transit_mask,
+        gap_mask=gap_mask,
+    )
+    return {
+        "max_mes": float(result.get("max_mes", np.nan)),
+        "n_mes_events": int(np.sum(np.isfinite(result.get("SES", [])))),
+    }
+
+
+def extract_features_from_arrays(
+    tTime,
+    flux,
+    verbose=False,
+    refine_duration=True,
+    use_tls=False,
+    mask_eclipses=False,
+    include_false_candidates=False,
+    label_output_candidates=False,
+    confirmed_rows=None,
+    *,
+    progress=None,
+):
+    """Iteratively extract MES-qualified transit candidates from one light curve.
+
+    Each iteration computes one global BLS periodogram, ranks independent local
+    maxima, and measures them in descending power order until one reaches the
+    7.1 MES threshold. Accepted transit windows are padded and removed from the
+    next iteration. This is a first masking implementation, not model
+    subtraction or a joint multi-planet fit.
+
+    A candidate whose period nearly matches an already-accepted one is treated
+    as a duplicate regardless of phase: imperfectly masked deep transits can
+    resurface at the same period with a drifted epoch in a later iteration.
+
+    ``include_false_candidates`` additionally returns every peak the search
+    measured and declined, so a training set can be built from the negatives
+    the run produced rather than from detections alone. They are marked by
+    ``detection_status`` and never masked anything, so the detections are
+    bit-for-bit what they would have been with the flag off.
+
+    ``label_output_candidates`` stamps ``candidate_label`` on each returned row
+    by pairing its period against ``confirmed_rows`` (a DataFrame or a path to
+    a confirmed CSV). Without a catalog every row is labelled ``UNKNOWN``.
+    """
+    time_values = np.asarray(tTime)
+    flux_values = np.asarray(flux)
+    finite = np.isfinite(time_values) & np.isfinite(flux_values)
+    if np.sum(finite) < 3:
+        raise ValueError("too few valid points")
+    time_values = time_values[finite]
+    flux_values = flux_values[finite]
+    active = np.ones(time_values.size, dtype=bool)
+    accepted_rows = []
+    rejected_ephemerides = []
+    # Candidates that cleared the MES gate but resolved onto a planet already
+    # reported. They masked nothing, so they are only ever output as negatives.
+    harmonic_duplicates = []
+    # Only the fully measured rejects, so the recovery pass never has to deal
+    # with the provisional screen's four-key stubs.
+    measured_rejects = []
+
+    for iteration in range(MAX_TRANSIT_CANDIDATES):
+        if np.sum(active) < MIN_SEARCH_POINTS:
+            break
+        if progress is not None:
+            # Local import: api imports this module, so a top-level import
+            # would be circular. An exception from the callback is a
+            # cancellation request and must propagate.
+            from .api import ProgressEvent
+
+            progress(
+                ProgressEvent(
+                    stage="period_search",
+                    message=f"Evaluating candidate {iteration + 1}",
+                )
+            )
+        print(
+            f"\n=== Transit search iteration {iteration + 1} "
+            f"({np.sum(active):,} active cadences) ==="
+        )
+        gapped = ~active
+        features, bls_info, _ = _extract_single_candidate_from_arrays(
+            time_values,
+            flux_values,
+            verbose=verbose,
+            refine_duration=refine_duration,
+            use_tls=use_tls,
+            mask_eclipses=mask_eclipses,
+            gap_mask=gapped,
+        )
+        ranked_peaks = list(bls_info.get("search_candidates", []))
+        attempts = [(features, bls_info, None)]
+        attempts.extend(
+            (None, None, peak)
+            for peak in ranked_peaks[1:MAX_PEAKS_TO_VALIDATE]
+        )
+
+        accepted = None
+        accepted_info = None
+        refined_peaks = 1
+        for measured_features, measured_info, hint in attempts:
+            if measured_features is None:
+                hint_ephemeris = {
+                    "period_days": hint.get("period", np.nan),
+                    "t0": hint.get("t0", np.nan),
+                    "duration_days": hint.get("duration", np.nan),
+                }
+                if _period_already_accepted(hint_ephemeris, accepted_rows) or any(
+                    _same_ephemeris(hint_ephemeris, previous)
+                    for previous in rejected_ephemerides
+                ):
+                    continue
+                quick_info = _quick_candidate_diagnostics(
+                    time_values, flux_values, hint, gap_mask=gapped
+                )
+                quick_features = {
+                    "period_days": hint.get("period", np.nan),
+                    "t0": hint.get("t0", np.nan),
+                    "duration_days": hint.get("duration", np.nan),
+                    "max_mes": quick_info["max_mes"],
+                }
+                if not _candidate_passes_mes(
+                    quick_features,
+                    quick_info,
+                    threshold=PROVISIONAL_MES_THRESHOLD,
+                ):
+                    rejected_ephemerides.append(quick_features)
+                    print(
+                        f"Skipped queued peak P={quick_features['period_days']:.6f} d: "
+                        f"provisional max_mes={quick_features['max_mes']:.2f}, "
+                        f"events={quick_info['n_mes_events']}"
+                    )
+                    continue
+                if refined_peaks >= MAX_REFINED_PEAKS_PER_ITERATION:
+                    print("Reached the queued-peak refinement budget")
+                    break
+                refined_peaks += 1
+                (
+                    measured_features,
+                    measured_info,
+                    _,
+                ) = _extract_single_candidate_from_arrays(
+                    time_values,
+                    flux_values,
+                    verbose=verbose,
+                    refine_duration=refine_duration,
+                    use_tls=use_tls,
+                    mask_eclipses=mask_eclipses,
+                    candidate_hint=hint,
+                    gap_mask=gapped,
+                )
+            if _period_already_accepted(measured_features, accepted_rows) or any(
+                _same_ephemeris(measured_features, previous)
+                for previous in rejected_ephemerides
+            ):
+                continue
+            if _candidate_passes_mes(measured_features, measured_info):
+                accepted = measured_features
+                accepted_info = measured_info
+                break
+            rejected_ephemerides.append(measured_features)
+            # The statistics object is only useful while its candidate is live,
+            # and it is large; keeping one per reject would grow without bound.
+            measured_rejects.append(
+                (
+                    measured_features,
+                    {k: v for k, v in measured_info.items() if k != "sesmes_statistics"},
+                )
+            )
+            observed_events = int(measured_info.get("n_mes_events", 0))
+            print(
+                f"Rejected BLS candidate P={measured_features['period_days']:.6f} d: "
+                f"max_mes={measured_features['max_mes']:.2f}, "
+                f"events={observed_events} "
+                f"(requires MES >= {MES_DETECTION_THRESHOLD:.1f} and "
+                f">= {MIN_OBSERVED_TRANSIT_EVENTS} events)"
+            )
+
+        if accepted is None:
+            print("No remaining independent BLS peak passed the MES threshold")
+            # The search stopped for want of signal rather than for want of
+            # budget, so this is the point at which sub-threshold peaks are
+            # worth reporting. The other loop exits leave signal on the table.
+            accepted_rows.extend(
+                _recover_subthreshold_candidates(
+                    measured_rejects,
+                    accepted_rows,
+                    threshold=RECOVERY_MES_THRESHOLD,
+                    limit=MAX_RECOVERED_CANDIDATES,
+                )
+            )
+            break
+
+        # Settle the harmonic before anything is masked: the mask below is
+        # built from this ephemeris, and a P/2 alias's mask covers every real
+        # transit of the planet it came from.
+        accepted, accepted_info, verdict = _reconcile_accepted_harmonic(
+            time_values,
+            flux_values,
+            accepted,
+            accepted_info,
+            gapped,
+            accepted_rows,
+            verbose=verbose,
+            refine_duration=refine_duration,
+            use_tls=use_tls,
+            mask_eclipses=mask_eclipses,
+        )
+        if verdict == "duplicate":
+            rejected_ephemerides.append(dict(accepted))
+            harmonic_duplicates.append(dict(accepted))
+            continue
+
+        accepted_rows.append(accepted)
+        print(
+            f"Accepted candidate {len(accepted_rows)}: "
+            f"P={accepted['period_days']:.6f} d, "
+            f"max_mes={accepted['max_mes']:.2f}"
+        )
+        remove_from_active = _periodic_mask(
+            time_values,
+            accepted["period_days"],
+            accepted["t0"],
+            accepted["duration_days"],
+            width_factor=TRANSIT_MASK_WIDTH,
+        ) & active
+        if not np.any(remove_from_active):
+            break
+        active[remove_from_active] = False
+
+        # The periodic mask only removes what this candidate predicts. Deep
+        # dips left behind belong to something else, and BLS will weave a box
+        # train through them next iteration if they stay in the search. The
+        # sweep needs the detrended series: on raw flux, stellar variability
+        # alone would drift below any fixed depth threshold.
+        sweep_flux = (
+            accepted_info.get("flux_detrended") if accepted_info is not None else None
+        )
+        if sweep_flux is not None and np.shape(sweep_flux) == time_values.shape:
+            active[
+                _unexplained_deep_event_mask(
+                    time_values, sweep_flux, active, accepted_rows
+                )
+            ] = False
+
+        masked_fraction = 1.0 - float(np.sum(active)) / float(active.size)
+        if masked_fraction >= MAX_CUMULATIVE_MASK_FRACTION:
+            print(
+                f"Stopping after masking {masked_fraction:.1%} of valid cadences"
+            )
+            break
+
+    # Deliberately outside the loop: recovery above runs only where the search
+    # stopped for want of signal, but the budget exits (candidate cap, mask
+    # fraction) leave just as many measured negatives behind.
+    if include_false_candidates:
+        accepted_rows.extend(
+            _collect_false_candidates(
+                measured_rejects, harmonic_duplicates, accepted_rows
+            )
+        )
+
+    rows = sorted(
+        accepted_rows,
+        key=lambda row: float(row.get("period_days", np.inf)),
+    )
+    if label_output_candidates:
+        rows = label_candidate_rows(rows, confirmed_rows)
+        print(f"Candidate labels: {summarize_labels(rows)}")
+    return rows
+
+
+def extract_all_features_from_csv(
+    csv_path,
+    verbose=False,
+    refine_duration=True,
+    use_tls=False,
+    mask_eclipses=False,
+    include_false_candidates=False,
+    label_output_candidates=False,
+    confirmed_rows=None,
+    include_ml_cutouts=False,
+):
+    """Extract candidate feature rows from a light-curve CSV."""
+    import pandas as pd
+
+    print(f"Loading light curve data from: {csv_path}")
+
+    # Read the CSV file
+    df = pd.read_csv(csv_path)
+    time = df["time"].values
+    flux = df["flux"].values
+
+    print(f"CSV loaded: {len(time):,} data points")
+    print(f"File size: {os.path.getsize(csv_path) / 1024 / 1024:.2f} MB")
+
+    if verbose:
+        print(f"Loaded light curve data from: {csv_path}")
+        print(f"Data points: {len(time)}")
+
+    # Use the same feature extraction logic as extract_all_features_v2
+    feature_rows = extract_features_from_arrays(
+        time,
+        flux,
+        verbose=verbose,
+        refine_duration=refine_duration,
+        use_tls=use_tls,
+        mask_eclipses=mask_eclipses,
+        include_false_candidates=include_false_candidates,
+        label_output_candidates=label_output_candidates,
+        confirmed_rows=confirmed_rows,
+    )
+    return feature_rows
+
+
+def extract_features_from_lightcurve(
+    lc,
+    verbose=False,
+    refine_duration=True,
+    use_tls=False,
+    mask_eclipses=False,
+    include_false_candidates=False,
+    label_output_candidates=False,
+    confirmed_rows=None,
+    *,
+    progress=None,
+):
+    """Extract candidate feature rows from a LightCurve object."""
+    time = lc.time.value
+    flux = lc.flux.value
+
+    # Use the internal function for feature extraction
+    feature_rows = extract_features_from_arrays(
+        time,
+        flux,
+        verbose=verbose,
+        refine_duration=refine_duration,
+        use_tls=use_tls,
+        mask_eclipses=mask_eclipses,
+        include_false_candidates=include_false_candidates,
+        label_output_candidates=label_output_candidates,
+        confirmed_rows=confirmed_rows,
+        progress=progress,
+    )
+
+    # Add stellar radius information if available
+    if "RADIUS" in lc.meta and np.isfinite(lc.meta["RADIUS"]):
+        stellar_radius = lc.meta["RADIUS"]
+        for feats in feature_rows:
+            depth = feats["depth_mean_per_transit"]
+            if np.isfinite(depth) and depth >= 0:
+                Rp_over_Rs = np.sqrt(depth)
+                feats["planet_radius_rearth"] = stellar_radius * 109.1 * Rp_over_Rs
+                feats["planet_radius_rjup"] = stellar_radius * 9.731 * Rp_over_Rs
+
+    return feature_rows

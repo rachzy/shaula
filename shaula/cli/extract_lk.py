@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+"""Extract candidate feature rows for a LightKurve host star.
+
+Optionally saves the downloaded light-curve data before feature extraction.
+
+Usage (from repo root with venv active):
+  shaula-extract-lk --target HAT-P-7 --mission Kepler --out-features out/hatp7_features.csv
+  shaula-extract-lk --target HAT-P-7 --mission Kepler --download-all --out-features out/hatp7_features.csv
+"""
+
+import argparse
+from typing import Optional, Union
+
+from ..extract_feats import extract_features_from_lightcurve
+from ..download_and_clean import download_and_clean_lightcurve
+from ..save import save_features
+from ..extract_feats import extract_all_features_from_csv
+from ..utils.target_names import host_star_name
+
+
+def run_lightkurve_extraction(
+    target: str,
+    mission: str,
+    sigma_clip: float,
+    verbose: bool,
+    lightkurve_out_path: str = None,
+    download_all: bool = False,
+    author: str = None,
+    exptime: Optional[Union[str, float]] = None,
+):
+    """Download light curve, save to CSV, and extract features."""
+    # Download and save the light curve
+    lc = download_and_clean_lightcurve(
+        target,
+        mission,
+        sigma_clip,
+        download_all,
+        lightkurve_out_path,
+        verbose,
+        author=author,
+        exptime=exptime,
+    )
+
+    # Extract features using the saved CSV data
+    feats = extract_features_from_lightcurve(lc, verbose=verbose)
+    return feats
+
+
+def run_csv_extraction(csv_path: str, verbose: bool = False):
+    """Extract features from a CSV file."""
+
+    feats = extract_all_features_from_csv(csv_path, verbose=verbose)
+    return feats
+
+
+def parse_args():
+    p = argparse.ArgumentParser(description="Extract features using LightKurve search")
+    p.add_argument("--target", help="Target name, e.g., HAT-P-7")
+    p.add_argument("--input-lightkurve", help="Path to input lightkurve data")
+    p.add_argument("--out-lightkurve", help="Path to lightkurve data")
+    p.add_argument("--mission", default="Kepler", help="Mission name (Kepler/TESS)")
+    p.add_argument(
+        "--author",
+        help="Lightkurve product author (default: Kepler/K2/SPOC by mission)",
+    )
+    p.add_argument(
+        "--exptime",
+        help="Exposure class or seconds (default: long for Kepler/K2, short for TESS)",
+    )
+    p.add_argument(
+        "--sigma-clip", type=float, default=5.0, help="Outlier sigma for cleaning"
+    )
+    p.add_argument(
+        "--download-all",
+        action="store_true",
+        help="Download all available light curve files instead of just the first one",
+    )
+    p.add_argument("--out-features", help="Path to output (csv or json)")
+    p.add_argument("--quiet", action="store_true", help="Reduce verbosity")
+    return p.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    if not args.target and not args.input_lightkurve:
+        raise ValueError("Either --target or --input-lightkurve must be provided")
+
+    if args.input_lightkurve:
+        feats = run_csv_extraction(args.input_lightkurve, verbose=not args.quiet)
+    else:
+        star = host_star_name(args.target)
+        feats = run_lightkurve_extraction(
+            target=star,
+            mission=args.mission,
+            sigma_clip=args.sigma_clip,
+            verbose=not args.quiet,
+            lightkurve_out_path=args.out_lightkurve,
+            download_all=args.download_all,
+            author=args.author,
+            exptime=args.exptime,
+        )
+
+    if args.out_features:
+        output_star = host_star_name(args.target) if args.target else "lightcurve"
+        save_features(feats, output_star, args.out_features, not args.quiet)
+
+
+if __name__ == "__main__":
+    main()
