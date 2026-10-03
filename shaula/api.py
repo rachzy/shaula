@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -79,6 +80,10 @@ def extract(
     _validate_query(target)
     mission = canonical_mission(mission)
     star = host_star_name(target)
+    if use_tls and importlib.util.find_spec("transitleastsquares") is None:
+        raise RuntimeError(
+            "use_tls=True needs the optional 'tls' extra: pip install 'shaula[tls]'."
+        )
 
     _emit(progress, "downloading", f"Downloading {target} from {mission}")
     lc = download_and_clean_lightcurve(

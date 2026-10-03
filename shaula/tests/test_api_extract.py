@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import importlib.util
 import io
 from typing import ClassVar
 from unittest.mock import patch
@@ -194,4 +195,25 @@ def test_overlong_query_is_rejected_before_any_download(stubbed):
 
 def test_query_at_the_limit_is_accepted(stubbed):
     extract("x" * MAX_QUERY_LENGTH, "Kepler")
+    assert "download" in stubbed
+
+
+def test_use_tls_without_the_extra_fails_before_downloading(stubbed, monkeypatch):
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name, *a, **k: None)
+    with pytest.raises(RuntimeError, match="tls"):
+        extract("Kepler-11", "Kepler", use_tls=True)
+    assert "download" not in stubbed
+
+
+def test_tls_check_is_skipped_when_use_tls_is_false(stubbed, monkeypatch):
+    def boom(*args, **kwargs):
+        raise AssertionError("find_spec must not be called")
+
+    monkeypatch.setattr(importlib.util, "find_spec", boom)
+    assert extract("Kepler-11", "Kepler", use_tls=False).features
+
+
+def test_use_tls_proceeds_when_the_extra_is_installed(stubbed, monkeypatch):
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name, *a, **k: object())
+    assert extract("Kepler-11", "Kepler", use_tls=True).features
     assert "download" in stubbed
