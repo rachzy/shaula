@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from . import __version__
+from . import __version__, download_and_clean
 from .download_and_clean import download_and_clean_lightcurve
 from .extract_feats import extract_features_from_lightcurve
 from .utils.target_names import host_star_name
@@ -76,9 +76,13 @@ def extract(
     ``progress`` receives a :class:`ProgressEvent` at each stage boundary and
     may raise to cancel the run.
     """
+    _validate_query(target)
+    mission = canonical_mission(mission)
+    star = host_star_name(target)
+
     _emit(progress, "downloading", f"Downloading {target} from {mission}")
     lc = download_and_clean_lightcurve(
-        target,
+        star,
         mission,
         sigma_clip,
         download_all,
@@ -111,7 +115,33 @@ MISSION_CATALOGS: dict[str, str] = {
     "TESS": "TIC",
 }
 
+MAX_QUERY_LENGTH = 200
+
 _TARGET_NAME_PREFIXES = ("kplr", "ktwo")
+
+
+def _validate_query(query: str) -> None:
+    """Reject a query too long to be a star name, before any network call."""
+    if len(query) > MAX_QUERY_LENGTH:
+        raise ValueError(
+            f"Query is {len(query)} characters; the limit is {MAX_QUERY_LENGTH}."
+        )
+
+
+def canonical_mission(mission: str) -> str:
+    """Return the canonical spelling of ``mission``, ignoring case and spaces.
+
+    Raises:
+        ValueError: when the mission is not one of Kepler, K2 or TESS.
+    """
+    wanted = str(mission).strip().casefold()
+    for name in MISSION_CATALOGS:
+        if name.casefold() == wanted:
+            return name
+    raise ValueError(
+        f"Unsupported mission {mission!r}; expected one of "
+        f"{sorted(MISSION_CATALOGS)}."
+    )
 
 
 class TargetNotFound(Exception):
@@ -132,15 +162,23 @@ class ResolvedTarget:
     dec_deg: float
     display_name: str
 
+    @property
+    def designation(self) -> str:
+        """The exact catalogue designation, such as ``"KIC 8120608"``.
+
+        Pass this to :func:`extract` so the star extracted is exactly the star
+        that was resolved.
+        """
+        return f"{self.catalog} {self.catalog_id}"
+
 
 def _search_target(query: str, mission: str):
     """Ask lightkurve to resolve a name, returning its search-result table.
 
     Isolated behind one function so tests can replace it without a network.
+    It runs the same filtered, unmemoised search that extraction uses.
     """
-    import lightkurve as lk
-
-    return lk.search_lightcurve(query, mission=mission).table
+    return download_and_clean.search_default_product(query, mission).result.table
 
 
 def _catalog_id_from_target_name(target_name: str) -> str:
@@ -165,11 +203,8 @@ def _catalog_id_from_target_name(target_name: str) -> str:
 
 def resolve(query: str, mission: str = "Kepler") -> ResolvedTarget:
     """Resolve a name or designation to an exact catalogue identifier."""
-    if mission not in MISSION_CATALOGS:
-        raise ValueError(
-            f"Unsupported mission {mission!r}; expected one of "
-            f"{sorted(MISSION_CATALOGS)}."
-        )
+    _validate_query(query)
+    mission = canonical_mission(mission)
 
     catalog = MISSION_CATALOGS[mission]
     star = host_star_name(query)

@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any, NamedTuple
 
 import lightkurve as lk
 from numpy import inf
@@ -36,6 +37,45 @@ def _normalize_exptime(
         return value
 
 
+class ProductSearch(NamedTuple):
+    """A search result plus the author and exposure class that selected it."""
+
+    result: Any
+    author: str | None
+    exptime: str | float | None
+
+
+def search_default_product(
+    target: str,
+    mission: str,
+    author: str | None = None,
+    exptime: str | float | None = None,
+) -> ProductSearch:
+    """Search for one consistent product class, without lightkurve's memo.
+
+    Shared by ``resolve()`` and the downloader so both look up the same
+    thing. ``lk.search_lightcurve`` is memoised without a size or time limit,
+    which would keep every network-supplied string for the life of the
+    process and cache an empty result from a transient archive failure
+    forever; the unmemoised function is called instead.
+    """
+    default_author, default_exptime = default_product_selection(mission)
+    selected_author = author if author is not None else default_author
+    selected_exptime = _normalize_exptime(
+        exptime if exptime is not None else default_exptime
+    )
+    search_kwargs: dict[str, Any] = {"mission": mission}
+    if selected_author is not None:
+        search_kwargs["author"] = selected_author
+    if selected_exptime is not None:
+        search_kwargs["exptime"] = selected_exptime
+
+    search = getattr(lk.search_lightcurve, "__wrapped__", lk.search_lightcurve)
+    return ProductSearch(
+        search(target, **search_kwargs), selected_author, selected_exptime
+    )
+
+
 def download_and_clean_lightcurve(
     target: str,
     mission: str,
@@ -60,18 +100,9 @@ def download_and_clean_lightcurve(
 
     if verbose:
         print(f"Downloading light curve for {target} from {mission}...")
-    default_author, default_exptime = default_product_selection(mission)
-    selected_author = author if author is not None else default_author
-    selected_exptime = _normalize_exptime(
-        exptime if exptime is not None else default_exptime
+    search_result, selected_author, selected_exptime = search_default_product(
+        target, mission, author, exptime
     )
-    search_kwargs = {"mission": mission}
-    if selected_author is not None:
-        search_kwargs["author"] = selected_author
-    if selected_exptime is not None:
-        search_kwargs["exptime"] = selected_exptime
-
-    search_result = lk.search_lightcurve(target, **search_kwargs)
     if len(search_result) == 0:
         raise ValueError(
             f"No {mission} light curves found for {target!r} with "

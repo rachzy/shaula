@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 
 from .. import api
-from ..api import STAGES, ExtractionResult, ProgressEvent, extract
+from ..api import MAX_QUERY_LENGTH, STAGES, ExtractionResult, ProgressEvent, extract
 from ..extract_feats import extract_features_from_arrays
 
 
@@ -167,3 +167,31 @@ def test_real_candidate_loop_emits_period_search_events():
     searching = [e for e in seen if e.stage == "period_search"]
     assert searching, "no period_search event from the real candidate loop"
     assert "1" in searching[0].message
+
+
+def test_planet_letter_is_stripped_before_the_downloader(stubbed):
+    extract("Kepler-186f", "Kepler")
+    assert stubbed["download"]["target"] == "Kepler-186"
+
+
+def test_mission_is_canonicalised_for_the_downloader(stubbed):
+    result = extract("TOI-178", "tess")
+    assert stubbed["download"]["mission"] == "TESS"
+    assert result.mission == "TESS"
+
+
+def test_unsupported_mission_is_rejected_before_downloading(stubbed):
+    with pytest.raises(ValueError, match="Hubble"):
+        extract("Kepler-11", "Hubble")
+    assert "download" not in stubbed
+
+
+def test_overlong_query_is_rejected_before_any_download(stubbed):
+    with pytest.raises(ValueError, match=str(MAX_QUERY_LENGTH)):
+        extract("x" * (MAX_QUERY_LENGTH + 1), "Kepler")
+    assert "download" not in stubbed
+
+
+def test_query_at_the_limit_is_accepted(stubbed):
+    extract("x" * MAX_QUERY_LENGTH, "Kepler")
+    assert "download" in stubbed
