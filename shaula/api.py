@@ -76,6 +76,17 @@ def extract(
 
     ``progress`` receives a :class:`ProgressEvent` at each stage boundary and
     may raise to cancel the run.
+
+    Pass ``ResolvedTarget.designation`` as ``target`` so the star extracted is
+    exactly the star resolved. ``use_tls=True`` raises ``RuntimeError`` when
+    the optional ``tls`` extra is not installed, and a ``target`` longer than
+    ``MAX_QUERY_LENGTH`` raises ``ValueError``.
+
+    The values in ``ExtractionResult.features`` are ``float``, ``str`` or
+    ``int``. A float **may be NaN** (for example ``planet_radius_rearth`` when
+    the light curve carries no stellar radius). Callers that serialise to JSON
+    or protobuf must map non-finite floats themselves; NaN is kept
+    deliberately because downstream pandas code relies on it.
     """
     _validate_query(target)
     mission = canonical_mission(mission)
