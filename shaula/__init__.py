@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
+__version__ = "0.0.1a0"
 
 from .api import (  # noqa: E402  (version must be defined before api imports it)
     STAGES,

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "shaula"
-version = "0.1.0"
+version = "0.0.1a0"
 description = "Light-curve transit photometry feature extraction for exoplanet candidate screening"
 readme = "README.md"
 license = { file = "LICENSE" }
