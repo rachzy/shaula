@@ -41,9 +41,9 @@ def download_and_clean_lightcurve(
     mission: str,
     sigma_upper: float = 5.0,
     all: bool = False,
-    savePath: str = None,
+    savePath: str | None = None,
     verbose: bool = False,
-    author: str = None,
+    author: str | None = None,
     exptime: str | float | None = None,
     *,
     cache_dir: Path | str | None = None,
@@ -55,8 +55,8 @@ def download_and_clean_lightcurve(
     ``download_all`` so stitching cannot mix exposure times or pipeline
     authors.
     """
-    # Redirect lightkurve's download cache before the first search.
-    lightcurve_cache_dir(cache_dir)
+    download_dir = lightcurve_cache_dir(cache_dir)
+    download_dir_arg = str(download_dir) if download_dir is not None else None
 
     if verbose:
         print(f"Downloading light curve for {target} from {mission}...")
@@ -89,10 +89,10 @@ def download_and_clean_lightcurve(
     if all:
         if verbose:
             print(f"Downloading all {len(search_result)} selected files...")
-        lc = search_result.download_all()
+        lc = search_result.download_all(download_dir=download_dir_arg)
         lc = lc.stitch()
     else:
-        lc = search_result.download()
+        lc = search_result.download(download_dir=download_dir_arg)
 
     lc = lc.remove_nans().normalize().remove_outliers(sigma_upper=sigma_upper, sigma_lower=inf)
     print(f"Downloaded {len(lc.time)} data points.")

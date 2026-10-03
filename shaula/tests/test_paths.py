@@ -1,22 +1,12 @@
-"""Resolution and redirection of lightkurve's download cache."""
+"""Resolution of the lightkurve download directory (a pure resolver)."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
+import lightkurve as lk
 
 from ..paths import LIGHTCURVE_CACHE_ENV, lightcurve_cache_dir
-
-
-@pytest.fixture(autouse=True)
-def _restore_lightkurve_cache():
-    """Keep one test's redirection from leaking into the next."""
-    import lightkurve as lk
-
-    original = lk.conf.cache_dir
-    yield
-    lk.conf.cache_dir = original
 
 
 def test_explicit_argument_wins(tmp_path, monkeypatch):
@@ -31,12 +21,18 @@ def test_env_var_used_when_no_argument(tmp_path, monkeypatch):
     assert lightcurve_cache_dir() == expected
 
 
-def test_falls_back_to_lightkurves_own_default(monkeypatch):
-    """No package-relative default: a pip-installed library must not write into site-packages."""
-    from lightkurve.config import get_cache_dir
-
+def test_returns_none_and_creates_nothing_when_unset(tmp_path, monkeypatch):
     monkeypatch.delenv(LIGHTCURVE_CACHE_ENV, raising=False)
-    assert lightcurve_cache_dir() == Path(get_cache_dir())
+    monkeypatch.chdir(tmp_path)
+    assert lightcurve_cache_dir() is None
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_empty_env_var_is_treated_as_unset(tmp_path, monkeypatch):
+    monkeypatch.setenv(LIGHTCURVE_CACHE_ENV, "")
+    monkeypatch.chdir(tmp_path)
+    assert lightcurve_cache_dir() is None
+    assert list(tmp_path.iterdir()) == []
 
 
 def test_missing_directory_is_created_with_parents(tmp_path):
@@ -52,20 +48,10 @@ def test_accepts_a_string_path(tmp_path):
     assert resolved.is_dir()
 
 
-def test_redirects_lightkurves_download_cache(tmp_path):
-    """Assigning lk.conf.cache_dir is the only thing that moves downloads."""
-    import lightkurve as lk
-
-    chosen = tmp_path / "cache"
-    lightcurve_cache_dir(chosen)
-    assert Path(lk.conf.cache_dir) == chosen
-
-
-def test_env_var_reaches_lightkurve_not_just_the_return_value(tmp_path, monkeypatch):
-    """The mounted-volume case: returning the right path is not enough."""
-    import lightkurve as lk
-
-    expected = tmp_path / "from_env"
-    monkeypatch.setenv(LIGHTCURVE_CACHE_ENV, str(expected))
+def test_does_not_change_lightkurves_global_cache_dir(tmp_path, monkeypatch):
+    """The point of the per-call design: no process-wide state is touched."""
+    before = lk.conf.cache_dir
+    monkeypatch.setenv(LIGHTCURVE_CACHE_ENV, str(tmp_path / "from_env"))
+    lightcurve_cache_dir(tmp_path / "explicit")
     lightcurve_cache_dir()
-    assert Path(lk.conf.cache_dir) == expected
+    assert lk.conf.cache_dir == before
