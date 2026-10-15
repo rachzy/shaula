@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 194 passed, 19 subtests
+uv run pytest                        # tests: 230 passed, 19 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
@@ -21,6 +21,7 @@ The only module an external consumer imports (the `apps/shaula` gRPC service in 
 - `STAGES` has exactly four entries: `downloading`, `detrending`, `period_search`, `done`. Every declared stage must actually be emitted; a stage that never fires is a broken contract, and a test pins it.
 - The `progress` callback may raise to cancel. `extract()` deliberately does not catch it. Never wrap a callback invocation in `try`/`except`.
 - `resolve()` returns an exact catalogue identifier (`KIC`/`EPIC`/`TIC`). The caller uses `catalog_id` as a cache key, so `resolve()` raises `TargetNotFound` for an unusable identifier or non-finite coordinates instead of returning a plausible-looking value.
+- `resolve()` takes either a `query` or both `ra_deg` and `dec_deg` (never both, never one coordinate); a blank query counts as none. A position resolves to the nearest star with light curves within `POSITION_MATCH_RADIUS_ARCSEC` (4 arcseconds) and sets `display_name` to the designation. `0.0` is a valid coordinate, so test with `is None`, never truthiness.
 
 ## Gotchas
 

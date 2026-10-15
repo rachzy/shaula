@@ -9,6 +9,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from astropy.coordinates import SkyCoord
+
 from . import __version__, download_and_clean
 from .download_and_clean import download_and_clean_lightcurve
 from .extract_feats import extract_features_from_lightcurve
@@ -132,6 +134,7 @@ MISSION_CATALOGS: dict[str, str] = {
 }
 
 MAX_QUERY_LENGTH = 200
+POSITION_MATCH_RADIUS_ARCSEC = 4.0
 
 _TARGET_NAME_PREFIXES = ("kplr", "ktwo")
 
@@ -197,6 +200,14 @@ def _search_target(query: str, mission: str):
     return download_and_clean.search_default_product(query, mission).result.table
 
 
+def _search_position(ra_deg: float, dec_deg: float, mission: str):
+    """Cone-search lightkurve around a position, returning its search-result table."""
+    position = SkyCoord(ra=ra_deg, dec=dec_deg, unit="deg")
+    return download_and_clean.search_default_product(
+        position, mission, radius=POSITION_MATCH_RADIUS_ARCSEC
+    ).result.table
+
+
 def _catalog_id_from_target_name(target_name: str) -> str:
     """Strip lightkurve's mission prefix and zero padding from an identifier.
 
@@ -217,11 +228,41 @@ def _catalog_id_from_target_name(target_name: str) -> str:
     return identifier
 
 
-def resolve(query: str, mission: str = "Kepler") -> ResolvedTarget:
-    """Resolve a name or designation to an exact catalogue identifier."""
-    _validate_query(query)
-    mission = canonical_mission(mission)
+def _target_from_row(
+    row, mission: str, label: str, display_name: str | None
+) -> ResolvedTarget:
+    catalog = MISSION_CATALOGS[mission]
+    try:
+        catalog_id = _catalog_id_from_target_name(row["target_name"])
+    except ValueError as error:
+        raise TargetNotFound(
+            f"{label!r} resolved to an unusable identifier: {error}"
+        ) from error
 
+    try:
+        ra_deg = float(row["s_ra"])
+        dec_deg = float(row["s_dec"])
+    except (TypeError, ValueError) as error:
+        raise TargetNotFound(
+            f"{label!r} resolved to unreadable coordinates: {error}"
+        ) from error
+    if not (math.isfinite(ra_deg) and math.isfinite(dec_deg)):
+        raise TargetNotFound(
+            f"{label!r} resolved to non-finite coordinates "
+            f"(ra={ra_deg!r}, dec={dec_deg!r})."
+        )
+
+    return ResolvedTarget(
+        catalog=catalog,
+        catalog_id=catalog_id,
+        ra_deg=ra_deg,
+        dec_deg=dec_deg,
+        display_name=display_name or f"{catalog} {catalog_id}",
+    )
+
+
+def _resolve_name(query: str, mission: str) -> ResolvedTarget:
+    _validate_query(query)
     catalog = MISSION_CATALOGS[mission]
     star = host_star_name(query)
 
@@ -231,32 +272,69 @@ def resolve(query: str, mission: str = "Kepler") -> ResolvedTarget:
             f"No {mission} light curves found for {query!r}, so it has no "
             f"{catalog} identifier this pipeline can use."
         )
+    return _target_from_row(table[0], mission, query, star)
 
-    row = table[0]
-    try:
-        catalog_id = _catalog_id_from_target_name(row["target_name"])
-    except ValueError as error:
-        raise TargetNotFound(
-            f"{query!r} resolved to an unusable identifier: {error}"
-        ) from error
 
+def _validate_position(ra_deg: float, dec_deg: float) -> None:
+    for name, value in (("ra_deg", ra_deg), ("dec_deg", dec_deg)):
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not math.isfinite(value)
+        ):
+            raise ValueError(f"{name} must be a finite number, got {value!r}.")
+    if not 0 <= ra_deg < 360:
+        raise ValueError(f"ra_deg must be in [0, 360), got {ra_deg!r}.")
+    if not -90 <= dec_deg <= 90:
+        raise ValueError(f"dec_deg must be in [-90, 90], got {dec_deg!r}.")
+
+
+def _row_distance(row) -> float:
     try:
-        ra_deg = float(row["s_ra"])
-        dec_deg = float(row["s_dec"])
-    except (TypeError, ValueError) as error:
+        distance = float(row["distance"])
+    except (KeyError, TypeError, ValueError):
+        return math.inf
+    return distance if math.isfinite(distance) else math.inf
+
+
+def _resolve_position(ra_deg: float, dec_deg: float, mission: str) -> ResolvedTarget:
+    _validate_position(ra_deg, dec_deg)
+    label = f"ra={ra_deg}, dec={dec_deg}"
+
+    table = _search_position(ra_deg, dec_deg, mission)
+    if table is None or len(table) == 0:
         raise TargetNotFound(
-            f"{query!r} resolved to unreadable coordinates: {error}"
-        ) from error
-    if not (math.isfinite(ra_deg) and math.isfinite(dec_deg)):
-        raise TargetNotFound(
-            f"{query!r} resolved to non-finite coordinates "
-            f"(ra={ra_deg!r}, dec={dec_deg!r})."
+            f"No {mission} light curves found within "
+            f"{POSITION_MATCH_RADIUS_ARCSEC:g} arcseconds of {label}."
         )
 
-    return ResolvedTarget(
-        catalog=catalog,
-        catalog_id=catalog_id,
-        ra_deg=ra_deg,
-        dec_deg=dec_deg,
-        display_name=star,
-    )
+    nearest = min(table, key=_row_distance)
+    if math.isinf(_row_distance(nearest)):
+        raise TargetNotFound(
+            f"The {mission} search around {label} returned no readable distance, "
+            "so the nearest star cannot be chosen."
+        )
+    return _target_from_row(nearest, mission, label, None)
+
+
+def resolve(
+    query: str | None = None,
+    mission: str = "Kepler",
+    *,
+    ra_deg: float | None = None,
+    dec_deg: float | None = None,
+) -> ResolvedTarget:
+    """Resolve a name or designation, or a sky position, to an exact catalogue identifier."""
+    mission = canonical_mission(mission)
+    has_position = ra_deg is not None or dec_deg is not None
+
+    if query is not None and query.strip():
+        if has_position:
+            raise ValueError("Pass a query, or ra_deg and dec_deg, not both.")
+        return _resolve_name(query, mission)
+
+    if not has_position:
+        raise ValueError("Pass a query, or both ra_deg and dec_deg.")
+    if ra_deg is None or dec_deg is None:
+        raise ValueError("ra_deg and dec_deg must be given together.")
+    return _resolve_position(ra_deg, dec_deg, mission)

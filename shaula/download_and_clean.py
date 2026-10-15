@@ -46,10 +46,12 @@ class ProductSearch(NamedTuple):
 
 
 def search_default_product(
-    target: str,
+    target: Any,
     mission: str,
     author: str | None = None,
     exptime: str | float | None = None,
+    *,
+    radius: float | None = None,
 ) -> ProductSearch:
     """Search for one consistent product class, without lightkurve's memo.
 
@@ -69,6 +71,8 @@ def search_default_product(
         search_kwargs["author"] = selected_author
     if selected_exptime is not None:
         search_kwargs["exptime"] = selected_exptime
+    if radius is not None:
+        search_kwargs["radius"] = radius
 
     search = getattr(lk.search_lightcurve, "__wrapped__", lk.search_lightcurve)
     return ProductSearch(
