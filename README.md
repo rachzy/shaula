@@ -267,4 +267,4 @@ You need network access when downloading data through Lightkurve; first-time use
 
 ## Credits
 
-Great part of the code in this repository was originally meant for the Gatonautas team project for [Nasa Space Apps Challenge 2025](https://www.nasa.gov/nasa-space-apps-challenge-2025/), in which the author of this repository ([rachzy](github.com/rachzy)) actively participated and was responsible for the pre-processing pipeline.
+The prototype code used in this repository was originally meant for the Gatonautas team project for [Nasa Space Apps Challenge 2025](https://www.nasa.gov/nasa-space-apps-challenge-2025/)
