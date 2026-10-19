@@ -215,11 +215,52 @@ far *above* the catalogue (Kepler-10b 181 vs 30, 42c 74 vs 10, 90f 44 vs
 18); the catalogue values there look like TPS reporting a different event
 set (to check).
 
+### E12. Full search, branch v1 (flank baseline + audit) vs main
+`real_search.py` on downloaded hosts, graded by period (0.5%, aliases 2x,
+3x, 1/2, 1/3). `results/search_real_main.csv`, `search_real_branch_v1.csv`.
+v1 on 6 hosts: Kepler-102 2/5 (main 1/5), 37 2/4 (1/4), 444 3/5 (1/5), 13,
+25 unchanged, 411 0/3 (0/3). More planets, more unmatched rows (102: 9,
+444: 7), and much slower (102: 3987 s vs 618 s; 444: 4764 s vs 898 s),
+because the higher MES lets more candidates through the gate and each
+accepted candidate costs another iteration.
+
+### E13. Kepler-411: fine-window BLS pass and MES-ordered queue
+Kepler-411's day-scale variability (~3700 ppm) is deeper than its transits,
+so the 1 d+ pre-BLS running median leaves residual bumps that BLS ranks
+above the planets. A global 0.75 d window recovered 411c (that test, not the
+fine pass alone, is what commit 4b7f5ea's message describes; the message is
+wrong). Adopted instead: a second BLS pass on 0.75 d flattened flux with
+durations <= window/3, interleaved into the peak queue
+(`_fine_window_candidates`), and the queue tried in order of quick MES, not
+BLS power, so a strong true peak is accepted before junk that merely has
+high BLS power.
+
+### E14. Full search, branch v3 (E11 + E13) vs main
+10 of 12 hosts finished before the 2 h job limit (Kepler-51 and 138 rerun
+separately). `results/search_real_v3.csv`, `search_real_v3_rows.csv`.
+
+| star | main found | v3 found | main extra | v3 extra | main s | v3 s |
+|---|---|---|---|---|---|---|
+| Kepler-102 | 1/5 | 2/5 | 0 | 4 | 618 | 1880 |
+| Kepler-411 | 0/3 | **2/3** | 0 | 1 | 430 | 1005 |
+| Kepler-37 | 1/4 | 2/4 | 1 | 10 | 1116 | 4509 |
+| Kepler-7 | 1/1 | 1/1 | 0 | 2 | 398 | 1120 |
+| Kepler-90 | 7/8 | **8/8** | 1 | 2 | 2005 | 3423 |
+| Kepler-444 | 1/5 | 3/5 | 0 | 5 | 898 | 4073 |
+| Kepler-25 | 2/2 | 2/2 | 0 | 2 | 800 | 1126 |
+| Kepler-13 | 1/1 | 1/1 | 1 | 2 | 633 | 1681 |
+| Kepler-89 | 4/4 | 4/4 | 1 | 2 | 1858 | 2822 |
+| Kepler-62 | 3/5 | **5/5** | 0 | 3 | 984 | 2842 |
+| **total** | **21/38** | **30/38** | 4 | 33 | 9740 | 24481 |
+
+Recall 55% -> 79%; extra rows 4 -> 33 (acceptable per Henrique: recall over
+precision); runtime 2.5x. Still missed: Kepler-102b/c/f (catalogue MES
+14-21), 37b/e (no catalogue MES; 37b is ~Moon-sized), 444c/f, 411d.
+
 ## Next
-- E12 (running): full iterative search on 12 hosts, main vs branch, to see
-  what it does to recall and false rows (`real_search.py`).
-- When the network opens: real-star comparison against `koi_max_mult_ev`.
-- When the network opens: rerun the 49-star comparison with `auto` and
-  compare `max_mes` to `koi_max_mult_ev`; then calibrate the 7.1 gate.
-- When the network opens: rerun the 49-star comparison with the chosen
-  detrend and compare `max_mes` to `koi_max_mult_ev`.
+- Kepler-51 and 138 v3 rows (running).
+- Runtime: 2.5x per star is the main cost for the service. Candidates: cap
+  iterations by remaining-MES, cheaper quick-MES ranking.
+- Remaining misses above (102b/c/f, 444c/f, 411d): check whether the peak
+  is in the queue at all or fails the gate.
+- Calibrate the 7.1 gate against `koi_max_mult_ev` now that MES is unbiased.
