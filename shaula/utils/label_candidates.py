@@ -22,7 +22,29 @@ CANDIDATE_LABEL_CONFIRMED = "CONFIRMED"
 CANDIDATE_LABEL_FALSE_POSITIVE = "FALSE-POSITIVE"
 CANDIDATE_LABEL_UNKNOWN = "UNKNOWN"
 
-LABEL_COLUMNS = ("candidate_label", "matched_target", "matched_period_ratio")
+LABEL_COLUMNS = (
+    "candidate_label",
+    "matched_target",
+    "matched_period_ratio",
+    "fp_source",
+)
+
+# Reference tables may carry every KOI of a star, not only its planets. A
+# missing ``disposition`` column means the legacy confirmed-only CSVs.
+REFERENCE_DISPOSITION_LABELS = {
+    "CONFIRMED": CANDIDATE_LABEL_CONFIRMED,
+    "FALSE POSITIVE": CANDIDATE_LABEL_FALSE_POSITIVE,
+}
+
+# Robovetter flags that are judgements on the light curve itself: not
+# transit-like and stellar eclipse. A KOI rejected only for a centroid offset
+# or an ephemeris match looks like a planet in its own light curve, so pairing
+# with one says nothing the features can learn from.
+LIGHT_CURVE_FP_FLAGS = frozenset({"nt", "ss"})
+
+# fp_source values for rows that no reference KOI explains.
+FP_SOURCE_UNMATCHED = "unmatched"
+FP_SOURCE_INVERTED = "inverted"
 
 
 def _as_confirmed_frame(confirmed_rows) -> pd.DataFrame | None:
@@ -55,6 +77,15 @@ def label_candidate_rows(
     ``FALSE-POSITIVE`` when it pairs with none, and ``UNKNOWN`` for every row
     when no confirmed table is available for the star.
 
+    The table may also list a star's other KOIs, with a ``disposition`` column
+    (``CONFIRMED``, ``CANDIDATE``, ``FALSE POSITIVE``) and optional ``fp_flags``.
+    A row pairing with a ``FALSE POSITIVE`` KOI is then ``FALSE-POSITIVE`` with
+    ``fp_source`` ``koi:<flags>``, and one pairing with a ``CANDIDATE`` is
+    ``UNKNOWN``, since nobody knows yet what it is. So is one pairing with a
+    false positive that carries neither the ``nt`` nor the ``ss`` flag: those
+    were rejected on pixel-level or other stars' data the features never see.
+    ``fp_source`` is ``unmatched`` for a false positive that pairs with nothing.
+
     A pairing at a small integer ratio of the catalog period counts as
     ``CONFIRMED`` - the comparison report treats those as recoveries of the
     planet rather than as unrelated rows - and ``matched_period_ratio`` records
@@ -73,6 +104,7 @@ def label_candidate_rows(
         )
         row["matched_target"] = ""
         row["matched_period_ratio"] = ""
+        row["fp_source"] = "" if confirmed is None else FP_SOURCE_UNMATCHED
     if confirmed is None:
         return labelled
 
@@ -83,9 +115,45 @@ def label_candidate_rows(
         if match["kind"] not in ("direct", "alias"):
             continue
         row = labelled[match["extracted_index"]]
-        row["candidate_label"] = CANDIDATE_LABEL_CONFIRMED
+        reference = confirmed.iloc[match["confirmed_index"]]
+        label, fp_source = _reference_label(reference)
+        row["candidate_label"] = label
         row["matched_target"] = match["target"] or ""
         row["matched_period_ratio"] = match["ratio_label"]
+        row["fp_source"] = fp_source
+    return labelled
+
+
+def _reference_label(reference) -> tuple[str, str]:
+    """Label and fp_source for a row paired with one reference KOI."""
+    disposition = reference.get("disposition")
+    if not isinstance(disposition, str) or not disposition.strip():
+        return CANDIDATE_LABEL_CONFIRMED, ""
+    label = REFERENCE_DISPOSITION_LABELS.get(
+        disposition.strip().upper(), CANDIDATE_LABEL_UNKNOWN
+    )
+    if label != CANDIDATE_LABEL_FALSE_POSITIVE:
+        return label, ""
+    flags = reference.get("fp_flags")
+    flags = flags.strip() if isinstance(flags, str) else ""
+    if not LIGHT_CURVE_FP_FLAGS.intersection(flags.split("+")):
+        return CANDIDATE_LABEL_UNKNOWN, ""
+    return label, f"koi:{flags}"
+
+
+def label_all_false_positive(rows, fp_source: str = FP_SOURCE_INVERTED) -> list[dict]:
+    """Stamp every row ``FALSE-POSITIVE`` from one known-fake source.
+
+    For light curves built so that no real transit can be detected, such as
+    an inverted light curve, where any detection is a false alarm by
+    construction and no catalogue is consulted.
+    """
+    labelled = [dict(row) for row in rows]
+    for row in labelled:
+        row["candidate_label"] = CANDIDATE_LABEL_FALSE_POSITIVE
+        row["matched_target"] = ""
+        row["matched_period_ratio"] = ""
+        row["fp_source"] = fp_source
     return labelled
 
 
