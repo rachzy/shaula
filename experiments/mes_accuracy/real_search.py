@@ -29,6 +29,11 @@ from shaula.extract_feats import extract_features_from_arrays  # noqa: E402
 if os.environ.get("SHAULA_EXP_VARWIN"):
     detrend_and_period.BLS_VARIABILITY_WINDOW_DAYS = float(os.environ["SHAULA_EXP_VARWIN"])
 
+if os.environ.get("SHAULA_EXP_GLOBAL_DUR"):
+    detrend_and_period.GLOBAL_BLS_DURATIONS = int(os.environ["SHAULA_EXP_GLOBAL_DUR"])
+if os.environ.get("SHAULA_EXP_PER_BAND"):
+    detrend_and_period.BLS_PEAKS_PER_BAND = int(os.environ["SHAULA_EXP_PER_BAND"])
+
 from experiments.mes_accuracy.real_stars import CONFIRMED, DATA  # noqa: E402
 
 RATIOS = (1.0, 2.0, 3.0, 0.5, 1.0 / 3.0)

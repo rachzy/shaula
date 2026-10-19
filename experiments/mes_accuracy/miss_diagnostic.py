@@ -21,9 +21,10 @@ import pandas as pd
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1]))
 
-from experiments.mes_accuracy.real_stars import BKJD_OFFSET, CONFIRMED, DATA  # noqa: E402
 from shaula.extract_feats import _periodic_mask  # noqa: E402
 from shaula.sesmes import compute_SES_MES  # noqa: E402
+
+from experiments.mes_accuracy.real_stars import BKJD_OFFSET, CONFIRMED, DATA  # noqa: E402
 
 
 def masked_running_median(time, flux, keep, window, step=0.02):
@@ -31,7 +32,7 @@ def masked_running_median(time, flux, keep, window, step=0.02):
     centres = 0.5 * (edges[:-1] + edges[1:])
     idx = np.digitize(time, edges) - 1
     trend = np.full(centres.size, np.nan)
-    half = int(round(0.5 * window / step))
+    half = round(0.5 * window / step)
     order = np.argsort(idx)
     sorted_idx = idx[order]
     for b in range(centres.size):
@@ -77,7 +78,9 @@ def diagnose(star, target):
         if p["target"] != target:
             others |= m
     p = planets[planets["target"] == target].iloc[0]
-    period, t0, dur = float(p["period_days"]), float(p["t0"]) - BKJD_OFFSET, float(p["duration_days"])
+    period = float(p["period_days"])
+    t0 = float(p["t0"]) - BKJD_OFFSET
+    dur = float(p["duration_days"])
     window = max(1.0, 3.0 * dur)
     flat = flux / masked_running_median(time, flux, ~all_tr, window)
     own = _periodic_mask(time, period, t0, dur, 1.5)
