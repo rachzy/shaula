@@ -21,7 +21,13 @@ sys.path.insert(0, sys.argv[1])
 HERE = Path(__file__).resolve().parent
 sys.path.insert(1, str(HERE.parents[1]))
 
+import os  # noqa: E402
+
+from shaula import detrend_and_period  # noqa: E402
 from shaula.extract_feats import extract_features_from_arrays  # noqa: E402
+
+if os.environ.get("SHAULA_EXP_VARWIN"):
+    detrend_and_period.BLS_VARIABILITY_WINDOW_DAYS = float(os.environ["SHAULA_EXP_VARWIN"])
 
 from experiments.mes_accuracy.real_stars import CONFIRMED, DATA  # noqa: E402
 
@@ -67,6 +73,9 @@ def main():
         with contextlib.redirect_stdout(io.StringIO()):
             rows = extract_features_from_arrays(data["time"], data["flux"])
         recs = grade(star, rows, round(_time.time() - start))
+        full = out_path.with_name(out_path.stem + "_rows.csv")
+        frame = pd.DataFrame(rows).assign(star=star)
+        frame.to_csv(full, mode="a", header=not full.exists(), index=False)
         records.extend(recs)
         pd.DataFrame(records).to_csv(out_path, index=False)
         found = sum(r.get("found", False) for r in recs if r["target"] != "UNMATCHED")

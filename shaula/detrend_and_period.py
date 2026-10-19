@@ -25,6 +25,71 @@ EPOCH_REFIT_MAX_SHIFT_DURATIONS = 0.5
 # 17th multiple, P=379.1 d, which holds 1 event and fails the >=3-event rule -
 # the planet was then lost outright. At 10 it survives.
 DEALIAS_MAX_MULTIPLE = 10
+# Experiment hook: fixed pre-BLS variability window in days; None keeps the
+# duration-scaled rule below.
+BLS_VARIABILITY_WINDOW_DAYS = None
+# A second global BLS on flux flattened with this much shorter window, searched
+# only for durations up to a third of it, so short transits on very active
+# stars still reach the candidate queue. The default window (>= 1 d, set by
+# the widest duration) leaves Kepler-411's spot modulation (~0.4% day to day)
+# deeper than all three planets' transits, and none of them was found. None
+# disables the pass.
+BLS_FINE_VARIABILITY_WINDOW_DAYS = 0.75
+
+
+def _flatten_binned_median(time, flux, window):
+    """Divide out a linear interpolation of ``window``-day binned medians."""
+    bins = np.arange(time.min(), time.max() + window, window)
+    medians, _, _ = binned_statistic(time, flux, statistic="median", bins=bins)
+    centers = 0.5 * (bins[:-1] + bins[1:])
+    good = np.isfinite(medians)
+    if np.sum(good) < 3:
+        return None
+    trend = np.interp(time, centers[good], medians[good])
+    ok = np.isfinite(trend) & (trend > 0)
+    flat = flux.copy()
+    flat[ok] = flux[ok] / trend[ok]
+    return flat
+
+
+def _fine_window_candidates(time, flux, period_grid, durations, oversample):
+    """Ranked BLS peaks of the fine-window pass, or [] when it does not apply."""
+    window = BLS_FINE_VARIABILITY_WINDOW_DAYS
+    if window is None or time.size < 10:
+        return []
+    fine_durations = durations[durations <= window / 3.0]
+    if fine_durations.size == 0:
+        return []
+    flat = _flatten_binned_median(time, flux, window)
+    if flat is None:
+        return []
+    print(
+        f"Fine-window BLS pass: window={window:.2f} d, "
+        f"durations <= {fine_durations[-1]:.3f} d"
+    )
+    periodogram = BoxLeastSquares(time, flat).power(
+        period_grid, fine_durations, oversample=oversample
+    )
+    return rank_independent_bls_candidates(periodogram)
+
+
+def _interleave_candidates(primary, secondary, tolerance=0.005):
+    """Alternate two ranked queues, dropping periods already queued."""
+    merged = []
+    for pair in zip(primary, secondary):
+        merged.extend(pair)
+    longer = primary if len(primary) > len(secondary) else secondary
+    merged.extend(longer[min(len(primary), len(secondary)):])
+    unique = []
+    for candidate in merged:
+        period = float(candidate.get("period", np.nan))
+        if any(
+            abs(period / float(kept.get("period", np.nan)) - 1.0) < tolerance
+            for kept in unique
+        ):
+            continue
+        unique.append(candidate)
+    return unique
 
 
 def rank_independent_bls_candidates(
@@ -500,8 +565,13 @@ def detrend_with_bls_mask(
     # modulation over days, e.g. Kepler-447) dominate the box search and the true
     # transit never surfaces. The window scales with the widest searched duration
     # so long transits stay well under half of any bin and survive the median.
+    flux_bls_unflattened = flux_bls
     try:
-        var_window = max(1.0, 3.0 * max_dur_cap)
+        var_window = (
+            BLS_VARIABILITY_WINDOW_DAYS
+            if BLS_VARIABILITY_WINDOW_DAYS is not None
+            else max(1.0, 3.0 * max_dur_cap)
+        )
         bins_v = np.arange(time_bls.min(), time_bls.max() + var_window, var_window)
         med_v, _, _ = binned_statistic(
             time_bls, flux_bls, statistic="median", bins=bins_v
@@ -580,6 +650,13 @@ def detrend_with_bls_mask(
         periodogram = bls_global.power(period_grid, durations, oversample=oversample)
         print("BLS periodogram computed successfully")
         search_candidates = rank_independent_bls_candidates(periodogram)
+        fine_candidates = _fine_window_candidates(
+            time_bls, flux_bls_unflattened, period_grid, durations, oversample
+        )
+        if fine_candidates:
+            search_candidates = _interleave_candidates(
+                search_candidates, fine_candidates
+            )
 
         if np.ndim(periodogram.power) == 1:
             idx_best = np.nanargmax(periodogram.power)
