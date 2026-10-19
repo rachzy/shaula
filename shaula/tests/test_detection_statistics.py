@@ -13,7 +13,7 @@ from unittest.mock import patch
 import numpy as np
 
 from ..cdpp import calculate_cdpp, duration_matched_statistics
-from ..extract_feats import extract_features_from_arrays
+from ..extract_feats import _mes_optimal_duration, extract_features_from_arrays
 from ..sesmes import compute_SES_MES, fold_statistics
 
 
@@ -472,6 +472,27 @@ class FlankBaselineTests(unittest.TestCase):
             duration_matched_statistics(
                 time, np.ones_like(time), DURATION_HOURS, flank_durations="wide"
             )
+
+
+class DurationAuditTests(unittest.TestCase):
+    def _series(self):
+        rng = np.random.default_rng(31)
+        time = np.arange(0.0, 300.0, CADENCE_DAYS)
+        flux = 1.0 + rng.normal(0.0, 2e-4, time.size)
+        flux[_transit_mask(time, 10.0, 2.037)] -= 5e-4
+        return time, flux
+
+    def test_a_badly_short_duration_is_widened(self):
+        time, flux = self._series()
+        audited = _mes_optimal_duration(
+            time, flux, 10.0, 2.037, DURATION_DAYS / 4.0, None
+        )
+        self.assertAlmostEqual(audited, DURATION_DAYS, delta=0.3 * DURATION_DAYS)
+
+    def test_a_good_duration_is_kept(self):
+        time, flux = self._series()
+        audited = _mes_optimal_duration(time, flux, 10.0, 2.037, DURATION_DAYS, None)
+        self.assertEqual(audited, DURATION_DAYS)
 
 
 class GapMaskTests(unittest.TestCase):

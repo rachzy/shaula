@@ -126,8 +126,41 @@ explained (duration or epoch from the search, or the spline).
 case as building all five, at baseline runtime (7.2 s vs 8.3 s white,
 6.5 s vs 5.7 s variable per star). Null test unchanged.
 
+### E7. Duration audit by MES
+Tracing the weak 11.3 d case: BLS found T14 = 0.169 d (true 0.18), then
+`_folded_profile_duration` read a one-bin-wide (0.047 d, 240 phase bins)
+dip off the un-flattened, spotted flux and capped T14 to 0.064 d; the
+trapezoid refit, on the same flux, then gave 0.041 d. Every downstream
+feature used that.
+
+Fix (`extract_feats._mes_optimal_duration`): after detrending, score T14 x
+{0.5, 0.71, 1.41, 2, 2.83, 4} by `max_mes` with the calibrated noise model
+and adopt the best if it beats the refit T14 by 10%. TPS likewise maximises
+MES over its duration grid.
+
+| | before | after |
+|---|---|---|
+| search case 2 (11.3 d, 12 d spots) | 0.42 of ideal, T14 x0.23 | **0.80**, T14 x0.91 |
+| search case 3 (11.3 d, 3 d spots) | 0.46, T14 x1.35 | **0.66**, T14 x0.96 |
+| variable grid (hint path) median | 0.647 | **0.711** |
+| white grid median | 1.009 | 1.017 |
+
+One white case (300 ppm, P 3.7 d) moved to T14 x0.72 and MES 1.15 of the
+noiseless oracle: picking the best of 7 durations adds some upward noise
+bias at low MES, as it does in TPS. Worth remembering when calibrating the
+gate.
+
+### E8. Vectorised local noise windows
+`_local_anchor_noise` computed a median and MAD per anchor in a Python loop
+(~75% of noise-model time). Now one NaN-padded 2-D `nanmedian` per segment:
+bit-identical SES on synthetic data, 5x faster (0.43 s -> 0.08 s per call on
+8 quarters). With it, the audit costs nothing net: hint-path runtimes are
+7.6 s white / 6.9 s variable vs 8.3 / 5.7 s originally.
+
 ## Next
-- Find why the full search loses MES on the 11.3 d planets vs the hint path.
+- The search still runs the profile/trapezoid refits on un-flattened flux;
+  the audit covers the damage but flattening those folds would fix the cause.
+- When the network opens: real-star comparison against `koi_max_mult_ev`.
 - When the network opens: rerun the 49-star comparison with `auto` and
   compare `max_mes` to `koi_max_mult_ev`; then calibrate the 7.1 gate.
 - When the network opens: rerun the 49-star comparison with the chosen

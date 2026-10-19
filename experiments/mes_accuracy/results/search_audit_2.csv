@@ -1,0 +1,2 @@
+period,depth,duration_days,sigma_ppm,amp_rot,prot,seed,oracle_mes,optimal_snr,found,n_rows,seconds,x_max_mes,x_MES,x_duration_days,x_depth_mean_per_transit,x_cdpp_6h,mes_ratio,dur_ratio
+11.3,0.0003,0.18,100,0.002,12.0,2,59.30119748550983,61.30825359500836,True,3,853.0,47.171909421036766,46.35531215095604,0.16346888888892863,0.0002806150323392529,38.501610224214545,0.7954630162833248,0.9081604938273813
