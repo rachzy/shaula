@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 241 passed, 19 subtests
+uv run pytest                        # tests: 259 passed, 19 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
@@ -71,7 +71,7 @@ One row per candidate. Depths are fractional flux deficits (positive = dimming);
 | `ingress_egress_asymmetry` | Difference of absolute linear slopes either side of the folded minimum. |
 | `planet_radius_rearth`, `planet_radius_rjup` | From stellar radius and depth (step 9), else NaN. |
 | `mes_threshold_used`, `is_provisional_detection`, `detection_status` | Gate the row was judged against; `1.0` and `"provisional"` for recovered sub-threshold rows, `0.0` and `"accepted"` otherwise. Scripts can also emit `"rejected"` and `"harmonic_duplicate"`. |
-| `candidate_label`, `matched_target`, `matched_period_ratio` | Only with `label_output_candidates` (CLI/scripts): `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, by period match against `data/confirmed/`. |
+| `candidate_label`, `matched_target`, `matched_period_ratio`, `fp_source` | Only with `label_output_candidates` (CLI/scripts): `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, by period match (`utils/label_candidates`) against `data/confirmed/` or a KOI reference table. With a reference table, a match to a `FALSE POSITIVE` KOI is `FALSE-POSITIVE` only when it carries the `nt` or `ss` flag (`fp_source` `koi:<flags>`); a centroid/ephemeris-only false positive or an open `CANDIDATE` is `UNKNOWN`. An unmatched row is `FALSE-POSITIVE` with `fp_source` `unmatched`; every row of an `--invert` run is `FALSE-POSITIVE` with `fp_source` `inverted`. |
 
 ## Libraries and how they are used
 
@@ -87,6 +87,7 @@ One row per candidate. Depths are fractional flux deficits (positive = dimming);
 ## Validation data
 
 - `data/confirmed/<Star>-confirmed.csv`: literature parameters per host, written by `scripts/get_literature_data.py` from the NASA Exoplanet Archive KOI cumulative table (TAP).
+- `data/koi/KIC<kepid>-koi.csv` and `data/targets/training_targets.csv`: written by `scripts/build_koi_targets.py` from one query of the KOI cumulative table. Each reference table lists every KOI of a star with `disposition` and `fp_flags`; the target list (`target,mission,group,name,reference`) covers every confirmed host plus a seeded sample of stars with an `nt`/`ss` false positive, all as `KIC <kepid>`. Run it with `extract_multiple_stars --targets`, once plainly and once with `--invert` (full search on the flipped light curve; outputs `<star>_inverted_<date>.csv`).
 - `data/extracted/`, `data/testing/`: feature CSVs written by the pipeline, compared against confirmed values with `scripts/compare_confirmed_and_extracted.py` (pairs rows by period, including small integer aliases).
 - Notebooks (`shaula/lightcurve_analysis.ipynb`, `shaula/tests/unit_graph_test.ipynb`) are exploratory and not run by pytest.
 

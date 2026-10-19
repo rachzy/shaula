@@ -9,6 +9,12 @@ Usage (from the repo root with the project venv active)::
 Pass ``--include-false-candidates --label-output-candidates`` to build training
 data: the CSV then also carries the peaks the search measured and declined, each
 row labelled CONFIRMED / FALSE-POSITIVE / UNKNOWN against the confirmed catalog.
+
+``--reference`` points at a KOI reference table (see ``build_koi_targets``)
+instead of looking one up by star name. ``--invert`` flips the cleaned light
+curve before the search, so real transits become brightenings that cannot be
+detected: every row found is a false alarm, labelled FALSE-POSITIVE with
+``fp_source=inverted``, and is written to ``<star>_inverted_<date>.csv``.
 """
 
 from __future__ import annotations
@@ -16,6 +22,8 @@ from __future__ import annotations
 import argparse
 from datetime import datetime
 from pathlib import Path
+
+import numpy as np
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -25,6 +33,11 @@ from ..save import save_features
 from ..utils.compare_extracted_confirmed import (
     compare_extracted_confirmed,
     find_confirmed_csv,
+)
+from ..utils.label_candidates import (
+    FP_SOURCE_INVERTED,
+    label_all_false_positive,
+    summarize_labels,
 )
 from ..utils.target_names import host_star_name
 
@@ -100,6 +113,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--reference",
+        type=Path,
+        help=(
+            "Reference table to label against (a confirmed CSV or a KOI table "
+            "from build_koi_targets); skips the lookup in --confirmed-dir"
+        ),
+    )
+    parser.add_argument(
+        "--invert",
+        action="store_true",
+        help=(
+            "Flip the cleaned light curve before the search and label every "
+            "row it finds FALSE-POSITIVE (fp_source=inverted)"
+        ),
+    )
+    parser.add_argument(
         "--out-dir",
         type=Path,
         default=REPO_ROOT / "data" / "extracted",
@@ -119,6 +148,25 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def output_stem(star: str, *, inverted: bool = False) -> str:
+    """File-name stem for a star's output: no spaces, so ``KIC 123`` -> ``KIC123``."""
+    stem = star.replace(" ", "")
+    return f"{stem}_inverted" if inverted else stem
+
+
+def invert_lightcurve(lc):
+    """Mirror the flux about its median, turning every dip into a brightening.
+
+    Done after cleaning, which clips upward outliers only: flares are already
+    gone and cannot turn into fake dips, while the real transits survive the
+    cleaning and are flipped out of reach of the search.
+    """
+    inverted = lc.copy()
+    flux = inverted.flux
+    inverted.flux = 2.0 * np.nanmedian(flux) - flux
+    return inverted
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     verbose = not args.quiet
@@ -130,8 +178,15 @@ def main(argv: list[str] | None = None) -> int:
     # catalog while the rows are still in memory, and a star with no confirmed
     # data is worth reporting before a long download and search rather than
     # after one.
-    confirmed_path = find_confirmed_csv(star, args.confirmed_dir)
-    if confirmed_path is None:
+    if args.invert:
+        confirmed_path = None
+    elif args.reference is not None:
+        confirmed_path = args.reference if args.reference.is_file() else None
+        if confirmed_path is None:
+            print(f"Reference table {args.reference} not found.\n")
+    else:
+        confirmed_path = find_confirmed_csv(star, args.confirmed_dir)
+    if confirmed_path is None and not args.invert:
         note = (
             " Candidates will be labelled UNKNOWN."
             if args.label_output_candidates
@@ -151,6 +206,9 @@ def main(argv: list[str] | None = None) -> int:
         author=args.author,
         exptime=args.exptime,
     )
+    if args.invert:
+        lc = invert_lightcurve(lc)
+        print("Light curve inverted: every detection below is a false alarm.\n")
 
     feats = extract_features_from_lightcurve(
         lc,
@@ -159,15 +217,21 @@ def main(argv: list[str] | None = None) -> int:
         use_tls=args.use_tls,
         mask_eclipses=args.mask_eclipses,
         include_false_candidates=args.include_false_candidates,
-        label_output_candidates=args.label_output_candidates,
+        label_output_candidates=args.label_output_candidates and not args.invert,
         confirmed_rows=confirmed_path,
     )
+    if args.invert and args.label_output_candidates:
+        feats = label_all_false_positive(feats, FP_SOURCE_INVERTED)
+        print(f"Candidate labels: {summarize_labels(feats)}")
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    extracted_path = args.out_dir / f"{star}_{datetime.now().strftime('%Y%m%d')}.csv"
+    stem = output_stem(star, inverted=args.invert)
+    extracted_path = args.out_dir / f"{stem}_{datetime.now().strftime('%Y%m%d')}.csv"
     save_features(feats, star, str(extracted_path), verbose=verbose)
     print(f"\nExtracted features saved to: {extracted_path}")
 
+    if args.invert:
+        return 0
     if confirmed_path is None:
         print("\nNo confirmed catalog for this star; skipping comparison.")
         return 0
