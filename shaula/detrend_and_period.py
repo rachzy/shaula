@@ -25,11 +25,86 @@ EPOCH_REFIT_MAX_SHIFT_DURATIONS = 0.5
 # 17th multiple, P=379.1 d, which holds 1 event and fails the >=3-event rule -
 # the planet was then lost outright. At 10 it survives.
 DEALIAS_MAX_MULTIPLE = 10
+# Experiment hook: fixed pre-BLS variability window in days; None keeps the
+# duration-scaled rule below.
+BLS_VARIABILITY_WINDOW_DAYS = None
+# A second global BLS on flux flattened with this much shorter window, searched
+# only for durations up to a third of it, so short transits on very active
+# stars still reach the candidate queue. The default window (>= 1 d, set by
+# the widest duration) leaves Kepler-411's spot modulation (~0.4% day to day)
+# deeper than all three planets' transits, and none of them was found. None
+# disables the pass.
+BLS_FINE_VARIABILITY_WINDOW_DAYS = 0.75
+# Independent peaks kept per log-period band (16 bands, 0.5 d to span/3).
+BLS_PEAKS_PER_BAND = 1
+# Durations in the global BLS, log-spaced (each ~12% wider than the last, so a
+# box is never more than ~6% off a transit's T14). BLS cost is ~ periods x
+# durations; the 200 linear durations used before spent the compute budget on
+# near-duplicate boxes and left the period grid ~35x coarser than a 1.7 h
+# transit needs over 4 years, so Kepler-444c/f never formed a BLS peak. Fewer
+# durations buy an ~8x denser period grid at the same cost (12 Kepler hosts:
+# 34 -> 36 of 44 planets, extra rows 42 -> 25). None restores the linear grid.
+GLOBAL_BLS_DURATIONS = 24
+
+
+def _flatten_binned_median(time, flux, window):
+    """Divide out a linear interpolation of ``window``-day binned medians."""
+    bins = np.arange(time.min(), time.max() + window, window)
+    medians, _, _ = binned_statistic(time, flux, statistic="median", bins=bins)
+    centers = 0.5 * (bins[:-1] + bins[1:])
+    good = np.isfinite(medians)
+    if np.sum(good) < 3:
+        return None
+    trend = np.interp(time, centers[good], medians[good])
+    ok = np.isfinite(trend) & (trend > 0)
+    flat = flux.copy()
+    flat[ok] = flux[ok] / trend[ok]
+    return flat
+
+
+def _fine_window_candidates(time, flux, period_grid, durations, oversample):
+    """Ranked BLS peaks of the fine-window pass, or [] when it does not apply."""
+    window = BLS_FINE_VARIABILITY_WINDOW_DAYS
+    if window is None or time.size < 10:
+        return []
+    fine_durations = durations[durations <= window / 3.0]
+    if fine_durations.size == 0:
+        return []
+    flat = _flatten_binned_median(time, flux, window)
+    if flat is None:
+        return []
+    print(
+        f"Fine-window BLS pass: window={window:.2f} d, "
+        f"durations <= {fine_durations[-1]:.3f} d"
+    )
+    periodogram = BoxLeastSquares(time, flat).power(
+        period_grid, fine_durations, oversample=oversample
+    )
+    return rank_independent_bls_candidates(periodogram)
+
+
+def _interleave_candidates(primary, secondary, tolerance=0.005):
+    """Alternate two ranked queues, dropping periods already queued."""
+    merged = []
+    for pair in zip(primary, secondary):
+        merged.extend(pair)
+    longer = primary if len(primary) > len(secondary) else secondary
+    merged.extend(longer[min(len(primary), len(secondary)):])
+    unique = []
+    for candidate in merged:
+        period = float(candidate.get("period", np.nan))
+        if any(
+            abs(period / float(kept.get("period", np.nan)) - 1.0) < tolerance
+            for kept in unique
+        ):
+            continue
+        unique.append(candidate)
+    return unique
 
 
 def rank_independent_bls_candidates(
     periodogram,
-    max_candidates=20,
+    max_candidates=None,
     min_relative_separation=0.005,
     period_bands=16,
 ):
@@ -109,7 +184,7 @@ def rank_independent_bls_candidates(
         int(period_bands) + 1,
     )
     band_winners = []
-    occupied_bands = set()
+    band_counts = {}
     for candidate in clustered:
         band = int(
             np.clip(
@@ -118,11 +193,13 @@ def rank_independent_bls_candidates(
                 len(band_edges) - 2,
             )
         )
-        if band in occupied_bands:
+        if band_counts.get(band, 0) >= BLS_PEAKS_PER_BAND:
             continue
-        occupied_bands.add(band)
+        band_counts[band] = band_counts.get(band, 0) + 1
         band_winners.append(candidate)
     band_winners.sort(key=lambda candidate: candidate["power"], reverse=True)
+    if max_candidates is None:
+        max_candidates = 20 * BLS_PEAKS_PER_BAND
     return band_winners[: int(max_candidates)]
 
 
@@ -494,14 +571,24 @@ def detrend_with_bls_mask(
         min_dur_floor = 0.5 * max_dur_cap
 
     durations = np.linspace(min_dur_floor, max_dur_cap, n_durations)
+    # Global search: log-spaced durations when GLOBAL_BLS_DURATIONS is set. BLS
+    # cost is ~ periods x durations, so the saved durations buy periods.
+    global_durations = durations
+    if GLOBAL_BLS_DURATIONS is not None and GLOBAL_BLS_DURATIONS < n_durations:
+        global_durations = np.geomspace(min_dur_floor, max_dur_cap, GLOBAL_BLS_DURATIONS)
 
     # Remove low-frequency stellar variability from the BLS input only.
     # BLS otherwise runs on raw stitched flux; spotted/rotating stars (percent-level
     # modulation over days, e.g. Kepler-447) dominate the box search and the true
     # transit never surfaces. The window scales with the widest searched duration
     # so long transits stay well under half of any bin and survive the median.
+    flux_bls_unflattened = flux_bls
     try:
-        var_window = max(1.0, 3.0 * max_dur_cap)
+        var_window = (
+            BLS_VARIABILITY_WINDOW_DAYS
+            if BLS_VARIABILITY_WINDOW_DAYS is not None
+            else max(1.0, 3.0 * max_dur_cap)
+        )
         bins_v = np.arange(time_bls.min(), time_bls.max() + var_window, var_window)
         med_v, _, _ = binned_statistic(
             time_bls, flux_bls, statistic="median", bins=bins_v
@@ -554,7 +641,16 @@ def detrend_with_bls_mask(
         np.ceil(np.log(max_period / min_period) * span_days_full / (3.0 * d_ref))
     )
     n_budget = int(
-        np.clip(round(TARGET_POINT_PERIOD_EVALUATIONS / max(1, time_stage1.size)), n_periods, MAX_GLOBAL_PERIODS)
+        np.clip(
+            round(
+                TARGET_POINT_PERIOD_EVALUATIONS
+                / max(1, time_stage1.size)
+                * n_durations
+                / global_durations.size
+            ),
+            n_periods,
+            MAX_GLOBAL_PERIODS * n_durations // global_durations.size,
+        )
     )
     n_periods_eff = int(np.clip(n_needed, n_periods, n_budget))
     period_grid = np.logspace(
@@ -563,7 +659,7 @@ def detrend_with_bls_mask(
 
     print(f"Duration search range: {min_dur_floor:.4f} to {max_dur_cap:.4f} days")
     print(
-        f"Search grid: {n_periods_eff} periods × {n_durations} durations = {n_periods_eff * n_durations:,} combinations"
+        f"Search grid: {n_periods_eff} periods × {global_durations.size} durations = {n_periods_eff * global_durations.size:,} combinations"
         f" (needed {n_needed:,}, budget {n_budget:,})"
     )
 
@@ -577,9 +673,16 @@ def detrend_with_bls_mask(
     )
     if candidate_hint is None:
         print("Computing BLS periodogram...")
-        periodogram = bls_global.power(period_grid, durations, oversample=oversample)
+        periodogram = bls_global.power(period_grid, global_durations, oversample=oversample)
         print("BLS periodogram computed successfully")
         search_candidates = rank_independent_bls_candidates(periodogram)
+        fine_candidates = _fine_window_candidates(
+            time_bls, flux_bls_unflattened, period_grid, global_durations, oversample
+        )
+        if fine_candidates:
+            search_candidates = _interleave_candidates(
+                search_candidates, fine_candidates
+            )
 
         if np.ndim(periodogram.power) == 1:
             idx_best = np.nanargmax(periodogram.power)
@@ -587,7 +690,7 @@ def detrend_with_bls_mask(
             best_duration = (
                 periodogram.duration[idx_best]
                 if hasattr(periodogram, "duration")
-                else durations[0]
+                else global_durations[0]
             )
             t0 = (
                 periodogram.transit_time[idx_best]
@@ -602,7 +705,7 @@ def detrend_with_bls_mask(
             best_duration = (
                 periodogram.duration[dur_idx]
                 if hasattr(periodogram, "duration")
-                else durations[dur_idx]
+                else global_durations[dur_idx]
             )
             t0 = (
                 periodogram.transit_time[idx_best]
