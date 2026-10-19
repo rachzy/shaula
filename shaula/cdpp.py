@@ -187,6 +187,7 @@ def duration_matched_statistics(
     min_local_anchors=20,
     min_independent_samples=5,
     flank_durations="auto",
+    _scale_only=False,
 ):
     """Build a local, duration-matched transit detection statistic.
 
@@ -211,8 +212,8 @@ def duration_matched_statistics(
     stays in the noise. A number measures it against the mean flux in that
     many box widths on either side (``_flank_relative_depth``), a local
     high-pass that removes spot modulation at the cost of the flanks' own
-    noise. ``"auto"`` builds every option in ``ADAPTIVE_FLANK_DURATIONS`` and
-    keeps the one with the lowest median noise. The choice looks only at
+    noise. ``"auto"`` ranks every option in ``ADAPTIVE_FLANK_DURATIONS`` by the
+    pooled robust scale of its noise anchors and builds the lowest. The choice looks only at
     noise-eligible boxes, never at the candidate's transits, and every option
     preserves the full transit depth, so the lowest noise is the highest
     expected MES without biasing MES on pure noise.
@@ -224,9 +225,11 @@ def duration_matched_statistics(
     if isinstance(flank_durations, str):
         if flank_durations != "auto":
             raise ValueError("flank_durations must be None, a number or 'auto'")
-        best, best_noise = None, np.inf
+        # Rank the options on the pooled scale of their noise anchors, which
+        # is cheap, then build the full local noise model only for the winner.
+        chosen, chosen_scale = None, np.inf
         for option in ADAPTIVE_FLANK_DURATIONS:
-            statistics = duration_matched_statistics(
+            scale = duration_matched_statistics(
                 time,
                 flux,
                 duration_hours,
@@ -239,12 +242,13 @@ def duration_matched_statistics(
                 min_local_anchors=min_local_anchors,
                 min_independent_samples=min_independent_samples,
                 flank_durations=option,
+                _scale_only=True,
             )
-            uncertainty = statistics["uncertainty"][statistics["noise_eligible"]]
-            noise = float(np.median(uncertainty)) if uncertainty.size else np.inf
-            if best is None or noise < best_noise:
-                best, best_noise = statistics, noise
-        return best
+            if isinstance(scale, dict):  # an early return: nothing to rank
+                continue
+            if np.isfinite(scale) and scale < chosen_scale:
+                chosen, chosen_scale = option, scale
+        flank_durations = chosen
 
     result = _empty_statistics()
     time = np.asarray(time, dtype=float)
@@ -364,6 +368,8 @@ def duration_matched_statistics(
         segment_id,
         step_days=max(cadence_days, half_duration),
     )
+    if _scale_only:
+        return _robust_location_scale(raw_depth[anchor_indices])[1]
     anchor_locations, anchor_scales = _local_anchor_noise(
         time,
         raw_depth,

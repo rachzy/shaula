@@ -40,6 +40,15 @@ GRIDS = {
         for a, pr, g in [(2000e-6, 12.0, 0.0), (500e-6, 3.0, 0.0), (0.0, 1.0, 80e-6)]
         for seed in (1,)
     ],
+    # Weak single planets on spotted stars, for --full: is the planet found
+    # and how many spurious rows come back?
+    "search": [
+        dict(period=p, depth=d, duration_days=dur, sigma_ppm=100, amp_rot=a,
+             prot=pr, seed=2)
+        for (p, dur) in [(3.7, 0.12), (11.3, 0.18)]
+        for a, pr in [(2000e-6, 12.0), (500e-6, 3.0)]
+        for d in (300e-6,)
+    ],
 }
 
 
@@ -93,6 +102,7 @@ def main(argv=None):
     parser.add_argument("--quarters", type=int, default=8)
     parser.add_argument("--out")
     parser.add_argument("--limit", type=int)
+    parser.add_argument("--only", type=int, help="run only this case index")
     parser.add_argument("--full", action="store_true", help="run the whole search")
     parser.add_argument(
         "--trend",
@@ -126,6 +136,8 @@ def main(argv=None):
             float(parts[2]) if len(parts) > 2 else 0.0,
         )
     cases = GRIDS[args.grid][: args.limit]
+    if args.only is not None:
+        cases = [GRIDS[args.grid][args.only]]
     results = []
     for case in cases:
         res = run_case(case, n_quarters=args.quarters, fast=not args.full)

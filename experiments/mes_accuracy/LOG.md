@@ -105,12 +105,29 @@ would not improve agreement with the literature. The large deficits for
 Kepler-89/51/138 are more likely the same variability problem or a period
 mismatch; check with real data.
 
+### E5. Full iterative search on weak planets around spotted stars
+`run_synth.py search --full`, 8 quarters, depth 300 ppm, sigma 100 ppm,
+one planet each (`results/search_*.csv`).
+
+| P (d) | spots | current: found / max_mes | auto: found / max_mes | oracle |
+|---|---|---|---|---|
+| 3.7 | 2000 ppm, 12 d | yes / 9.1 | yes / 59.6 | 84.3 |
+| 3.7 | 500 ppm, 3 d | **missed** | yes / 56.8 | 84.3 |
+| 11.3 | 2000 ppm, 12 d | yes / 15.9 | yes / 24.7 | 59.3 |
+| 11.3 | 500 ppm, 3 d | **missed** | yes / 27.2 | 59.3 |
+
+No spurious rows in either mode. The 11.3 d planets come out lower in the
+full search (0.42-0.46 of ideal) than on the hint path (0.6-0.8); not yet
+explained (duration or epoch from the search, or the spline).
+
+### E6. Cheap width selection
+`auto` first ranks the options by the pooled MAD of their noise anchors
+(no local model), then builds the full model once. Same MES on every grid
+case as building all five, at baseline runtime (7.2 s vs 8.3 s white,
+6.5 s vs 5.7 s variable per star). Null test unchanged.
+
 ## Next
-- Optimise `auto` (choose the width once per light curve or per candidate
-  instead of rebuilding five times on every call).
-- Full-search run on a few synthetic stars to see whether `auto` changes
-  what the iterative search finds (false alarms from leftover variability
-  should drop).
+- Find why the full search loses MES on the 11.3 d planets vs the hint path.
 - When the network opens: rerun the 49-star comparison with `auto` and
   compare `max_mes` to `koi_max_mult_ev`; then calibrate the 7.1 gate.
 - When the network opens: rerun the 49-star comparison with the chosen
