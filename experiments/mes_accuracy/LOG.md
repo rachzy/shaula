@@ -5,6 +5,8 @@ model) closer to the Kepler KOI values (`koi_max_mult_ev`), then calibrate the
 detection gate. Running log; newest entries at the bottom. A restarted session
 resumes from "Next".
 
+> `results/` paths below are local outputs of the scripts and are not committed (gitignored); the tables here hold the numbers.
+
 ## Setup
 
 - `synth.py`: Kepler-like long-cadence light curves (quarters, monthly gaps,

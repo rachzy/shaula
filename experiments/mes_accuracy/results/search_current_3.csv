@@ -1,2 +1,0 @@
-period,depth,duration_days,sigma_ppm,amp_rot,prot,seed,oracle_mes,optimal_snr,found,n_rows,seconds
-11.3,0.0003,0.18,100,0.0005,3.0,2,59.30119748550983,61.30825359500836,False,0,352.4
