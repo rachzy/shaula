@@ -397,6 +397,83 @@ class FoldStatisticsTests(unittest.TestCase):
         self.assertTrue(np.isnan(fold_statistics(statistics, 10.0, np.nan)["max_mes"]))
 
 
+class FlankBaselineTests(unittest.TestCase):
+    """The local flank baseline and the ``"auto"`` choice of its width."""
+
+    period = 10.0
+    epoch = 2.037
+    depth = 8e-4
+    point_sigma = 2e-4
+
+    def _flux(self, spot_amplitude, seed=1234):
+        rng = np.random.default_rng(seed)
+        time = np.arange(0.0, 300.0, CADENCE_DAYS)
+        transit_mask = _transit_mask(time, self.period, self.epoch)
+        flux = 1.0 + rng.normal(0.0, self.point_sigma, time.size)
+        flux += spot_amplitude * np.sin(2.0 * np.pi * time / 3.0)
+        flux[transit_mask] -= self.depth
+        return time, flux, transit_mask
+
+    def _mes(self, time, flux, transit_mask, flank_durations):
+        with patch(
+            "shaula.sesmes.duration_matched_statistics",
+            lambda *a, **kw: duration_matched_statistics(
+                *a, flank_durations=flank_durations, **kw
+            ),
+        ):
+            return compute_SES_MES(
+                time,
+                flux,
+                self.period,
+                self.epoch,
+                DURATION_DAYS,
+                cadence_hours=CADENCE_HOURS,
+                transit_mask=transit_mask,
+            )["MES"]
+
+    def _ideal_mes(self, time):
+        n_events = np.unique(np.round((time - self.epoch) / self.period)).size
+        expected_points = DURATION_DAYS / CADENCE_DAYS
+        return self.depth * np.sqrt(expected_points * n_events) / self.point_sigma
+
+    def test_auto_keeps_white_noise_mes(self):
+        time, flux, transit_mask = self._flux(spot_amplitude=0.0)
+        median_mes = self._mes(time, flux, transit_mask, None)
+        auto_mes = self._mes(time, flux, transit_mask, "auto")
+        self.assertAlmostEqual(auto_mes, median_mes, delta=0.05 * median_mes)
+
+    def test_flanks_recover_mes_under_spot_modulation(self):
+        time, flux, transit_mask = self._flux(spot_amplitude=5e-4)
+        ideal = self._ideal_mes(time)
+        median_mes = self._mes(time, flux, transit_mask, None)
+        auto_mes = self._mes(time, flux, transit_mask, "auto")
+        self.assertLess(median_mes, 0.3 * ideal)
+        self.assertGreater(auto_mes, 0.6 * ideal)
+
+    def test_auto_keeps_noise_unit_scaled_under_spot_modulation(self):
+        time = np.arange(0.0, 300.0, CADENCE_DAYS)
+        rng = np.random.default_rng(5)
+        flux = 1.0 + rng.normal(0.0, self.point_sigma, time.size)
+        flux += 5e-4 * np.sin(2.0 * np.pi * time / 3.0)
+        statistics = duration_matched_statistics(
+            time,
+            flux,
+            duration_hours=DURATION_HOURS,
+            cadence_hours=CADENCE_HOURS,
+        )
+        background = statistics["SES"][statistics["noise_eligible"]]
+        self.assertLess(abs(float(np.median(background))), 0.1)
+        self.assertGreater(_robust_scale(background), 0.8)
+        self.assertLess(_robust_scale(background), 1.2)
+
+    def test_unknown_mode_is_rejected(self):
+        time = np.arange(0.0, 10.0, CADENCE_DAYS)
+        with self.assertRaises(ValueError):
+            duration_matched_statistics(
+                time, np.ones_like(time), DURATION_HOURS, flank_durations="wide"
+            )
+
+
 class GapMaskTests(unittest.TestCase):
     """Gapping an accepted candidate must not disturb the cadence grid.
 
