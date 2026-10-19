@@ -4,7 +4,7 @@ import numpy as np
 from collections import OrderedDict
 from scipy.stats import skew, kurtosis
 
-from .detrend_and_period import detrend_with_bls_mask
+from .detrend_and_period import detrend_with_bls_mask, max_physical_duration
 from .folded_binned_metrics import folded_binned_metrics
 from .cdpp import calculate_cdpp
 from .sesmes import compute_SES_MES, fold_statistics, secondary_eclipse
@@ -384,7 +384,10 @@ def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
     if positive_steps.size == 0:
         return duration_days
     floor = 2.0 * float(np.median(positive_steps))
-    ceiling = 0.12 * period
+    # Same physical cap the BLS refits use: without it the x2-x4 trials widened
+    # junk candidates on Kepler-444 to 22-41 h at 62-154 d, beyond what any
+    # host allows, and each wide box masks 1.5 x T14 of data per event.
+    ceiling = min(0.12 * period, max_physical_duration(period))
 
     def score(trial):
         result = compute_SES_MES(
