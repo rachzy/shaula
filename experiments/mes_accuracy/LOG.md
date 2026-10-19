@@ -157,9 +157,13 @@ bit-identical SES on synthetic data, 5x faster (0.43 s -> 0.08 s per call on
 8 quarters). With it, the audit costs nothing net: hint-path runtimes are
 7.6 s white / 6.9 s variable vs 8.3 / 5.7 s originally.
 
+### E9. Refit folds on the variability-removed flux: not adopted
+Folding the pre-BLS-flattened flux (1 d binned median) in the profile and
+trapezoid refits: white 1.017 -> 1.042, variable 0.711 -> 0.700, search
+cases 0.80/0.66 -> 0.84/0.65, and T14 ratios scatter more (0.75-1.13).
+No clear gain on top of the audit, so reverted (`results/*_flatfold*`).
+
 ## Next
-- The search still runs the profile/trapezoid refits on un-flattened flux;
-  the audit covers the damage but flattening those folds would fix the cause.
 - When the network opens: real-star comparison against `koi_max_mult_ev`.
 - When the network opens: rerun the 49-star comparison with `auto` and
   compare `max_mes` to `koi_max_mult_ev`; then calibrate the 7.1 gate.
