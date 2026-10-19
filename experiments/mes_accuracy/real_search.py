@@ -36,9 +36,9 @@ def grade(star, rows, seconds):
         best = None
         for i, row in enumerate(rows):
             for ratio in RATIOS:
-                if abs(row["period_days"] / (planet["period_days"] * ratio) - 1) < 5e-3:
-                    if best is None or ratio == 1.0:
-                        best = (i, ratio)
+                close = abs(row["period_days"] / (planet["period_days"] * ratio) - 1) < 5e-3
+                if close and (best is None or ratio == 1.0):
+                    best = (i, ratio)
         rec = {"star": star, "target": planet["target"], "cat_max_mes": planet["max_mes"]}
         if best is not None:
             i, ratio = best
