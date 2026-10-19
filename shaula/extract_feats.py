@@ -38,8 +38,11 @@ MIN_SEARCH_PERIOD_DAYS = 0.5
 # Trial T14 multiples for the MES duration audit, and the MES gain a trial
 # needs to replace the refit T14. On a weak synthetic planet around a spotted
 # star the refits returned 0.041 d for a 0.18 d transit (MES 24.7 of an ideal
-# 59), see experiments/mes_accuracy/LOG.md.
-DURATION_AUDIT_FACTORS = (0.5, 0.71, 1.41, 2.0, 2.83, 4.0)
+# 59). Only gross factors: on 123 Kepler planets, adding 0.71 and 1.41 moved
+# T14 off the catalogue value (median +4.7% vs +6.8%, but |error| 12% vs 10%)
+# for a negligible MES change, because the highest-MES box of a limb-darkened
+# transit is shorter than T14. See experiments/mes_accuracy/LOG.md.
+DURATION_AUDIT_FACTORS = (0.5, 2.0, 2.83, 4.0)
 DURATION_AUDIT_MARGIN = 1.1
 
 # Deep, unexplained single events are the raw material of spurious candidates:

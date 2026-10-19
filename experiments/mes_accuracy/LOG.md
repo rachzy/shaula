@@ -177,7 +177,47 @@ Oracle MES 67.4 / 29.1 / 47.6. `results/multi_planet.txt`.
 No regression on the quiet star; the spotted star goes from one planet to
 all three.
 
+## 2026-10-19 (afternoon): real stars
+
+Network opened at 12:47 UTC. MAST's name resolver (`mastresolver.stsci.edu`,
+plain HTTP) is still unreachable, so `real_stars.py` resolves hosts to
+`KIC n` through the Exoplanet Archive TAP first.
+
+### E11. MES at the catalogue ephemeris, 56 hosts / 127 planets
+`real_stars.py download` (all long-cadence quarters, cleaned as `extract()`
+does; ~35 s per star) then `measure --mode M`: hint path on the KOI
+ephemeris, other planets gapped at 1.5 x T14. Error = extracted / catalogue
+- 1 (`koi_max_mult_ev`, `koi_duration`, `koi_depth`); 123 planets with a
+finite value in every mode. `results/real_<mode>.csv`.
+
+| mode | MES median | MES median abs | MES within 20% | MES 90th pct abs | T14 median / abs | depth median / abs |
+|---|---|---|---|---|---|---|
+| main | **-27.1%** | 31.4% | 35% | 74% | +7.7% / 10.2% | -7.4% / 8.2% |
+| flank only (no audit) | +0.6% | 9.6% | 80% | 30% | +7.7% / 10.2% | -7.4% / 8.2% |
+| flank + audit 0.5-4x (gross) | **+1.1%** | **9.1%** | 80% | 30% | +6.8% / 10.3% | -6.9% / 8.0% |
+| flank + audit incl. 0.71/1.41 | +3.3% | 9.4% | 82% | 29% | +4.7% / 12.2% | -8.2% / 9.4% |
+
+By catalogue MES (main -> full branch): <=10: -11% -> +13%; 10-15: -18% ->
++17%; 15-30: -19% -> +6%; 30-100: -21% -> +6%; >100: **-48% -> -8%**.
+Kepler-7b: 1163 -> 2088 (catalogue 2252); Kepler-13b 2216 -> 4332 (6791);
+Kepler-2b 2262 -> 3161 (3862).
+
+The flank baseline does nearly all of it. The 0.71/1.41 audit steps pick a
+box shorter than T14 on strong limb-darkened transits (that box has the
+higher MES), which costs T14 and depth accuracy for no real MES gain, so
+`DURATION_AUDIT_FACTORS` is now `(0.5, 2, 2.83, 4)`: it only fixes gross
+misfits like the synthetic x4 case.
+
+Still far off (branch, hint path): Kepler-411d, 51c, 102b/f (MES 4-8 vs
+21-47), where T14 is also off by 1.4-20x, so likely contamination from
+neighbouring planets or TTVs rather than the noise model. A few come out
+far *above* the catalogue (Kepler-10b 181 vs 30, 42c 74 vs 10, 90f 44 vs
+18); the catalogue values there look like TPS reporting a different event
+set (to check).
+
 ## Next
+- E12 (running): full iterative search on 12 hosts, main vs branch, to see
+  what it does to recall and false rows (`real_search.py`).
 - When the network opens: real-star comparison against `koi_max_mult_ev`.
 - When the network opens: rerun the 49-star comparison with `auto` and
   compare `max_mes` to `koi_max_mult_ev`; then calibrate the 7.1 gate.
