@@ -100,22 +100,35 @@ def _local_anchor_noise(
         positions = np.flatnonzero(anchor_segment == segment)
         segment_times = anchor_time[positions]
         segment_depths = anchor_depth[positions]
-        for local_position, output_position in enumerate(positions):
-            center = segment_times[local_position]
-            left = int(
-                np.searchsorted(segment_times, center - half_window, side="left")
+        left = np.searchsorted(segment_times, segment_times - half_window, side="left")
+        right = np.searchsorted(
+            segment_times, segment_times + half_window, side="right"
+        )
+        # Every window as one NaN-padded row, so the medians run vectorised.
+        # Same result as calling _robust_location_scale per window.
+        width = int(np.max(right - left))
+        offsets = np.arange(width)
+        index = left[:, None] + offsets[None, :]
+        inside = index < right[:, None]
+        windows = np.where(
+            inside, segment_depths[np.minimum(index, positions.size - 1)], np.nan
+        )
+        windows[~np.isfinite(windows)] = np.nan
+        n_finite = np.sum(np.isfinite(windows), axis=1)
+        enough = (right - left >= min_local_anchors) & (n_finite >= 2)
+        location = np.full(positions.size, np.nan)
+        scale = np.full(positions.size, np.nan)
+        if np.any(enough):
+            rows = windows[enough]
+            location[enough] = np.nanmedian(rows, axis=1)
+            scale[enough] = 1.4826 * np.nanmedian(
+                np.abs(rows - location[enough][:, None]), axis=1
             )
-            right = int(
-                np.searchsorted(segment_times, center + half_window, side="right")
-            )
-            if right - left >= min_local_anchors:
-                location, scale = _robust_location_scale(segment_depths[left:right])
-            else:
-                location, scale = global_location, global_scale
-            if not np.isfinite(scale) or scale <= 0:
-                location, scale = global_location, global_scale
-            locations[output_position] = location
-            scales[output_position] = scale
+        fallback = ~enough | ~np.isfinite(scale) | (scale <= 0)
+        location[fallback] = global_location
+        scale[fallback] = global_scale
+        locations[positions] = location
+        scales[positions] = scale
 
     return locations, scales
 
