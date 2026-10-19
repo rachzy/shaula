@@ -37,7 +37,7 @@ What `extract(target, mission)` does, end to end. Module paths are under `shaula
    - per-segment robust normalisation and 0.3% winsorisation across data gaps;
    - optional deep-eclipse masking (`mask_eclipses`);
    - BLS-only variability removal (running median, window = 3 x widest searched duration);
-   - stage-1 global `astropy.timeseries.BoxLeastSquares` on a binned series with a compute-budgeted, duration-aware log-period grid from 0.5 d to span/3 (so at least 3 transits fit);
+   - stage-1 global `astropy.timeseries.BoxLeastSquares` on a binned series with a compute-budgeted, duration-aware log-period grid from 0.5 d to span/3 (so at least 3 transits fit), over `GLOBAL_BLS_DURATIONS` (24) log-spaced durations; the budget is periods x durations, so fewer durations buy a denser period grid, which short transits over a 4-year baseline need;
    - `rank_independent_bls_candidates` clusters peaks (`scipy.signal.find_peaks`) into a ranked queue;
    - a second BLS pass on flux flattened with a 0.75 d window (`BLS_FINE_VARIABILITY_WINDOW_DAYS`, durations up to a third of it) is interleaved into that queue, so short transits on strongly variable stars (Kepler-411) are not buried under residual variability;
    - local BLS zoom, de-aliasing up to `DEALIAS_MAX_MULTIPLE` (10), folded-profile and trapezoid duration refits, optional TLS refinement within ±1.5% of the period;

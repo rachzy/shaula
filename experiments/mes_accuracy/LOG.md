@@ -257,10 +257,54 @@ Recall 55% -> 79%; extra rows 4 -> 33 (acceptable per Henrique: recall over
 precision); runtime 2.5x. Still missed: Kepler-102b/c/f (catalogue MES
 14-21), 37b/e (no catalogue MES; 37b is ~Moon-sized), 444c/f, 411d.
 
+Kepler-51 2/3 (main 2/3) and Kepler-138 2/3 (main 1/3) finished later;
+over all 12 hosts v3 finds 34/44 planets (main 24/44), extra rows 6 -> 42.
+
+### E15. Were the misses catchable? (`miss_diagnostic.py`, `queue_probe.py`)
+Fixed-ephemeris MES (masked running-median flatten, catalogue P/t0/T14, no
+refinement): 102b 15.9, 102c 19.8, 102f 21.2, 444c 34.3, 444f 36.6, 411d
+25.6, 51c 24.9, 37b 9.7, 37e 3.8. So every miss except 37e (out of reach)
+and 37b (12 ppm, marginal) had its signal well above the gate in our own
+statistic: the search lost them. Causes found by printing one iteration's
+queue with the found planets gapped:
+- **Period grid.** The global BLS used 200 linear durations, and the
+  compute budget (periods x points) left ~3,000 periods where a 1.7 h
+  transit over 1,400 d needs ~100,000. 444c/f formed no peak in the queue at
+  all (not even with 3 peaks per log band). BLS cost is ~ periods x
+  durations; 24 log-spaced durations (~6% max box mismatch) buy an ~8x
+  denser grid at equal cost, and both enter the queue with quick MES 19/36.
+- **Refinement on active stars.** Kepler-411d's 2P (116 d) is in the queue;
+  with the refinement budget raised to 20 it is refined, but the BLS-power
+  zoom and de-aliaser move 58.03 d to 57.3 d and then to P/11 = 5.2 d (the
+  star's rotation harmonic), MES 2.6. Needs MES-based refinement: not a
+  minor change, left open.
+- Kepler-51c (85 d, grazing, young active star): not in the queue either;
+  likely the same grid problem at long period, not fixed by E16.
+
+### E16. Full search, v4 = v3 + 24 log-spaced global durations
+`GLOBAL_BLS_DURATIONS = 24` (adopted). `results/search_real_v4.csv`. Six
+hosts ran on a separate 8-core machine (times not comparable).
+
+| star | main | v3 | v4 | extra main/v3/v4 |
+|---|---|---|---|---|
+| Kepler-102 | 1/5 | 2/5 | **3/5** | 0/4/2 |
+| Kepler-138 | 1/3 | 2/3 | **3/3** (b at 3P, provisional) | 2/8/5 |
+| Kepler-444 | 1/5 | 3/5 | 3/5 (c instead of f) | 0/5/4 |
+| Kepler-37 | 1/4 | 2/4 | 2/4 | 1/10/4 |
+| Kepler-62 | 3/5 | 5/5 | 5/5 | 0/3/0 |
+| Kepler-90 | 7/8 | 8/8 | 8/8 | 1/2/3 |
+| Kepler-411 | 0/3 | 2/3 | 2/3 | 0/1/0 |
+| Kepler-51 | 2/3 | 2/3 | 2/3 | 0/1/1 |
+| others (7, 13, 25, 89) | 8/8 | 8/8 | 8/8 | 2/8/6 |
+| **total** | **24/44** | **34/44** | **36/44** | **6/42/25** |
+
+Still missed: 102b/f, 444b/f, 411d, 51c (catchable; see E15), 37b/e (not).
+On 444, junk long-period candidates (168-330 d, T14 12-20 h) are accepted
+between real planets and mask data; b and f were lost that way in v4.
+
 ## Next
-- Kepler-51 and 138 v3 rows (running).
-- Runtime: 2.5x per star is the main cost for the service. Candidates: cap
-  iterations by remaining-MES, cheaper quick-MES ranking.
-- Remaining misses above (102b/c/f, 444c/f, 411d): check whether the peak
-  is in the queue at all or fails the gate.
+- Junk long-duration, long-period acceptances (444, 7, 138): they cost
+  masked data and iterations. Candidate fix without a recall veto: try them
+  after short-duration peaks of similar MES, or mask them less widely.
+- MES-based queue refinement on active stars (411d).
 - Calibrate the 7.1 gate against `koi_max_mult_ev` now that MES is unbiased.

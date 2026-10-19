@@ -37,8 +37,14 @@ BLS_VARIABILITY_WINDOW_DAYS = None
 BLS_FINE_VARIABILITY_WINDOW_DAYS = 0.75
 # Independent peaks kept per log-period band (16 bands, 0.5 d to span/3).
 BLS_PEAKS_PER_BAND = 1
-# Durations in the global BLS (log-spaced); None keeps the linear n_durations grid.
-GLOBAL_BLS_DURATIONS = None
+# Durations in the global BLS, log-spaced (each ~12% wider than the last, so a
+# box is never more than ~6% off a transit's T14). BLS cost is ~ periods x
+# durations; the 200 linear durations used before spent the compute budget on
+# near-duplicate boxes and left the period grid ~35x coarser than a 1.7 h
+# transit needs over 4 years, so Kepler-444c/f never formed a BLS peak. Fewer
+# durations buy an ~8x denser period grid at the same cost (12 Kepler hosts:
+# 34 -> 36 of 44 planets, extra rows 42 -> 25). None restores the linear grid.
+GLOBAL_BLS_DURATIONS = 24
 
 
 def _flatten_binned_median(time, flux, window):
