@@ -60,7 +60,7 @@ DESIRED_FEATURE_ORDER = [
     "vshape_metric",
     "secondary_depth",
     "secondary_depth_snr",
-    "secondary_depth_snr_log10",
+    "secondary_depth_snr_log",
     "secondary_depth_snr_capped",
     "secondary_to_primary_ratio",
     "secondary_is_eb_like",
