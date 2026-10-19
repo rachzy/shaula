@@ -1110,11 +1110,21 @@ def extract_features_from_arrays(
             gap_mask=gapped,
         )
         ranked_peaks = list(bls_info.get("search_candidates", []))
-        attempts = [(features, bls_info, None)]
-        attempts.extend(
-            (None, None, peak)
-            for peak in ranked_peaks[1:MAX_PEAKS_TO_VALIDATE]
-        )
+        # Try the queue in order of quick MES rather than BLS power. BLS power
+        # on an active star favours long boxes threaded through leftover
+        # variability; the first candidate past the gate wins the iteration,
+        # so on Kepler-411 a MES 8.6 artefact at 10.4 d beat planet c (MES
+        # 212) and masked 17% of the data. MES is the calibrated statistic.
+        quick_cache = {}
+        scored = [(float(features.get("max_mes", np.nan)), 0, (features, bls_info, None))]
+        for order, peak in enumerate(ranked_peaks[1:MAX_PEAKS_TO_VALIDATE], start=1):
+            quick_info = _quick_candidate_diagnostics(
+                time_values, flux_values, peak, gap_mask=gapped
+            )
+            quick_cache[id(peak)] = quick_info
+            scored.append((quick_info["max_mes"], order, (None, None, peak)))
+        scored.sort(key=lambda item: (-np.nan_to_num(item[0], nan=-np.inf), item[1]))
+        attempts = [entry for _, _, entry in scored]
 
         accepted = None
         accepted_info = None
@@ -1131,9 +1141,7 @@ def extract_features_from_arrays(
                     for previous in rejected_ephemerides
                 ):
                     continue
-                quick_info = _quick_candidate_diagnostics(
-                    time_values, flux_values, hint, gap_mask=gapped
-                )
+                quick_info = quick_cache[id(hint)]
                 quick_features = {
                     "period_days": hint.get("period", np.nan),
                     "t0": hint.get("t0", np.nan),
