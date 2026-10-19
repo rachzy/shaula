@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 230 passed, 19 subtests
+uv run pytest                        # tests: 241 passed, 19 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
@@ -65,8 +65,8 @@ One row per candidate. Depths are fractional flux deficits (positive = dimming);
 | `snr_global` | `depth_mean_per_transit x 1e6 / CDPP` interpolated at T14 (`utils/interp_cdpp`). |
 | `snr_per_transit_mean`, `snr_per_transit_std` | Mean and std of the per-event SES. |
 | `resid_rms_global` | Std of the detrended flux about its median. |
-| `vshape_metric` | Shoulder-to-centre flux difference of the folded median profile over depth; high for V-shaped (grazing / EB) dips. |
-| `secondary_depth`, `secondary_depth_snr`, `secondary_depth_snr_log`, `secondary_depth_snr_capped` | Dip at phase 0.5 (`utils/compute_secondary_depth`). See the SNR gotcha below. |
+| `vshape_metric` | `utils/compute_vshape`: least-squares trapezoid fit to the unbinned points around each transit, on a grid of total durations (0.6–1.4 x T14) and ingress fractions, with the model averaged over the cadence. The value is the fitted ingress fraction T12 / (T14/2): 0 for a flat-bottomed box, 1 for a pure V (grazing transit or EB). Noisy at low MES. |
+| `secondary_depth`, `secondary_depth_snr`, `secondary_depth_snr_log`, `secondary_depth_snr_capped` | `sesmes.secondary_eclipse`: the candidate's own SES/MES statistics folded at `t0 + P/2` with no phase scan. Depth is the inverse-variance weighted box depth (sum N / sum D), SNR is that fold's MES, so it is directly comparable to `MES`. Both are **signed** and scatter around 0 when there is no secondary. `_log` is sign(SNR) x log1p(abs(SNR)); `_capped` clips SNR to ±100. A hot Jupiter's occultation (e.g. Kepler-2b) is a real secondary too. |
 | `odd_even_depth_ratio` | Mean odd-epoch depth over mean even-epoch depth; far from 1 suggests an EB at twice the period. |
 | `ingress_egress_asymmetry` | Difference of absolute linear slopes either side of the folded minimum. |
 | `planet_radius_rearth`, `planet_radius_rjup` | From stellar radius and depth (step 9), else NaN. |
@@ -98,7 +98,6 @@ One row per candidate. Depths are fractional flux deficits (positive = dimming);
 - `use_tls=True` raises `RuntimeError` before any download when the optional `tls` extra (`transitleastsquares`) is not installed.
 - A query longer than 200 characters (`MAX_QUERY_LENGTH`) raises `ValueError` in both `resolve()` and `extract()`; a mission is matched case-insensitively (`canonical_mission`).
 - Feature values in `ExtractionResult.features` are `float`, `str` or `int`. A float **may be `NaN`** (for example `planet_radius_rearth` when the light curve carries no stellar radius). Callers that serialise to JSON or protobuf must map non-finite floats themselves; Shaula keeps `NaN` deliberately because downstream pandas code relies on it.
-- `secondary_depth_snr` is assigned twice in `_extract_single_candidate_from_arrays`: first CDPP-based, then overwritten by the `local_noise`-based `compute_secondary_depth_snr`. `secondary_depth_snr_log` and `_capped` are derived from the CDPP-based value, so the three columns do not share a definition. Changing this changes output; treat it as a deliberate decision, not a cleanup.
 - Accepted candidates' cadences are passed to the noise model as `gap_mask` on the full series, never sliced out: deleting cadences fragments the noise model's segments and biases its MAD low. Keep that pattern in new code.
 - Many constants in `extract_feats.py` and `detrend_and_period.py` carry comments naming the Kepler system that set them (Kepler-90, Kepler-186e, Kepler-447). Read them before tuning; they record regressions.
 - The pipeline `print`s progress to stdout heavily. Structured progress goes through the `progress` callback, not stdout.
