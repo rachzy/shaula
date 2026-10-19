@@ -1,0 +1,6 @@
+main-wt {"cfg": {"amp_rot": 0.001, "prot": 8.0}, "rows": [{"P": 4.2, "mes": 22.9, "dur": 0.103, "status": "accepted", "planet": 4.2}]}
+shaula {"cfg": {"amp_rot": 0}, "rows": [{"P": 4.2, "mes": 69.3, "dur": 0.089, "status": "accepted", "planet": 4.2}, {"P": 13.7, "mes": 28.8, "dur": 0.147, "status": "accepted", "planet": 13.7}, {"P": 37.8997, "mes": 48.7, "dur": 0.279, "status": "accepted", "planet": 37.9}, {"P": 89.8392, "mes": 6.1, "dur": 0.134, "status": "provisional", "planet": null}]}
+shaula {"cfg": {"amp_rot": 0.001, "prot": 8.0}, "rows": [{"P": 4.2, "mes": 60.5, "dur": 0.103, "status": "accepted", "planet": 4.2}, {"P": 13.7, "mes": 21.9, "dur": 0.149, "status": "accepted", "planet": 13.7}, {"P": 37.8989, "mes": 38.0, "dur": 0.205, "status": "accepted", "planet": 37.9}]}
+main-wt {"cfg": {"amp_rot": 0}, "rows": [{"P": 2.8467, "mes": 6.2, "dur": 0.041, "status": "provisional", "planet": null}, {"P": 4.2, "mes": 62.4, "dur": 0.126, "status": "accepted", "planet": 4.2}, {"P": 13.7001, "mes": 25.8, "dur": 0.206, "status": "accepted", "planet": 13.7}, {"P": 37.8996, "mes": 53.3, "dur": 0.268, "status": "accepted", "planet": 37.9}]}
+
+[exited with code 0]

@@ -163,6 +163,20 @@ trapezoid refits: white 1.017 -> 1.042, variable 0.711 -> 0.700, search
 cases 0.80/0.66 -> 0.84/0.65, and T14 ratios scatter more (0.75-1.13).
 No clear gain on top of the audit, so reverted (`results/*_flatfold*`).
 
+### E10. Regression check: 3-planet system, main vs branch
+`multi_planet.py <repo-root> '<cfg-json>'` (run with the branch venv;
+`shaula` is imported from `<repo-root>`, e.g. a worktree of main). Planets
+at 4.2 / 13.7 / 37.9 d, 400 / 250 / 600 ppm, sigma 150 ppm, 8 quarters.
+Oracle MES 67.4 / 29.1 / 47.6. `results/multi_planet.txt`.
+
+| star | main | branch |
+|---|---|---|
+| quiet | 3/3 found, MES 62.4 / 25.8 / 53.3, plus a spurious provisional at 2.85 d | 3/3, MES **69.3 / 28.8 / 48.7**, plus a provisional at 89.8 d (MES 6.1) |
+| 1000 ppm spots, 8 d | **1/3** (MES 22.9 for the 4.2 d planet) | **3/3**, MES 60.5 / 21.9 / 38.0 |
+
+No regression on the quiet star; the spotted star goes from one planet to
+all three.
+
 ## Next
 - When the network opens: real-star comparison against `koi_max_mult_ev`.
 - When the network opens: rerun the 49-star comparison with `auto` and
