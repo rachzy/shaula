@@ -200,6 +200,37 @@ def fold_statistics(statistics, period, epoch, duration_days=None):
     return out
 
 
+def secondary_eclipse(statistics, period, epoch):
+    """Box depth and MES at phase 0.5 of a candidate, from its own statistics.
+
+    The secondary is folded at ``epoch + period / 2`` with the same
+    duration-matched box the primary was scored with, so its significance is
+    directly comparable to ``MES`` (Kepler DV's weak-secondary test at phase
+    0.5). ``depth`` is the inverse-variance weighted box depth over the events
+    (sum N / sum D) and is signed: pure noise scatters around zero instead of
+    reporting a positive floor. No phase scan is done, so the statistic is not
+    biased upward by a maximum over trials.
+    """
+    out = {"depth": np.nan, "snr": np.nan, "n_events": 0}
+    if statistics is None or statistics["time"].size == 0:
+        return out
+    if not (np.isfinite(period) and period > 0 and np.isfinite(epoch)):
+        return out
+    tolerance_days = statistics["cadence_days"] / 2.0
+    mes, _, indices, event_ses = _fold_components(
+        statistics, float(period), float(epoch) + 0.5 * float(period), tolerance_days
+    )
+    if indices.size == 0:
+        return out
+    denominator_sum = float(np.sum(statistics["D"][indices]))
+    if not (np.isfinite(denominator_sum) and denominator_sum > 0):
+        return out
+    out["depth"] = float(np.sum(statistics["N"][indices]) / denominator_sum)
+    out["snr"] = float(mes)
+    out["n_events"] = int(np.sum(np.isfinite(event_ses)))
+    return out
+
+
 def compute_SES_MES(
     time,
     flux,

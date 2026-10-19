@@ -1,22 +1,20 @@
 import os
 import time
 import numpy as np
-from scipy.stats import binned_statistic
 from collections import OrderedDict
 from scipy.stats import skew, kurtosis
 
 from .detrend_and_period import detrend_with_bls_mask
 from .folded_binned_metrics import folded_binned_metrics
 from .cdpp import calculate_cdpp
-from .sesmes import compute_SES_MES, fold_statistics
+from .sesmes import compute_SES_MES, fold_statistics, secondary_eclipse
 from .utils.ephemeris import canonical_epoch
 from .utils import (
     scaling_and_metrics,
     interp_cdpp,
-    compute_secondary_depth,
     compute_odd_even_depth_ratio,
     compute_ingress_egress_asymmetry,
-    compute_secondary_depth_snr,
+    compute_vshape,
     label_candidate_rows,
     summarize_labels,
 )
@@ -283,66 +281,28 @@ def _extract_single_candidate_from_arrays(
         else np.nan
     )
 
-    try:
-        nbins = 200
-        phase = ((time_arr - t0) / period) % 1.0
-        phase = (phase + 0.5) % 1.0 - 0.5
-        bins = np.linspace(-0.5, 0.5, nbins + 1)
-        med_profile, _, _ = binned_statistic(
-            phase, flux_features, statistic="median", bins=bins
-        )
-        bin_centers = 0.5 * (bins[:-1] + bins[1:])
-        dur_phase = (duration_days / period) if (period > 0) else 0.05
-
-        center_mask = np.abs(bin_centers) < (0.25 * dur_phase)
-        shoulder_mask = (np.abs(bin_centers) > (0.5 * dur_phase)) & (
-            np.abs(bin_centers) < dur_phase
-        )
-
-        center_flux = (
-            np.nanmedian(med_profile[center_mask]) if np.any(center_mask) else np.nan
-        )
-        shoulder_flux = (
-            np.nanmedian(med_profile[shoulder_mask])
-            if np.any(shoulder_mask)
-            else np.nan
-        )
-
-        depth_for_shape = abs(feats["depth_mean_per_transit"])
-        num = shoulder_flux - center_flux
-
-        if (
-            np.isfinite(center_flux)
-            and np.isfinite(shoulder_flux)
-            and np.isfinite(depth_for_shape)
-            and depth_for_shape > 0
-        ):
-            feats["vshape_metric"] = max(0.0, num / depth_for_shape)
-        else:
-            feats["vshape_metric"] = np.nan
-    except Exception:
-        feats["vshape_metric"] = np.nan
-
-    feats["secondary_depth"] = compute_secondary_depth(
-        time_arr, flux_features, period, t0, duration_days
+    feats["vshape_metric"] = compute_vshape(
+        time_arr,
+        flux_features,
+        period,
+        t0,
+        duration_days,
+        cadence_days=feats["cadence_hours"] / 24.0,
     )
 
-    # CDPP-based secondary SNR (cadence-invariant, ppm-consistent)
-    cdpp_interp_for_duration = interp_cdpp(cdpp, duration_hours)
-    if (
-        np.isfinite(feats["secondary_depth"])
-        and np.isfinite(cdpp_interp_for_duration)
-        and cdpp_interp_for_duration > 0
-    ):
-        sec_snr = float((feats["secondary_depth"] * 1e6) / cdpp_interp_for_duration)
-    else:
-        sec_snr = np.nan
+    # Folded at phase 0.5 with the same duration-matched statistics as MES, so
+    # depth, SNR and both derived columns share one definition.
+    secondary = secondary_eclipse(sesmes.get("statistics"), period, t0)
+    sec_snr = secondary["snr"]
+    feats["secondary_depth"] = secondary["depth"]
     feats["secondary_depth_snr"] = sec_snr
     feats["secondary_depth_snr_log"] = (
-        float(np.log1p(sec_snr)) if np.isfinite(sec_snr) else np.nan
+        float(np.sign(sec_snr) * np.log1p(abs(sec_snr)))
+        if np.isfinite(sec_snr)
+        else np.nan
     )
     feats["secondary_depth_snr_capped"] = (
-        float(np.clip(sec_snr, 0.0, 100.0)) if np.isfinite(sec_snr) else np.nan
+        float(np.clip(sec_snr, -100.0, 100.0)) if np.isfinite(sec_snr) else np.nan
     )
 
     # Step 4: Add EB/grazing discriminants
@@ -353,10 +313,6 @@ def _extract_single_candidate_from_arrays(
     feats["ingress_egress_asymmetry"] = compute_ingress_egress_asymmetry(
         time_arr, flux_features, period, t0, duration_days
     )
-    feats["secondary_depth_snr"] = compute_secondary_depth_snr(
-        time_arr, flux_features, period, t0, duration_days, feats["local_noise"]
-    )
-
     print(
         f"EB/Grazing features: odd_even_ratio={feats['odd_even_depth_ratio']:.3f}, "
         f"asymmetry={feats['ingress_egress_asymmetry']:.3f}, "
