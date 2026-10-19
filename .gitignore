@@ -50,3 +50,6 @@ shaula/data/feature_results/*
 
 # Implementation plans (local only, deleted when the refactor is done)
 plans/
+
+# Regenerable experiment outputs (numbers are kept in experiments/*/LOG.md)
+experiments/*/results/

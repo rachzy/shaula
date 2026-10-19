@@ -2,6 +2,12 @@ import numpy as np
 
 # 4 - Compute duration-matched noise and CDPP
 
+# Baselines tried by ``flank_durations="auto"``, in box widths per side; None
+# is the series-median baseline. Synthetic injections (experiments/
+# mes_accuracy) put white-noise MES at 0.78/0.88/0.91/0.94/1.0 of ideal for
+# these, while 1 box width recovers spotted stars from 0.14 to 0.65 of ideal.
+ADAPTIVE_FLANK_DURATIONS = (1.0, 2.0, 3.0, 5.0, None)
+
 
 def _empty_statistics():
     empty_float = np.array([], dtype=float)
@@ -94,24 +100,91 @@ def _local_anchor_noise(
         positions = np.flatnonzero(anchor_segment == segment)
         segment_times = anchor_time[positions]
         segment_depths = anchor_depth[positions]
-        for local_position, output_position in enumerate(positions):
-            center = segment_times[local_position]
-            left = int(
-                np.searchsorted(segment_times, center - half_window, side="left")
+        left = np.searchsorted(segment_times, segment_times - half_window, side="left")
+        right = np.searchsorted(
+            segment_times, segment_times + half_window, side="right"
+        )
+        # Every window as one NaN-padded row, so the medians run vectorised.
+        # Same result as calling _robust_location_scale per window.
+        width = int(np.max(right - left))
+        offsets = np.arange(width)
+        index = left[:, None] + offsets[None, :]
+        inside = index < right[:, None]
+        windows = np.where(
+            inside, segment_depths[np.minimum(index, positions.size - 1)], np.nan
+        )
+        windows[~np.isfinite(windows)] = np.nan
+        n_finite = np.sum(np.isfinite(windows), axis=1)
+        enough = (right - left >= min_local_anchors) & (n_finite >= 2)
+        location = np.full(positions.size, np.nan)
+        scale = np.full(positions.size, np.nan)
+        if np.any(enough):
+            rows = windows[enough]
+            location[enough] = np.nanmedian(rows, axis=1)
+            scale[enough] = 1.4826 * np.nanmedian(
+                np.abs(rows - location[enough][:, None]), axis=1
             )
-            right = int(
-                np.searchsorted(segment_times, center + half_window, side="right")
-            )
-            if right - left >= min_local_anchors:
-                location, scale = _robust_location_scale(segment_depths[left:right])
-            else:
-                location, scale = global_location, global_scale
-            if not np.isfinite(scale) or scale <= 0:
-                location, scale = global_location, global_scale
-            locations[output_position] = location
-            scales[output_position] = scale
+        fallback = ~enough | ~np.isfinite(scale) | (scale <= 0)
+        location[fallback] = global_location
+        scale[fallback] = global_scale
+        locations[positions] = location
+        scales[positions] = scale
 
     return locations, scales
+
+
+def _flank_relative_depth(
+    time, deficit, left, right, box_depth, segment_id, usable, flank_days, min_points
+):
+    """Box depth relative to the mean of the flux on either side of the box.
+
+    Each flank spans ``flank_days`` next to the box, stays inside the box's
+    segment and uses only ``usable`` cadences (known transits withheld). The
+    two flank means are averaged with equal weight so a linear trend cancels.
+    Every box, in transit or not, is treated identically, so the noise model
+    sees exactly the filter the signal sees.
+    """
+    n = time.size
+    seg_start = np.zeros(n, dtype=int)
+    seg_end = np.full(n, n, dtype=int)
+    boundaries = np.flatnonzero(np.diff(segment_id)) + 1
+    starts = np.concatenate(([0], boundaries))
+    ends = np.concatenate((boundaries, [n]))
+    for start, end in zip(starts, ends):
+        seg_start[start:end] = start
+        seg_end[start:end] = end
+
+    left_lo = np.maximum(
+        np.searchsorted(time, time[np.minimum(left, n - 1)] - flank_days, side="left"),
+        seg_start,
+    )
+    left_hi = np.maximum(left, left_lo)
+    right_hi = np.minimum(
+        np.searchsorted(
+            time, time[np.maximum(right - 1, 0)] + flank_days, side="right"
+        ),
+        seg_end,
+    )
+    right_lo = np.minimum(right, right_hi)
+
+    weights = usable.astype(float)
+    prefix_count = np.concatenate(([0.0], np.cumsum(weights)))
+    prefix_sum = np.concatenate(([0.0], np.cumsum(deficit * weights)))
+    n_left = prefix_count[left_hi] - prefix_count[left_lo]
+    n_right = prefix_count[right_hi] - prefix_count[right_lo]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        mean_left = (prefix_sum[left_hi] - prefix_sum[left_lo]) / n_left
+        mean_right = (prefix_sum[right_hi] - prefix_sum[right_lo]) / n_right
+    has_left = n_left >= min_points
+    has_right = n_right >= min_points
+    baseline = np.where(
+        has_left & has_right,
+        0.5 * (mean_left + mean_right),
+        np.where(has_left, mean_left, mean_right),
+    )
+    ok = has_left | has_right
+    depth = np.where(ok, box_depth - baseline, np.nan)
+    return depth, ok
 
 
 def duration_matched_statistics(
@@ -126,6 +199,8 @@ def duration_matched_statistics(
     noise_window_durations=30.0,
     min_local_anchors=20,
     min_independent_samples=5,
+    flank_durations="auto",
+    _scale_only=False,
 ):
     """Build a local, duration-matched transit detection statistic.
 
@@ -145,9 +220,49 @@ def duration_matched_statistics(
     the local noise windows and biasing the MAD low. Note ``gap_cadences``
     (segment-splitting threshold) is unrelated to ``gap_mask``.
 
+    ``flank_durations`` sets the box's baseline. ``None`` measures depth
+    against the series median, so any stellar variability slower than the box
+    stays in the noise. A number measures it against the mean flux in that
+    many box widths on either side (``_flank_relative_depth``), a local
+    high-pass that removes spot modulation at the cost of the flanks' own
+    noise. ``"auto"`` ranks every option in ``ADAPTIVE_FLANK_DURATIONS`` by the
+    pooled robust scale of its noise anchors and builds the lowest. The choice looks only at
+    noise-eligible boxes, never at the candidate's transits, and every option
+    preserves the full transit depth, so the lowest noise is the highest
+    expected MES without biasing MES on pure noise.
+
     This is a time-domain approximation to Kepler TPS. It intentionally does
-    not reproduce TPS's adaptive wavelet whitening.
+    not reproduce TPS's adaptive wavelet whitening; ``"auto"`` stands in for
+    its adaptivity.
     """
+    if isinstance(flank_durations, str):
+        if flank_durations != "auto":
+            raise ValueError("flank_durations must be None, a number or 'auto'")
+        # Rank the options on the pooled scale of their noise anchors, which
+        # is cheap, then build the full local noise model only for the winner.
+        chosen, chosen_scale = None, np.inf
+        for option in ADAPTIVE_FLANK_DURATIONS:
+            scale = duration_matched_statistics(
+                time,
+                flux,
+                duration_hours,
+                cadence_hours=cadence_hours,
+                exclude_mask=exclude_mask,
+                gap_mask=gap_mask,
+                min_coverage=min_coverage,
+                gap_cadences=gap_cadences,
+                noise_window_durations=noise_window_durations,
+                min_local_anchors=min_local_anchors,
+                min_independent_samples=min_independent_samples,
+                flank_durations=option,
+                _scale_only=True,
+            )
+            if isinstance(scale, dict):  # an early return: nothing to rank
+                continue
+            if np.isfinite(scale) and scale < chosen_scale:
+                chosen, chosen_scale = option, scale
+        flank_durations = chosen
+
     result = _empty_statistics()
     time = np.asarray(time, dtype=float)
     flux = np.asarray(flux, dtype=float)
@@ -241,6 +356,20 @@ def duration_matched_statistics(
     right_index = np.maximum(right - 1, 0)
     same_segment = segment_id[left] == segment_id[right_index]
     box_valid = (counts >= minimum_points) & same_segment & ~overlaps_gap
+
+    if flank_durations is not None:
+        raw_depth, flank_ok = _flank_relative_depth(
+            time,
+            deficit,
+            left,
+            right,
+            raw_depth,
+            segment_id,
+            ~exclude_mask & ~gap_mask,
+            float(flank_durations) * duration_days,
+            max(1, int(np.ceil(0.25 * expected_points))),
+        )
+        box_valid &= flank_ok
     raw_depth[~box_valid] = np.nan
     coverage = counts.astype(float) / expected_points
     coverage[~box_valid] = np.nan
@@ -252,6 +381,8 @@ def duration_matched_statistics(
         segment_id,
         step_days=max(cadence_days, half_duration),
     )
+    if _scale_only:
+        return _robust_location_scale(raw_depth[anchor_indices])[1]
     anchor_locations, anchor_scales = _local_anchor_noise(
         time,
         raw_depth,

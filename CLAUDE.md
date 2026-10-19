@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 259 passed, 19 subtests
+uv run pytest                        # tests: 265 passed, 19 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
@@ -37,13 +37,14 @@ What `extract(target, mission)` does, end to end. Module paths are under `shaula
    - per-segment robust normalisation and 0.3% winsorisation across data gaps;
    - optional deep-eclipse masking (`mask_eclipses`);
    - BLS-only variability removal (running median, window = 3 x widest searched duration);
-   - stage-1 global `astropy.timeseries.BoxLeastSquares` on a binned series with a compute-budgeted, duration-aware log-period grid from 0.5 d to span/3 (so at least 3 transits fit);
+   - stage-1 global `astropy.timeseries.BoxLeastSquares` on a binned series with a compute-budgeted, duration-aware log-period grid from 0.5 d to span/3 (so at least 3 transits fit), over `GLOBAL_BLS_DURATIONS` (24) log-spaced durations; the budget is periods x durations, so fewer durations buy a denser period grid, which short transits over a 4-year baseline need;
    - `rank_independent_bls_candidates` clusters peaks (`scipy.signal.find_peaks`) into a ranked queue;
+   - a second BLS pass on flux flattened with a 0.75 d window (`BLS_FINE_VARIABILITY_WINDOW_DAYS`, durations up to a third of it) is interleaved into that queue, so short transits on strongly variable stars (Kepler-411) are not buried under residual variability;
    - local BLS zoom, de-aliasing up to `DEALIAS_MAX_MULTIPLE` (10), folded-profile and trapezoid duration refits, optional TLS refinement within ±1.5% of the period;
    - final trend: `scipy.interpolate.UnivariateSpline` on binned out-of-transit medians, with this candidate's and earlier candidates' transits withheld; flux is divided by the trend;
    - final epoch refit, limited to ±0.5 T14 so a shallow candidate cannot slide onto a deeper unmasked signal.
-6. **Noise model, CDPP and SES/MES** (`cdpp.py`, `sesmes.py`). `duration_matched_statistics` builds a local box matched filter at T14, with noise from a robust median/MAD of half-duration-spaced anchors, excluding transit windows. `compute_SES_MES` folds its numerator/denominator at the ephemeris (MES = sum N / sqrt(sum D)), and `max_mes` scans a small phase offset. This is a time-domain approximation of Kepler TPS; it deliberately does not reproduce TPS's adaptive wavelet whitening.
-7. **Detection gate** (`_candidate_passes_mes`): `max_mes >= MES_DETECTION_THRESHOLD` (7.1, the Kepler TPS threshold) with at least 3 observed events. Queued peaks are pre-screened at MES 4.0 before full refinement. `_reconcile_accepted_harmonic` refolds the same statistics object at 2P, 3P, P/2 and P/3 and adopts one only if its MES beats the original by `HARMONIC_ADOPT_MARGIN` (1.15).
+6. **Noise model, CDPP and SES/MES** (`cdpp.py`, `sesmes.py`). `duration_matched_statistics` builds a local box matched filter at T14, with noise from a robust median/MAD of half-duration-spaced anchors, excluding transit windows. Each box's depth is measured against its flanks (1, 2, 3 or 5 box widths per side) or the series median, whichever gives the lowest noise (`flank_durations="auto"`, `ADAPTIVE_FLANK_DURATIONS`); this removes stellar variability the final spline leaves in the flux, which otherwise cuts MES several-fold on active stars. Before features are measured, `_mes_optimal_duration` scores T14 x 0.5 to 4 by `max_mes` and adopts a trial that beats the refit T14 by 10%. `compute_SES_MES` folds its numerator/denominator at the ephemeris (MES = sum N / sqrt(sum D)), and `max_mes` scans a small phase offset. This is a time-domain approximation of Kepler TPS; it deliberately does not reproduce TPS's adaptive wavelet whitening. Synthetic validation of both lives in `experiments/mes_accuracy/` (`LOG.md`).
+7. **Detection gate** (`_candidate_passes_mes`): `max_mes >= MES_DETECTION_THRESHOLD` (7.1, the Kepler TPS threshold) with at least 3 observed events. Queued peaks are tried in order of quick MES, not BLS power, and pre-screened at MES 4.0 before full refinement. `_reconcile_accepted_harmonic` refolds the same statistics object at 2P, 3P, P/2 and P/3 and adopts one only if its MES beats the original by `HARMONIC_ADOPT_MARGIN` (1.15).
 8. **Feature measurement** (`_extract_single_candidate_from_arrays`). See the table below.
 9. **Recovery, sort and radius** (`extract_features_from_arrays`, `extract_features_from_lightcurve`). When the search runs out of signal, up to 2 rejected peaks with `max_mes >= 6.0` come back as `provisional` rows (they never masked anything). Rows are sorted by `period_days`. When `lc.meta["RADIUS"]` is finite, planet radius = R* x sqrt(depth) x 109.1 (Earth) or 9.731 (Jupiter); otherwise NaN.
 10. **Return** (`api.py`). Each row becomes a plain `dict` in `ExtractionResult.features`, with `shaula_version`. The CLIs instead write CSV or JSON via `save.save_features`, one row per candidate.

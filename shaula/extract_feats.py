@@ -33,6 +33,16 @@ MIN_OBSERVED_TRANSIT_EVENTS = 3
 PERIOD_DEDUP_TOLERANCE = 0.005
 MIN_SEARCH_PERIOD_DAYS = 0.5
 
+# Trial T14 multiples for the MES duration audit, and the MES gain a trial
+# needs to replace the refit T14. On a weak synthetic planet around a spotted
+# star the refits returned 0.041 d for a 0.18 d transit (MES 24.7 of an ideal
+# 59). Only gross factors: on 123 Kepler planets, adding 0.71 and 1.41 moved
+# T14 off the catalogue value (median +4.7% vs +6.8%, but |error| 12% vs 10%)
+# for a negligible MES change, because the highest-MES box of a limb-darkened
+# transit is shorter than T14. See experiments/mes_accuracy/LOG.md.
+DURATION_AUDIT_FACTORS = (0.5, 2.0, 2.83, 4.0)
+DURATION_AUDIT_MARGIN = 1.1
+
 # Deep, unexplained single events are the raw material of spurious candidates:
 # BLS happily threads a box train through a handful of them and reports a high
 # MES for a period that no planet has. A cadence enters an event when it drops
@@ -143,6 +153,18 @@ def _extract_single_candidate_from_arrays(
     period = float(bls_info.get("best_period", np.nan))
     t0 = float(bls_info.get("t0", np.nan))
     duration_days = float(bls_info.get("best_duration", np.nan))
+    audited = _mes_optimal_duration(
+        time_arr, flux_detr_full, period, t0, duration_days, gap_arr
+    )
+    if audited != duration_days:
+        print(
+            f"Duration audit: T14 {duration_days:.4f} -> {audited:.4f} days "
+            "(higher MES)"
+        )
+        duration_days = audited
+        bls_info["best_duration"] = audited
+        mask_transit = _periodic_mask(time_arr, period, t0, audited)
+        bls_info["mask_transit"] = mask_transit
 
     print(
         f"BLS results: P={period:.4f} days, T14={duration_days:.4f} days, t0={t0:.2f}"
@@ -336,6 +358,58 @@ def _extract_single_candidate_from_arrays(
             print(f"{k}: {v}")
 
     return feats, bls_info, mask_transit
+
+
+def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
+    """Return the trial T14 with the highest MES, keeping ties to the input.
+
+    The profile and trapezoid refits in ``detrend_with_bls_mask`` fold the
+    un-flattened flux and read widths off a few noisy phase bins, so on a weak
+    signal around an active star they can cut T14 by a factor of four. MES
+    from the calibrated noise model is the statistic the gate already trusts,
+    and maximising it over duration is what Kepler TPS does. A trial must beat
+    the incumbent by ``DURATION_AUDIT_MARGIN`` to replace it, so noise alone
+    does not move a well-fit T14.
+    """
+    if not (
+        np.isfinite(period)
+        and period > 0
+        and np.isfinite(t0)
+        and np.isfinite(duration_days)
+        and duration_days > 0
+    ):
+        return duration_days
+    positive_steps = np.diff(time)
+    positive_steps = positive_steps[positive_steps > 0]
+    if positive_steps.size == 0:
+        return duration_days
+    floor = 2.0 * float(np.median(positive_steps))
+    ceiling = 0.12 * period
+
+    def score(trial):
+        result = compute_SES_MES(
+            time,
+            flux,
+            period,
+            t0,
+            trial,
+            transit_mask=_periodic_mask(time, period, t0, trial),
+            gap_mask=gap_mask,
+        )
+        return float(result.get("max_mes", np.nan))
+
+    incumbent = score(duration_days)
+    best, best_mes = duration_days, incumbent
+    for factor in DURATION_AUDIT_FACTORS:
+        trial = duration_days * factor
+        if trial < floor or trial > ceiling:
+            continue
+        trial_mes = score(trial)
+        if np.isfinite(trial_mes) and trial_mes > best_mes:
+            best, best_mes = trial, trial_mes
+    if not np.isfinite(incumbent) or best_mes >= DURATION_AUDIT_MARGIN * incumbent:
+        return best
+    return duration_days
 
 
 def _periodic_mask(time, period, t0, duration_days, width_factor=1.0):
@@ -992,11 +1066,21 @@ def extract_features_from_arrays(
             gap_mask=gapped,
         )
         ranked_peaks = list(bls_info.get("search_candidates", []))
-        attempts = [(features, bls_info, None)]
-        attempts.extend(
-            (None, None, peak)
-            for peak in ranked_peaks[1:MAX_PEAKS_TO_VALIDATE]
-        )
+        # Try the queue in order of quick MES rather than BLS power. BLS power
+        # on an active star favours long boxes threaded through leftover
+        # variability; the first candidate past the gate wins the iteration,
+        # so on Kepler-411 a MES 8.6 artefact at 10.4 d beat planet c (MES
+        # 212) and masked 17% of the data. MES is the calibrated statistic.
+        quick_cache = {}
+        scored = [(float(features.get("max_mes", np.nan)), 0, (features, bls_info, None))]
+        for order, peak in enumerate(ranked_peaks[1:MAX_PEAKS_TO_VALIDATE], start=1):
+            quick_info = _quick_candidate_diagnostics(
+                time_values, flux_values, peak, gap_mask=gapped
+            )
+            quick_cache[id(peak)] = quick_info
+            scored.append((quick_info["max_mes"], order, (None, None, peak)))
+        scored.sort(key=lambda item: (-np.nan_to_num(item[0], nan=-np.inf), item[1]))
+        attempts = [entry for _, _, entry in scored]
 
         accepted = None
         accepted_info = None
@@ -1013,9 +1097,7 @@ def extract_features_from_arrays(
                     for previous in rejected_ephemerides
                 ):
                     continue
-                quick_info = _quick_candidate_diagnostics(
-                    time_values, flux_values, hint, gap_mask=gapped
-                )
+                quick_info = quick_cache[id(hint)]
                 quick_features = {
                     "period_days": hint.get("period", np.nan),
                     "t0": hint.get("t0", np.nan),
