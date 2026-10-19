@@ -26,6 +26,8 @@ PROVISIONAL_MES_THRESHOLD = 4.0
 MAX_TRANSIT_CANDIDATES = 12
 MAX_PEAKS_TO_VALIDATE = 20
 MAX_REFINED_PEAKS_PER_ITERATION = 6
+# Relative period change that counts as "the de-aliaser moved this peak".
+DEALIAS_RETRY_TOLERANCE = 0.01
 TRANSIT_MASK_WIDTH = 1.5
 MAX_CUMULATIVE_MASK_FRACTION = 0.5
 MIN_SEARCH_POINTS = 50
@@ -1137,6 +1139,29 @@ def extract_features_from_arrays(
                     candidate_hint=hint,
                     gap_mask=gapped,
                 )
+                # The de-aliaser adopts an integer multiple on a 0.98 x BLS-power
+                # tie, so a queued planet can come back at 10P with too few events
+                # in phase to pass (Kepler-444e: 7.74 d -> 77.5 d, MES 5.7). Its
+                # queued period is then never tried. Retry it as queued; harmonics
+                # are still settled on MES by _reconcile_accepted_harmonic.
+                hint_period = float(hint.get("period", np.nan))
+                moved = abs(
+                    float(measured_features.get("period_days", np.nan)) / hint_period - 1.0
+                ) > DEALIAS_RETRY_TOLERANCE
+                if moved and not _candidate_passes_mes(measured_features, measured_info):
+                    retry_features, retry_info, _ = _extract_single_candidate_from_arrays(
+                        time_values,
+                        flux_values,
+                        verbose=verbose,
+                        refine_duration=refine_duration,
+                        use_tls=use_tls,
+                        mask_eclipses=mask_eclipses,
+                        candidate_hint=hint,
+                        gap_mask=gapped,
+                        dealias=False,
+                    )
+                    if _candidate_passes_mes(retry_features, retry_info):
+                        measured_features, measured_info = retry_features, retry_info
             if _period_already_accepted(measured_features, accepted_rows) or any(
                 _same_ephemeris(measured_features, previous)
                 for previous in rejected_ephemerides
