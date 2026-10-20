@@ -280,3 +280,18 @@ def test_planet_radius_tolerates_a_missing_stellar_radius(monkeypatch, radius, e
         assert np.isnan(row["planet_radius_rearth"])
     else:
         assert row["planet_radius_rearth"] == pytest.approx(expected)
+
+
+def test_target_lists_store_repo_relative_references(tmp_path):
+    from ..scripts.build_koi_targets import REPO_ROOT, portable_path
+
+    inside = REPO_ROOT / "data" / "koi" / "KIC100-koi.csv"
+    assert portable_path(inside) == "data/koi/KIC100-koi.csv"
+    assert portable_path(tmp_path / "x.csv") == str(tmp_path / "x.csv")
+
+    targets = tmp_path / "targets.csv"
+    targets.write_text(
+        "target,mission,group,name,reference\n"
+        "KIC 100,Kepler,koi_fp,K1,data/koi/KIC100-koi.csv\n"
+    )
+    assert load_targets(targets)[0].reference == str(inside)

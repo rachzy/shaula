@@ -70,6 +70,15 @@ def fetch_cumulative_table(*, base_url: str = TAP_SYNC_URL) -> pd.DataFrame:
         ) from exc
 
 
+def portable_path(path: Path) -> str:
+    """``path`` relative to the repo root when it lies inside it, so a target
+    list written on one machine still resolves on another."""
+    try:
+        return Path(path).resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return str(path)
+
+
 def kic_target(kepid: int) -> str:
     return f"KIC {int(kepid)}"
 
@@ -146,7 +155,7 @@ def build_targets(
                 "mission": "Kepler",
                 "group": row["group"],
                 "name": name,
-                "reference": str(path),
+                "reference": portable_path(path),
             }
         )
     return pd.DataFrame(targets, columns=TARGET_COLUMNS)

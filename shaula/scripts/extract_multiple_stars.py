@@ -115,6 +115,13 @@ OUT_DIR = REPO_ROOT / "data" / "extracted"
 CONFIRMED_DIR = REPO_ROOT / "data" / "confirmed"
 
 
+def _resolve_reference(reference: str | None) -> str | None:
+    """Resolve a repo-relative reference path (as build_koi_targets writes it)."""
+    if not reference or Path(reference).is_absolute():
+        return reference
+    return str(REPO_ROOT / reference)
+
+
 def load_targets(path: Path) -> list[Star]:
     """Read a target list CSV into batch entries."""
     frame = pd.read_csv(path, dtype=str).fillna("")
@@ -126,7 +133,7 @@ def load_targets(path: Path) -> list[Star]:
             name=row["target"],
             group=row["group"],
             mission=row.get("mission") or "Kepler",
-            reference=row.get("reference") or None,
+            reference=_resolve_reference(row.get("reference") or None),
         )
         for row in frame.to_dict("records")
     ]
