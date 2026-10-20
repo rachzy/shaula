@@ -1,0 +1,41 @@
+target,mission,group,name,reference
+KIC 7866921,Kepler,koi_fp,K03360.01,/home/user/shaula/data/koi/KIC7866921-koi.csv
+KIC 7889486,Kepler,koi_fp,"K03300.01, K03300.02",/home/user/shaula/data/koi/KIC7889486-koi.csv
+KIC 7891264,Kepler,koi_fp,K07855.01,/home/user/shaula/data/koi/KIC7891264-koi.csv
+KIC 7900727,Kepler,koi_fp,K05443.01,/home/user/shaula/data/koi/KIC7900727-koi.csv
+KIC 7943535,Kepler,koi_fp,K06935.01,/home/user/shaula/data/koi/KIC7943535-koi.csv
+KIC 7959310,Kepler,koi_fp,K08150.01,/home/user/shaula/data/koi/KIC7959310-koi.csv
+KIC 7972785,Kepler,koi_fp,K00184.01,/home/user/shaula/data/koi/KIC7972785-koi.csv
+KIC 7983756,Kepler,koi_fp,K03846.01,/home/user/shaula/data/koi/KIC7983756-koi.csv
+KIC 7989422,Kepler,koi_fp,K02151.01,/home/user/shaula/data/koi/KIC7989422-koi.csv
+KIC 8027902,Kepler,koi_fp,K06955.01,/home/user/shaula/data/koi/KIC8027902-koi.csv
+KIC 8029848,Kepler,koi_fp,K05463.01,/home/user/shaula/data/koi/KIC8029848-koi.csv
+KIC 8126531,Kepler,koi_fp,K07868.01,/home/user/shaula/data/koi/KIC8126531-koi.csv
+KIC 8180020,Kepler,koi_fp,K01741.01,/home/user/shaula/data/koi/KIC8180020-koi.csv
+KIC 8210721,Kepler,koi_fp,K06991.01,/home/user/shaula/data/koi/KIC8210721-koi.csv
+KIC 8226720,Kepler,koi_fp,K08154.01,/home/user/shaula/data/koi/KIC8226720-koi.csv
+KIC 8241258,Kepler,koi_fp,K05491.01,/home/user/shaula/data/koi/KIC8241258-koi.csv
+KIC 8256453,Kepler,koi_fp,K02573.01,/home/user/shaula/data/koi/KIC8256453-koi.csv
+KIC 8260198,Kepler,koi_fp,K03888.01,/home/user/shaula/data/koi/KIC8260198-koi.csv
+KIC 8263746,Kepler,koi_fp,K03581.01,/home/user/shaula/data/koi/KIC8263746-koi.csv
+KIC 8285254,Kepler,koi_fp,K07008.01,/home/user/shaula/data/koi/KIC8285254-koi.csv
+KIC 8296467,Kepler,koi_fp,K07012.01,/home/user/shaula/data/koi/KIC8296467-koi.csv
+KIC 8314801,Kepler,koi_fp,K07018.01,/home/user/shaula/data/koi/KIC8314801-koi.csv
+KIC 8330548,Kepler,koi_fp,"K01132.02, K01132.01",/home/user/shaula/data/koi/KIC8330548-koi.csv
+KIC 8332986,Kepler,koi_fp,K01137.01,/home/user/shaula/data/koi/KIC8332986-koi.csv
+KIC 8378634,Kepler,koi_fp,K01139.01,/home/user/shaula/data/koi/KIC8378634-koi.csv
+KIC 8379021,Kepler,koi_fp,K03268.01,/home/user/shaula/data/koi/KIC8379021-koi.csv
+KIC 8430105,Kepler,koi_fp,K03873.01,/home/user/shaula/data/koi/KIC8430105-koi.csv
+KIC 8479386,Kepler,koi_fp,K07046.01,/home/user/shaula/data/koi/KIC8479386-koi.csv
+KIC 8487805,Kepler,koi_fp,K04206.01,/home/user/shaula/data/koi/KIC8487805-koi.csv
+KIC 8499922,Kepler,koi_fp,K05525.01,/home/user/shaula/data/koi/KIC8499922-koi.csv
+KIC 8552607,Kepler,koi_fp,K05542.01,/home/user/shaula/data/koi/KIC8552607-koi.csv
+KIC 8553907,Kepler,koi_fp,K07056.01,/home/user/shaula/data/koi/KIC8553907-koi.csv
+KIC 8560861,Kepler,koi_fp,K07059.01,/home/user/shaula/data/koi/KIC8560861-koi.csv
+KIC 8588377,Kepler,koi_fp,K03861.01,/home/user/shaula/data/koi/KIC8588377-koi.csv
+KIC 8590527,Kepler,koi_fp,K07065.01,/home/user/shaula/data/koi/KIC8590527-koi.csv
+KIC 8590780,Kepler,koi_fp,K06183.01,/home/user/shaula/data/koi/KIC8590780-koi.csv
+KIC 8610483,Kepler,koi_fp,K07068.01,/home/user/shaula/data/koi/KIC8610483-koi.csv
+KIC 8625821,Kepler,koi_fp,K01859.01,/home/user/shaula/data/koi/KIC8625821-koi.csv
+KIC 8719419,Kepler,koi_fp,K03506.01,/home/user/shaula/data/koi/KIC8719419-koi.csv
+KIC 8822585,Kepler,koi_fp,K07095.01,/home/user/shaula/data/koi/KIC8822585-koi.csv
