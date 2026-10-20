@@ -295,6 +295,9 @@ def main(argv: list[str] | None = None) -> int:
     if confirmed_path is None:
         print("\nNo confirmed catalog for this star; skipping comparison.")
         return 0
+    if not feats:
+        print("\nNo candidates extracted; skipping comparison.")
+        return 0
 
     print(f"\nComparing against confirmed catalog: {confirmed_path}\n")
     compare_extracted_confirmed(extracted_path, confirmed_path)

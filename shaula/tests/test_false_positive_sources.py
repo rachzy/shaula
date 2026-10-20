@@ -256,3 +256,27 @@ def test_rows_without_an_ephemeris_cut_nothing():
     kept, removed = remove_known_signals(lc, reference)
     assert removed == 0
     assert len(kept) == len(lc)
+
+
+# --- stellar radius -----------------------------------------------------------
+
+
+@pytest.mark.parametrize("radius, expected", [(None, None), (1.0, 109.1 * 0.01)])
+def test_planet_radius_tolerates_a_missing_stellar_radius(monkeypatch, radius, expected):
+    # KIC stars with no catalogue radius carry RADIUS=None, which crashed the
+    # radius step after a whole search.
+    from .. import extract_feats
+
+    monkeypatch.setattr(
+        extract_feats,
+        "extract_features_from_arrays",
+        lambda *a, **k: [{"depth_mean_per_transit": 1e-4, "planet_radius_rearth": np.nan}],
+    )
+    time = np.arange(0.0, 10.0, 0.02)
+    lc = lk.LightCurve(time=time, flux=np.ones_like(time))
+    lc.meta["RADIUS"] = radius
+    row = extract_feats.extract_features_from_lightcurve(lc)[0]
+    if expected is None:
+        assert np.isnan(row["planet_radius_rearth"])
+    else:
+        assert row["planet_radius_rearth"] == pytest.approx(expected)

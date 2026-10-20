@@ -1329,8 +1329,12 @@ def extract_features_from_lightcurve(
     )
 
     # Add stellar radius information if available
-    if "RADIUS" in lc.meta and np.isfinite(lc.meta["RADIUS"]):
-        stellar_radius = lc.meta["RADIUS"]
+    # KIC stars without a catalogue radius carry RADIUS=None, not NaN.
+    try:
+        stellar_radius = float(lc.meta.get("RADIUS"))
+    except (TypeError, ValueError):
+        stellar_radius = np.nan
+    if np.isfinite(stellar_radius):
         for feats in feature_rows:
             depth = feats["depth_mean_per_transit"]
             if np.isfinite(depth) and depth >= 0:
