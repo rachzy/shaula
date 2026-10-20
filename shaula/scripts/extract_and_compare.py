@@ -15,6 +15,9 @@ instead of looking one up by star name. ``--invert`` flips the cleaned light
 curve before the search, so real transits become brightenings that cannot be
 detected: every row found is a false alarm, labelled FALSE-POSITIVE with
 ``fp_source=inverted``, and is written to ``<star>_inverted_<date>.csv``.
+With ``--reference``, the transits and phase-0.5 windows of every KOI in the
+table are cut out before the flip, so the search cannot latch onto the edges of
+a flipped real signal.
 """
 
 from __future__ import annotations
@@ -24,8 +27,7 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
+import pandas as pd
 
 from ..download_and_clean import download_and_clean_lightcurve
 from ..extract_feats import extract_features_from_lightcurve
@@ -34,12 +36,15 @@ from ..utils.compare_extracted_confirmed import (
     compare_extracted_confirmed,
     find_confirmed_csv,
 )
+from ..utils.ephemeris import MISSION_TIME_OFFSETS
 from ..utils.label_candidates import (
     FP_SOURCE_INVERTED,
     label_all_false_positive,
     summarize_labels,
 )
 from ..utils.target_names import host_star_name
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -167,6 +172,49 @@ def invert_lightcurve(lc):
     return inverted
 
 
+# Full width of the window cut around each known transit and its phase-0.5
+# point, in units of T14. Flipping a deep transit leaves a dip-like residual on
+# either side of the brightening once the trend is fitted around it (Kepler-7b
+# inverted gave MES 486 at 2/5 of its period), so the cut is wider than the
+# 1.5 x T14 the search itself masks.
+KNOWN_SIGNAL_MASK_WIDTH = 3.0
+# Used when a KOI has no duration.
+DEFAULT_KNOWN_SIGNAL_DURATION_DAYS = 0.25
+
+
+def known_signal_mask(time, reference: pd.DataFrame, mission: str = "Kepler"):
+    """Cadences within the transit or phase-0.5 window of any reference row.
+
+    Phase 0.5 is cut too because an eclipsing binary's secondary is not a KOI
+    of its own but flips into a brightening all the same. Catalogue epochs in
+    full BJD are moved to the light curve's mission time base.
+    """
+    time = np.asarray(time, dtype=float)
+    mask = np.zeros(time.size, dtype=bool)
+    offset = MISSION_TIME_OFFSETS.get(str(mission).lower(), 0.0)
+    for _, row in reference.iterrows():
+        period = float(row.get("period_days", np.nan))
+        epoch = float(row.get("t0", np.nan))
+        if not (np.isfinite(period) and period > 0 and np.isfinite(epoch)):
+            continue
+        if abs(epoch) > 1_000_000.0:
+            epoch -= offset
+        duration = float(row.get("duration_days", np.nan))
+        if not (np.isfinite(duration) and duration > 0):
+            duration = DEFAULT_KNOWN_SIGNAL_DURATION_DAYS
+        half_width = min(0.5 * KNOWN_SIGNAL_MASK_WIDTH * duration, 0.2 * period)
+        for phase_epoch in (epoch, epoch + 0.5 * period):
+            dt = np.mod(time - phase_epoch + 0.5 * period, period) - 0.5 * period
+            mask |= np.abs(dt) < half_width
+    return mask
+
+
+def remove_known_signals(lc, reference: pd.DataFrame, mission: str = "Kepler"):
+    """Drop the cadences ``known_signal_mask`` selects; returns (lc, n_removed)."""
+    mask = known_signal_mask(lc.time.value, reference, mission)
+    return lc[~mask], int(mask.sum())
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     verbose = not args.quiet
@@ -207,6 +255,14 @@ def main(argv: list[str] | None = None) -> int:
         exptime=args.exptime,
     )
     if args.invert:
+        if args.reference is not None and args.reference.is_file():
+            lc, removed = remove_known_signals(
+                lc, pd.read_csv(args.reference), args.mission
+            )
+            print(
+                f"Removed {removed} cadences around the known signals in "
+                f"{args.reference} before inverting.\n"
+            )
         lc = invert_lightcurve(lc)
         print("Light curve inverted: every detection below is a false alarm.\n")
 

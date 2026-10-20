@@ -18,7 +18,12 @@ from ..scripts.build_koi_targets import (
 from ..scripts.build_koi_targets import (
     main as build_targets_main,
 )
-from ..scripts.extract_and_compare import invert_lightcurve, output_stem
+from ..scripts.extract_and_compare import (
+    invert_lightcurve,
+    known_signal_mask,
+    output_stem,
+    remove_known_signals,
+)
 from ..scripts.extract_multiple_stars import (
     Star,
     build_argv,
@@ -229,3 +234,25 @@ def test_inversion_turns_a_transit_into_a_brightening():
     assert np.nanmin(inverted.flux.value) == pytest.approx(1.0)
     # The original is untouched.
     assert np.nanmin(lc.flux.value) == pytest.approx(0.99)
+
+
+def test_known_signals_are_cut_at_transit_and_phase_half_in_mission_time():
+    time = np.arange(0.0, 20.0, 0.02)
+    # t0 in full BJD, as the reference tables store it; 102 BKJD = 2 mod 4.
+    reference = pd.DataFrame(
+        {"period_days": [4.0], "t0": [2454833.0 + 102.0], "duration_days": [0.1]}
+    )
+    mask = known_signal_mask(time, reference)
+    assert mask[np.argmin(np.abs(time - 6.0))]
+    assert mask[np.argmin(np.abs(time - 4.0))]  # phase 0.5
+    assert not mask[np.argmin(np.abs(time - 5.0))]
+    assert np.all(np.abs(time[mask] - np.round(time[mask] / 2.0) * 2.0) < 0.15 + 1e-9)
+
+
+def test_rows_without_an_ephemeris_cut_nothing():
+    time = np.arange(0.0, 10.0, 0.02)
+    reference = pd.DataFrame({"period_days": [np.nan], "t0": [1.0], "duration_days": [0.1]})
+    lc = lk.LightCurve(time=time, flux=np.ones_like(time))
+    kept, removed = remove_known_signals(lc, reference)
+    assert removed == 0
+    assert len(kept) == len(lc)

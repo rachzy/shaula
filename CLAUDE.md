@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 265 passed, 19 subtests
+uv run pytest                        # tests: 267 passed, 19 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
@@ -88,7 +88,7 @@ One row per candidate. Depths are fractional flux deficits (positive = dimming);
 ## Validation data
 
 - `data/confirmed/<Star>-confirmed.csv`: literature parameters per host, written by `scripts/get_literature_data.py` from the NASA Exoplanet Archive KOI cumulative table (TAP).
-- `data/koi/KIC<kepid>-koi.csv` and `data/targets/training_targets.csv`: written by `scripts/build_koi_targets.py` from one query of the KOI cumulative table. Each reference table lists every KOI of a star with `disposition` and `fp_flags`; the target list (`target,mission,group,name,reference`) covers every confirmed host plus a seeded sample of stars with an `nt`/`ss` false positive, all as `KIC <kepid>`. Run it with `extract_multiple_stars --targets`, once plainly and once with `--invert` (full search on the flipped light curve; outputs `<star>_inverted_<date>.csv`).
+- `data/koi/KIC<kepid>-koi.csv` and `data/targets/training_targets.csv`: written by `scripts/build_koi_targets.py` from one query of the KOI cumulative table. Each reference table lists every KOI of a star with `disposition` and `fp_flags`; the target list (`target,mission,group,name,reference`) covers every confirmed host plus a seeded sample of stars with an `nt`/`ss` false positive, all as `KIC <kepid>`. Run it with `extract_multiple_stars --targets`, once plainly and once with `--invert` (full search on the flipped light curve, after cutting 3 x T14 around every reference KOI's transit and phase 0.5 so flipped real signals leave no artifacts; outputs `<star>_inverted_<date>.csv`).
 - `data/extracted/`, `data/testing/`: feature CSVs written by the pipeline, compared against confirmed values with `scripts/compare_confirmed_and_extracted.py` (pairs rows by period, including small integer aliases).
 - Notebooks (`shaula/lightcurve_analysis.ipynb`, `shaula/tests/unit_graph_test.ipynb`) are exploratory and not run by pytest.
 
