@@ -304,9 +304,38 @@ Still missed: 102b/f, 444b/f, 411d, 51c (catchable; see E15), 37b/e (not).
 On 444, junk long-period candidates (168-330 d, T14 12-20 h) are accepted
 between real planets and mask data; b and f were lost that way in v4.
 
+### E17. Physical cap on the duration audit, and de-alias retry
+Tracing Kepler-444 (v4 3/5) showed two problems:
+- The MES duration audit (E10/E11) capped trials only at 0.12P, so it widened
+  junk candidates to 22-41 h at 62-154 d, past the 2.5x-solar physical limit
+  the BLS refits already use (`max_physical_duration`, now shared). Fixed;
+  `DurationAuditTests.test_widening_stops_at_the_physical_cap`.
+- With the cap alone, 444 found 0/5: the de-aliaser adopted 10 x 7.74 d (planet
+  e) on a 0.98 x BLS-power tie, the 77.5 d result failed the gate (MES 5.7, few
+  in-phase events) and the queued 7.74 d period was never tried; the same
+  happened to the next peaks until the refinement budget ran out. The widened
+  junk boxes had been masking this by passing the gate. Fix: when de-aliasing
+  moves a queued peak by > 1% and the result fails, refine it again at its
+  queued period with `dealias=False`.
+
+Full search, 12 hosts (Kepler-138's CSV was lost; its log line was kept):
+
+| star | main | v4 | v6 | extra v4/v6 |
+|---|---|---|---|---|
+| Kepler-102 | 1/5 | 3/5 | **5/5** | 2/3 |
+| Kepler-444 | 1/5 | 3/5 | **5/5** (c at 2P) | 4/5 |
+| Kepler-138 | 1/3 | 3/3 | 3/3 | 5/4 |
+| Kepler-37 | 1/4 | 2/4 | 2/4 | 4/5 |
+| Kepler-411 | 0/3 | 2/3 | 2/3 | 0/1 |
+| Kepler-51 | 2/3 | 2/3 | 2/3 | 1/0 |
+| Kepler-62, 90 | 10/13 | 13/13 | 13/13 | 3/3 |
+| Kepler-7, 13, 25, 89 | 8/8 | 8/8 | 8/8 | 6/9 |
+| **total** | **24/44** | **36/44** | **40/44** | **25/30** |
+
+Runtime per star 590-5004 s on 4 shared cores (444 slowest). Remaining
+misses: 37b/e (out of reach, E15), 51c (no queue peak), 411d (refinement
+on an active star).
+
 ## Next
-- Junk long-duration, long-period acceptances (444, 7, 138): they cost
-  masked data and iterations. Candidate fix without a recall veto: try them
-  after short-duration peaks of similar MES, or mask them less widely.
 - MES-based queue refinement on active stars (411d).
 - Calibrate the 7.1 gate against `koi_max_mult_ev` now that MES is unbiased.

@@ -4,7 +4,7 @@ import numpy as np
 from collections import OrderedDict
 from scipy.stats import skew, kurtosis
 
-from .detrend_and_period import detrend_with_bls_mask
+from .detrend_and_period import detrend_with_bls_mask, max_physical_duration
 from .folded_binned_metrics import folded_binned_metrics
 from .cdpp import calculate_cdpp
 from .sesmes import compute_SES_MES, fold_statistics, secondary_eclipse
@@ -26,6 +26,8 @@ PROVISIONAL_MES_THRESHOLD = 4.0
 MAX_TRANSIT_CANDIDATES = 12
 MAX_PEAKS_TO_VALIDATE = 20
 MAX_REFINED_PEAKS_PER_ITERATION = 6
+# Relative period change that counts as "the de-aliaser moved this peak".
+DEALIAS_RETRY_TOLERANCE = 0.01
 TRANSIT_MASK_WIDTH = 1.5
 MAX_CUMULATIVE_MASK_FRACTION = 0.5
 MIN_SEARCH_POINTS = 50
@@ -384,7 +386,10 @@ def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
     if positive_steps.size == 0:
         return duration_days
     floor = 2.0 * float(np.median(positive_steps))
-    ceiling = 0.12 * period
+    # Same physical cap the BLS refits use: without it the x2-x4 trials widened
+    # junk candidates on Kepler-444 to 22-41 h at 62-154 d, beyond what any
+    # host allows, and each wide box masks 1.5 x T14 of data per event.
+    ceiling = min(0.12 * period, max_physical_duration(period))
 
     def score(trial):
         result = compute_SES_MES(
@@ -1134,6 +1139,29 @@ def extract_features_from_arrays(
                     candidate_hint=hint,
                     gap_mask=gapped,
                 )
+                # The de-aliaser adopts an integer multiple on a 0.98 x BLS-power
+                # tie, so a queued planet can come back at 10P with too few events
+                # in phase to pass (Kepler-444e: 7.74 d -> 77.5 d, MES 5.7). Its
+                # queued period is then never tried. Retry it as queued; harmonics
+                # are still settled on MES by _reconcile_accepted_harmonic.
+                hint_period = float(hint.get("period", np.nan))
+                moved = abs(
+                    float(measured_features.get("period_days", np.nan)) / hint_period - 1.0
+                ) > DEALIAS_RETRY_TOLERANCE
+                if moved and not _candidate_passes_mes(measured_features, measured_info):
+                    retry_features, retry_info, _ = _extract_single_candidate_from_arrays(
+                        time_values,
+                        flux_values,
+                        verbose=verbose,
+                        refine_duration=refine_duration,
+                        use_tls=use_tls,
+                        mask_eclipses=mask_eclipses,
+                        candidate_hint=hint,
+                        gap_mask=gapped,
+                        dealias=False,
+                    )
+                    if _candidate_passes_mes(retry_features, retry_info):
+                        measured_features, measured_info = retry_features, retry_info
             if _period_already_accepted(measured_features, accepted_rows) or any(
                 _same_ephemeris(measured_features, previous)
                 for previous in rejected_ephemerides

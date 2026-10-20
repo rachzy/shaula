@@ -102,6 +102,16 @@ def _interleave_candidates(primary, secondary, tolerance=0.005):
     return unique
 
 
+def max_physical_duration(period):
+    """Longest T14 (days) the search accepts at ``period``.
+
+    A central transit across a solar-density star lasts ~13 h * (P/1yr)^(1/3).
+    Allow 2.5x that to cover evolved, low-density hosts. This replaces a flat
+    0.35 d cap that clipped real durations for P >~ 100 d (T14 grows with P).
+    """
+    return 2.5 * 0.5417 * (float(period) / 365.25) ** (1.0 / 3.0)
+
+
 def rank_independent_bls_candidates(
     periodogram,
     max_candidates=None,
@@ -341,11 +351,7 @@ def detrend_with_bls_mask(
         if not np.isfinite(period) or period <= 0:
             return max(floor * 1.5, 0.2)
         duty_cap = 0.12 * float(period)
-        # A central transit across a solar-density star lasts ~13 h * (P/1yr)^(1/3).
-        # Allow 2.5x that to cover evolved, low-density hosts. This replaces a flat
-        # 0.35 d cap that clipped real durations for P >~ 100 d (T14 grows with P).
-        physical_cap = 2.5 * 0.5417 * (float(period) / 365.25) ** (1.0 / 3.0)
-        return max(floor * 1.5, min(physical_cap, duty_cap))
+        return max(floor * 1.5, min(max_physical_duration(period), duty_cap))
 
     def _folded_profile_duration(time, flux_values, period, transit_time, floor):
         if not (np.isfinite(period) and period > 0 and np.isfinite(transit_time)):
