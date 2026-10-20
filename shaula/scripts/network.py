@@ -16,6 +16,7 @@ from collections.abc import Callable
 from typing import TypeVar
 
 import requests
+from astroquery.exceptions import RemoteServiceError
 
 # (connect, read) seconds. The read timeout bounds the wait for each chunk, not
 # the whole transfer, so a slow but live download still completes.
@@ -43,7 +44,16 @@ def install_default_request_timeout(timeout=DEFAULT_REQUEST_TIMEOUT) -> None:
 
 
 def is_network_error(exc: BaseException) -> bool:
-    return isinstance(exc, (requests.exceptions.RequestException, TimeoutError, ConnectionError))
+    # RemoteServiceError is MAST's own "Request failed" during an outage.
+    return isinstance(
+        exc,
+        (
+            requests.exceptions.RequestException,
+            RemoteServiceError,
+            TimeoutError,
+            ConnectionError,
+        ),
+    )
 
 
 def with_retries(

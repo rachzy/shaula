@@ -57,3 +57,17 @@ def test_other_errors_are_not_retried():
     with pytest.raises(ValueError):
         network.with_retries(broken, sleep=lambda s: None)
     assert len(calls) == 1
+
+
+def test_a_mast_service_failure_is_retried():
+    from astroquery.exceptions import RemoteServiceError
+
+    calls = []
+
+    def outage():
+        calls.append(1)
+        if len(calls) == 1:
+            raise RemoteServiceError("Request failed.")
+        return "lc"
+
+    assert network.with_retries(outage, sleep=lambda s: None) == "lc"
