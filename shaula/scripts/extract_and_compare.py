@@ -43,6 +43,7 @@ from ..utils.label_candidates import (
     summarize_labels,
 )
 from ..utils.target_names import host_star_name
+from .network import install_default_request_timeout, with_retries
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -245,14 +246,17 @@ def main(argv: list[str] | None = None) -> int:
             f"(expected `{star}-confirmed.csv`).{note}\n"
         )
 
-    lc = download_and_clean_lightcurve(
-        target=star,
-        mission=args.mission,
-        sigma_upper=args.sigma_upper,
-        all=args.download_all,
-        verbose=verbose,
-        author=args.author,
-        exptime=args.exptime,
+    install_default_request_timeout()
+    lc = with_retries(
+        lambda: download_and_clean_lightcurve(
+            target=star,
+            mission=args.mission,
+            sigma_upper=args.sigma_upper,
+            all=args.download_all,
+            verbose=verbose,
+            author=args.author,
+            exptime=args.exptime,
+        )
     )
     if args.invert:
         if args.reference is not None and args.reference.is_file():

@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 267 passed, 19 subtests
+uv run pytest                        # tests: 270 passed, 19 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
