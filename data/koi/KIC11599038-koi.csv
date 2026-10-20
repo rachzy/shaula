@@ -1,0 +1,4 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags
+Kepler-1751b,7.01733571,2454966.90592,0.148625,3.567,0.0002555,0.015214,0.581,87.34,12.53,0.0,0.14363457935587476,0.967,3.2695124,12.549701,CONFIRMED,
+K01437.02,9.27989,2454966.7457,0.13875,3.33,0.0001643,0.012195,0.579,88.13,17.69,0.0,0.11508609153358909,0.967,3.4277854,7.6888905,FALSE POSITIVE,co
+K01437.03,17.4217322,2454978.9011,0.19658333333333333,4.718,0.0002084,0.013447,0.415,89.09,26.08,0.0,0.12668391471139262,0.967,2.945277,7.1332707,FALSE POSITIVE,nt
