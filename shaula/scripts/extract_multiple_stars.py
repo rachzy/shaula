@@ -26,7 +26,19 @@ Usage (from the repo root with the project venv active)::
     python -m shaula.scripts.extract_multiple_stars \\
         --include-false-candidates --label-output-candidates
 
-Edit the ``STARS`` list below to change which stars are processed.
+Edit the ``STARS`` list below to change which stars are processed, or pass
+``--targets`` with a target list CSV (``target,mission,group,name,reference``,
+as written by ``build_koi_targets``) to run over it instead; each star is then
+labelled against its own ``reference`` table. ``--invert`` runs every star on
+its flipped light curve, so every detection is a labelled false alarm::
+
+    python -m shaula.scripts.build_koi_targets --fp-limit 300
+    python -m shaula.scripts.extract_multiple_stars \\
+        --targets data/targets/training_targets.csv \\
+        --no-include-false-candidates --label-output-candidates
+    python -m shaula.scripts.extract_multiple_stars \\
+        --targets data/targets/training_targets.csv --invert \\
+        --no-include-false-candidates --label-output-candidates
 """
 
 from __future__ import annotations
@@ -38,6 +50,8 @@ import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
+
+import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -52,6 +66,7 @@ class Star:
     name: str
     group: str
     mission: str = "Kepler"
+    reference: str | None = None
 
 
 # Every star below is annotated with the archive values it was selected on:
@@ -100,9 +115,41 @@ OUT_DIR = REPO_ROOT / "data" / "extracted"
 CONFIRMED_DIR = REPO_ROOT / "data" / "confirmed"
 
 
-def has_existing_output(star: str, out_dir: Path) -> bool:
-    """Return True if `out_dir` already holds an extracted CSV for `star`."""
-    return any(out_dir.glob(f"{star}_*.csv"))
+def _resolve_reference(reference: str | None) -> str | None:
+    """Resolve a repo-relative reference path (as build_koi_targets writes it)."""
+    if not reference or Path(reference).is_absolute():
+        return reference
+    return str(REPO_ROOT / reference)
+
+
+def load_targets(path: Path) -> list[Star]:
+    """Read a target list CSV into batch entries."""
+    frame = pd.read_csv(path, dtype=str).fillna("")
+    missing = {"target", "group"} - set(frame.columns)
+    if missing:
+        raise ValueError(f"{path} is missing column(s): {sorted(missing)}")
+    return [
+        Star(
+            name=row["target"],
+            group=row["group"],
+            mission=row.get("mission") or "Kepler",
+            reference=_resolve_reference(row.get("reference") or None),
+        )
+        for row in frame.to_dict("records")
+    ]
+
+
+def has_existing_output(star: str, out_dir: Path, *, inverted: bool = False) -> bool:
+    """Return True if `out_dir` already holds an extracted CSV for `star`.
+
+    Matched on the dated file name, ``<stem>_<YYYYMMDD>.csv``, so ``Kepler-7``
+    matches neither ``Kepler-70_...`` nor its own ``Kepler-7_inverted_...``.
+    """
+    stem = extract_and_compare.output_stem(star, inverted=inverted)
+    return any(
+        path.stem[len(stem) + 1 :].isdigit()
+        for path in out_dir.glob(f"{stem}_*.csv")
+    )
 
 
 def build_argv(
@@ -113,6 +160,7 @@ def build_argv(
     include_false_candidates: bool,
     label_output_candidates: bool,
     extra_args: list[str],
+    invert: bool = False,
 ) -> list[str]:
     """Build the extract_and_compare CLI arguments for one star."""
     argv = [
@@ -128,6 +176,10 @@ def build_argv(
         argv.append("--include-false-candidates")
     if label_output_candidates:
         argv.append("--label-output-candidates")
+    if entry.reference:
+        argv.extend(["--reference", entry.reference])
+    if invert:
+        argv.append("--invert")
     return [*argv, *extra_args]
 
 
@@ -178,6 +230,7 @@ def run_batch(
     confirmed_dir: Path = CONFIRMED_DIR,
     extra_args: list[str] | None = None,
     workers: int = 1,
+    invert: bool = False,
 ) -> tuple[list[str], list[str], list[str]]:
     """Extract every star in `stars`, skipping or failing individually.
 
@@ -201,7 +254,7 @@ def run_batch(
     # nothing and workers are only spawned for stars that actually need work.
     for entry in stars:
         star = host_star_name(entry.name)
-        if has_existing_output(star, out_dir):
+        if has_existing_output(star, out_dir, inverted=invert):
             print(f"=== Skipping {star}: existing output found in {out_dir} ===")
             skipped.append(star)
             continue
@@ -217,6 +270,7 @@ def run_batch(
                     include_false_candidates,
                     label_output_candidates,
                     extra_args,
+                    invert=invert,
                 ),
             )
         )
@@ -283,6 +337,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=f"Directory of confirmed CSVs (default: {CONFIRMED_DIR})",
     )
     parser.add_argument(
+        "--targets",
+        type=Path,
+        help=(
+            "Target list CSV (target,mission,group,name,reference) to run "
+            "instead of the STARS list, e.g. from build_koi_targets"
+        ),
+    )
+    parser.add_argument(
+        "--invert",
+        action="store_true",
+        help=(
+            "Search each star's flipped light curve; every row is a false "
+            "alarm, written as <star>_inverted_<date>.csv"
+        ),
+    )
+    parser.add_argument(
         "--include-false-candidates",
         action=argparse.BooleanOptionalAction,
         required=True,
@@ -303,13 +373,15 @@ def main(argv: list[str] | None = None) -> int:
         print("--workers must be at least 1", file=sys.stderr)
         return 2
 
+    stars = load_targets(args.targets) if args.targets else STARS
     succeeded, skipped, failed = run_batch(
-        STARS,
+        stars,
         include_false_candidates=args.include_false_candidates,
         label_output_candidates=args.label_output_candidates,
         out_dir=args.out_dir,
         confirmed_dir=args.confirmed_dir,
         workers=args.workers,
+        invert=args.invert,
     )
 
     print("\n=== Batch extraction complete ===")

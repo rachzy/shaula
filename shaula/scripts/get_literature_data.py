@@ -64,7 +64,20 @@ KOI_SELECT_COLUMNS = (
     "koi_srad",
     "koi_max_sngle_ev",
     "koi_max_mult_ev",
+    "koi_fpflag_nt",
+    "koi_fpflag_ss",
+    "koi_fpflag_co",
+    "koi_fpflag_ec",
 )
+
+# Robovetter major flag column -> short code written to a reference CSV's
+# ``fp_flags`` column (joined with "+", e.g. "nt+ss").
+KOI_FP_FLAG_CODES = {
+    "koi_fpflag_nt": "nt",
+    "koi_fpflag_ss": "ss",
+    "koi_fpflag_co": "co",
+    "koi_fpflag_ec": "ec",
+}
 
 # KOI column -> confirmed-CSV column (unit-compatible, direct copy).
 KOI_COLUMN_MAP = {
@@ -98,6 +111,10 @@ CONFIRMED_COLUMNS = [
     "max_ses",
     "max_mes",
 ]
+
+# A reference table lists every KOI of a star, not only its planets, so the
+# labeller can tell a known false positive from a candidate.
+REFERENCE_COLUMNS = [*CONFIRMED_COLUMNS, "disposition", "fp_flags"]
 
 # koi_depth is reported in parts-per-million; the pipeline stores a fraction.
 PPM_PER_UNITY = 1_000_000.0
@@ -146,21 +163,27 @@ def fetch_koi_table(
         ) from exc
 
 
-def koi_rows_to_confirmed(raw: pd.DataFrame) -> pd.DataFrame:
-    """Convert raw KOI rows into the wide confirmed-CSV row format."""
-    if raw.empty:
-        return pd.DataFrame(columns=CONFIRMED_COLUMNS)
+def _fp_flag_codes(df: pd.DataFrame) -> pd.Series:
+    """``fp_flags`` per row: the set Robovetter major flags, e.g. ``nt+ss``."""
+    flagged = {
+        code: pd.to_numeric(df[column], errors="coerce").fillna(0).to_numpy() > 0
+        for column, code in KOI_FP_FLAG_CODES.items()
+        if column in df.columns
+    }
+    return pd.Series(
+        [
+            "+".join(code for code, mask in flagged.items() if mask[position])
+            for position in range(len(df))
+        ],
+        index=df.index,
+        dtype=object,
+    )
 
-    df = raw.copy()
-    if "koi_disposition" in df.columns:
-        df = df[df["koi_disposition"] == "CONFIRMED"]
-    if "kepler_name" in df.columns:
-        df = df[df["kepler_name"].notna()]
-    if df.empty:
-        return pd.DataFrame(columns=CONFIRMED_COLUMNS)
 
+def _koi_rows_to_frame(df: pd.DataFrame, target: pd.Series) -> pd.DataFrame:
+    """Shared KOI -> confirmed-CSV unit conversion, one output row per KOI."""
     out = pd.DataFrame(index=df.index)
-    out["target"] = df["kepler_name"].str.strip().str.replace(" ", "", regex=False)
+    out["target"] = target
 
     for koi_col, confirmed_col in KOI_COLUMN_MAP.items():
         out[confirmed_col] = pd.to_numeric(df.get(koi_col), errors="coerce")
@@ -178,8 +201,50 @@ def koi_rows_to_confirmed(raw: pd.DataFrame) -> pd.DataFrame:
 
     numeric_cols = [c for c in CONFIRMED_COLUMNS if c != "target"]
     out[numeric_cols] = out[numeric_cols].astype(float)
+    return out
 
-    out = out[CONFIRMED_COLUMNS]
+
+def koi_rows_to_confirmed(raw: pd.DataFrame) -> pd.DataFrame:
+    """Convert raw KOI rows into the wide confirmed-CSV row format."""
+    if raw.empty:
+        return pd.DataFrame(columns=CONFIRMED_COLUMNS)
+
+    df = raw.copy()
+    if "koi_disposition" in df.columns:
+        df = df[df["koi_disposition"] == "CONFIRMED"]
+    if "kepler_name" in df.columns:
+        df = df[df["kepler_name"].notna()]
+    if df.empty:
+        return pd.DataFrame(columns=CONFIRMED_COLUMNS)
+
+    target = df["kepler_name"].str.strip().str.replace(" ", "", regex=False)
+    out = _koi_rows_to_frame(df, target)[CONFIRMED_COLUMNS]
+    out = out.drop_duplicates(subset="target", keep="first")
+    out = out.sort_values("period_days", kind="stable").reset_index(drop=True)
+    return out
+
+
+def koi_rows_to_reference(raw: pd.DataFrame) -> pd.DataFrame:
+    """Convert every KOI row of a star, whatever its disposition.
+
+    The output is a confirmed CSV plus ``disposition`` (the archive's
+    ``koi_disposition``) and ``fp_flags``. ``target`` is the Kepler name when
+    the KOI has one and the KOI number (``K00002.01``) otherwise.
+    """
+    if raw.empty:
+        return pd.DataFrame(columns=REFERENCE_COLUMNS)
+
+    df = raw.copy()
+    kepoi = df.get("kepoi_name", pd.Series("", index=df.index)).astype(str).str.strip()
+    if "kepler_name" in df.columns:
+        named = df["kepler_name"].astype(str).str.strip().str.replace(" ", "", regex=False)
+        target = named.where(df["kepler_name"].notna(), kepoi)
+    else:
+        target = kepoi
+    out = _koi_rows_to_frame(df, target)
+    out["disposition"] = df.get("koi_disposition", pd.Series("", index=df.index)).fillna("")
+    out["fp_flags"] = _fp_flag_codes(df)
+    out = out[REFERENCE_COLUMNS]
     out = out.drop_duplicates(subset="target", keep="first")
     out = out.sort_values("period_days", kind="stable").reset_index(drop=True)
     return out

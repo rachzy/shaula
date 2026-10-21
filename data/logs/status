@@ -1,0 +1,10 @@
+normal start 2026-10-19T20:35:46-03:00
+normal stopped for restart 2026-10-20T00:20:27-03:00
+normal start (local split, retries) 2026-10-20T00:21:45-03:00
+normal stopped for split + 14c4111 2026-10-20T06:29:32-03:00
+normal start (245 local, 14c4111) 2026-10-20T06:29:58-03:00
+machine was shut down 06:40-12:42; resuming 2026-10-20T12:48:54-03:00
+normal start (245 local, 14c4111) 2026-10-20T12:48:54-03:00
+stopped to shrink local list to rows 1-204+285, 4 workers 2026-10-20T12:50:09-03:00
+normal start (rows 1-204+285, 4 workers) 2026-10-20T12:50:19-03:00
+paused by request (save+commit) 2026-10-20T18:05:05-03:00
