@@ -13,6 +13,7 @@ from unittest.mock import patch
 import numpy as np
 
 from ..cdpp import calculate_cdpp, duration_matched_statistics
+from ..detrend_and_period import max_physical_duration
 from ..extract_feats import _mes_optimal_duration, extract_features_from_arrays
 from ..sesmes import compute_SES_MES, fold_statistics
 
@@ -493,6 +494,16 @@ class DurationAuditTests(unittest.TestCase):
         time, flux = self._series()
         audited = _mes_optimal_duration(time, flux, 10.0, 2.037, DURATION_DAYS, None)
         self.assertEqual(audited, DURATION_DAYS)
+
+    def test_widening_stops_at_the_physical_cap(self):
+        # A 1.2 d box at 60 d is longer than any host allows (cap ~0.74 d);
+        # the x2 trial would fit it best, but must not be adopted.
+        rng = np.random.default_rng(32)
+        time = np.arange(0.0, 600.0, CADENCE_DAYS)
+        flux = 1.0 + rng.normal(0.0, 2e-4, time.size)
+        flux[_transit_mask(time, 60.0, 20.0, 1.2)] -= 5e-4
+        audited = _mes_optimal_duration(time, flux, 60.0, 20.0, 0.6, None)
+        self.assertLessEqual(audited, max_physical_duration(60.0))
 
 
 class GapMaskTests(unittest.TestCase):
