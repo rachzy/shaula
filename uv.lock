@@ -2348,7 +2348,6 @@ wheels = [
 
 [[package]]
 name = "shaula"
-version = "0.0.1a0"
 source = { editable = "." }
 dependencies = [
     { name = "astropy" },
@@ -2388,7 +2387,7 @@ requires-dist = [
     { name = "threadpoolctl", marker = "extra == 'parallel'", specifier = ">=3.5" },
     { name = "transitleastsquares", marker = "extra == 'tls'", specifier = ">=1.32" },
 ]
-provides-extras = ["tls", "parallel"]
+provides-extras = ["parallel", "tls"]
 
 [package.metadata.requires-dev]
 dev = [

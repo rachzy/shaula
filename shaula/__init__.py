@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-__version__ = "0.0.1a0"
+from importlib.metadata import version as _metadata_version
+
+__version__ = _metadata_version("shaula")
 
 from .api import (  # noqa: E402  (version must be defined before api imports it)
     STAGES,
