@@ -351,7 +351,13 @@ def detrend_with_bls_mask(
         if not np.isfinite(period) or period <= 0:
             return max(floor * 1.5, 0.2)
         duty_cap = 0.12 * float(period)
-        return max(floor * 1.5, min(max_physical_duration(period), duty_cap))
+        # Never reach half the period: on sparse data (heavily gapped inverted
+        # KIC 9592855, median cadence 0.27 d) floor * 1.5 can exceed a short
+        # period and BoxLeastSquares raises. Callers skip a bound below floor.
+        return min(
+            max(floor * 1.5, min(max_physical_duration(period), duty_cap)),
+            0.5 * float(period),
+        )
 
     def _folded_profile_duration(time, flux_values, period, transit_time, floor):
         if not (np.isfinite(period) and period > 0 and np.isfinite(transit_time)):

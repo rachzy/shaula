@@ -13,7 +13,7 @@ from unittest.mock import patch
 import numpy as np
 
 from ..cdpp import calculate_cdpp, duration_matched_statistics
-from ..detrend_and_period import max_physical_duration
+from ..detrend_and_period import detrend_with_bls_mask, max_physical_duration
 from ..extract_feats import _mes_optimal_duration, extract_features_from_arrays
 from ..sesmes import compute_SES_MES, fold_statistics
 
@@ -643,6 +643,19 @@ class GapMaskTests(unittest.TestCase):
                 cadence_hours=CADENCE_HOURS,
                 gap_mask=np.zeros(time.size - 1, dtype=bool),
             )
+
+
+class SparseCadenceSearchTests(unittest.TestCase):
+    def test_short_period_on_sparse_cadence_does_not_raise(self):
+        # Heavy gapping (inverted KIC 9592855) left a 0.27 d median cadence,
+        # so the duration floor exceeded the refinement period window and
+        # BoxLeastSquares raised, losing the star's earlier candidates.
+        rng = np.random.default_rng(0)
+        time = np.arange(120.0, 1591.0, 0.27)
+        flux = 1.0 + 1e-3 * rng.standard_normal(time.size)
+        flux[((time - 120.1) / 0.55 % 1.0) < 0.3] -= 3e-3
+        with contextlib.redirect_stdout(io.StringIO()):
+            detrend_with_bls_mask(time, flux)
 
 
 if __name__ == "__main__":
