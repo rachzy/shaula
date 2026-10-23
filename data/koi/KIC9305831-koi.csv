@@ -1,0 +1,2 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags
+Kepler-44b,3.246732048,2454966.379165,0.12722916666666667,3.0535,0.0069981999999999996,0.077925,0.475,86.55,7.89,0.0,1.1062539031135694,1.457,56.10826,736.81085,CONFIRMED,

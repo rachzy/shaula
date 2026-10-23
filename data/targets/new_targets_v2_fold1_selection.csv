@@ -1,0 +1,120 @@
+kic_id,group,object_name,disposition,fp_flags,period_days,radius_rearth,transit_snr_or_mes,n_transits_kepler,koi_score,reason,stratum
+KIC10684670,A,Kepler-1189 b (K02317.01),CONFIRMED,,3.78862,1.23,14.8,285,0.996,"small planet (1.23 Re) at 3.8 d, modest MES",A-small
+KIC5601258,A,Kepler-1805 b (K02191.01),CONFIRMED,,8.84784,1.15,18.3,120,1.0,"small planet (1.15 Re) at 8.8 d, modest MES",A-small
+KIC6269070,A,Kepler-1288 b (K02608.01),CONFIRMED,,2.76122,1.84,13.3,379,0.985,"short period (<3 d), 1.8 Re",A-short
+KIC7120108,A,Kepler-1825 b (K02325.01),CONFIRMED,,1.02586,1.57,17.9,1302,1.0,"short period (<3 d), 1.6 Re",A-short
+KIC10975146,A,Kepler-808 b (K01300.01),CONFIRMED,,0.63133,1.2,17.1,2115,1.0,"ultra-short period (<3 d), 1.2 Re",A-ultra-short
+KIC5651104,A,Kepler-695 b (K00840.01),CONFIRMED,,3.04033,8.99,653.4,440,1.0,"hot Jupiter (9.0 Re, 3.0 d), EB look-alike",A-hot
+KIC9305831,A,Kepler-44 b (K00204.01),CONFIRMED,,3.24673,12.4,736.8,415,1.0,"hot Jupiter (12.4 Re, 3.2 d), EB look-alike",A-hot
+KIC3861595,A,Kepler-1658 b (K00004.01),CONFIRMED,,3.84937,12.94,235.6,276,1.0,"hot Jupiter (12.9 Re, 3.8 d) grazing/V-shaped (b>0.8), EB look-alike",A-hot
+KIC5124667,A,Kepler-1672 b (K01822.01),CONFIRMED,,150.87832,4.37,51.4,9,1.0,"long period (151 d, 9 transits)",A-long
+KIC10098844,C,K02964.02 (K02964.02),FALSE POSITIVE,NT,35.08093,1.21,7.5,32,0.189,"FP (NT) on a planet host, 1.2 Re at 35.1 d",C
+KIC10098844,C,Kepler-1397 b (K02964.01),CONFIRMED,,47.44971,1.61,13.8,24,0.985,"planet sharing its light curve with a KOI false positive; small planet (1.61 Re) at 47.4 d, modest MES",C
+KIC2438513,A,Kepler-1777 b (K01944.01),CONFIRMED,,12.1842,2.59,25.8,113,1.0,"moderate MES (26) planet, 2.6 Re at 12.2 d (was C: its only FP is CO-only, labelled UNKNOWN)",A-moderate
+KIC10350571,C,Kepler-784 c (K01175.02),CONFIRMED,,17.15724,1.55,13.0,61,0.997,"planet sharing its light curve with a KOI false positive; small planet (1.55 Re) at 17.2 d, modest MES",C
+KIC10350571,C,Kepler-784 b (K01175.01),CONFIRMED,,31.59258,1.78,13.0,34,0.994,"planet sharing its light curve with a KOI false positive; small planet (1.78 Re) at 31.6 d, modest MES",C
+KIC10350571,C,K01175.03 (K01175.03),FALSE POSITIVE,NT,93.88156,2.02,7.3,11,0.378,"FP (NT) on a planet host, 2.0 Re at 93.9 d",C
+KIC10212441,C,Kepler-1199 b (K02342.01),CONFIRMED,,15.04471,1.51,18.3,89,1.0,"planet sharing its light curve with a KOI false positive; small planet (1.51 Re) at 15.0 d, modest MES",C
+KIC10212441,C,K02342.02 (K02342.02),FALSE POSITIVE,NT,354.78194,30.53,8.2,3,0.269,"FP (NT) on a planet host, 30.5 Re at 354.8 d",C
+KIC6609270,A,Kepler-1902 b (K03090.01),CONFIRMED,,3.82223,1.05,14.1,258,0.614,"small planet (1.05 Re) at 3.8 d, modest MES (was C: its only FP is CO-only, labelled UNKNOWN)",A-small
+KIC5986270,B,K05220.01 (K05220.01),FALSE POSITIVE,SS,1.53468,18.39,33.9,878,1.0,"[B1] SS eclipse, giant-planet radius 18.4 Re at 1.5 d, no secondary flagged",B1
+KIC4649305,B,K00143.01 (K00143.01),FALSE POSITIVE,SS,22.65117,7.62,182.1,58,0.983,"[B1] SS eclipse, giant-planet radius 7.6 Re at 22.7 d, no secondary flagged",B1
+KIC5036537,B,K03718.01 (K03718.01),FALSE POSITIVE,SS+CO+EC,1.06101,9.14,448.2,1074,0.0,"[B1] SS eclipse, giant-planet radius 9.1 Re at 1.1 d, no secondary flagged",B1
+KIC11548140,B,K00256.01 (K00256.01),FALSE POSITIVE,SS,1.37865,6.51,110.8,770,0.0,"[B1] SS eclipse, giant-planet radius 6.5 Re at 1.4 d, no secondary flagged",B1
+KIC9049673,B,K03799.01 (K03799.01),FALSE POSITIVE,SS+CO,1.32747,7.08,451.7,861,0.0,"[B1] SS eclipse, giant-planet radius 7.1 Re at 1.3 d, weak model-fit secondary only",B1
+KIC9899630,B,K04439.01 (K04439.01),FALSE POSITIVE,SS+CO+EC,1.33258,15.89,13.1,1010,0.0,"[B1] SS eclipse, giant-planet radius 15.9 Re at 1.3 d, weak model-fit secondary only",B1
+KIC8264070,B,K01068.01 (K01068.01),FALSE POSITIVE,SS+CO+EC,2.89743,14.35,54.7,309,0.0,"[B1] SS eclipse, giant-planet radius 14.3 Re at 2.9 d, weak model-fit secondary only",B1
+KIC6198256,B,K07770.01 (K07770.01),FALSE POSITIVE,NT,3.54829,1.69,10.0,372,0.318,"[B3] not transit-like, small-planet mimic 1.7 Re at 3.5 d",B3
+KIC3761319,B,K06104.01 (K06104.01),FALSE POSITIVE,NT,16.24809,2.38,14.2,69,0.228,"[B3] not transit-like, small-planet mimic 2.4 Re at 16.2 d",B3
+KIC6384840,B,K06699.01 (K06699.01),FALSE POSITIVE,NT+CO,2.49904,1.04,7.9,457,0.039,"[B3] not transit-like, small-planet mimic 1.0 Re at 2.5 d",B3
+KIC5470851,B,K05172.01 (K05172.01),FALSE POSITIVE,NT+CO+EC,12.42762,1.14,9.5,110,0.0,"[B3] not transit-like, small-planet mimic 1.1 Re at 12.4 d",B3
+KIC9291039,B,K03230.01 (K03230.01),FALSE POSITIVE,NT,8.80854,2.69,16.7,160,0.0,"[B3] not transit-like, small-planet mimic 2.7 Re at 8.8 d",B3
+KIC5471480,B,K06587.01 (K06587.01),FALSE POSITIVE,NT+CO+EC,12.42542,2.17,14.4,112,0.0,"[B3] not transit-like, small-planet mimic 2.2 Re at 12.4 d",B3
+KIC3838004,B,K06365.01 (K06365.01),FALSE POSITIVE,NT,2.34414,2.43,8.8,1145,0.0,"[B3] not transit-like, small-planet mimic 2.4 Re at 2.3 d",B3
+KIC6470149,B,K01230.01 (K01230.01),FALSE POSITIVE,SS,165.73986,57.54,105.0,9,1.0,"[B4] high KOI score (1.00) false positive, 57.5 Re at 165.7 d",B4
+KIC8560475,B,K05543.01 (K05543.01),FALSE POSITIVE,SS,7.41505,91.09,23.8,65,1.0,"[B4] high KOI score (1.00) false positive, 91.1 Re at 7.4 d",B4
+KIC7900450,B,K05441.01 (K05441.01),FALSE POSITIVE,NT,25.48052,1.25,9.4,51,1.0,"[B4] high KOI score (1.00) false positive, 1.2 Re at 25.5 d",B4
+KIC9593528,B,K03939.01 (K03939.01),FALSE POSITIVE,SS,1.88665,43.81,16.9,49,1.0,"[B4] high KOI score (1.00) false positive, 43.8 Re at 1.9 d",B4
+KIC9595686,B,K00944.01 (K00944.01),FALSE POSITIVE,SS+CO,3.10825,4.43,139.4,435,1.0,"[B4] high KOI score (1.00) false positive, 4.4 Re at 3.1 d",B4
+KIC4150611,B,K03156.01 (K03156.01),FALSE POSITIVE,SS,0.76112,27.81,34.1,1504,1.0,"[B4] high KOI score (1.00) false positive, 27.8 Re at 0.8 d",B4
+KIC5106313,A,Kepler-1694 b (K02878.01),CONFIRMED,,3.89524,1.13,14.0,279,0.991,"small planet (1.13 Re) at 3.9 d, modest MES",A-small
+KIC7703882,A,Kepler-1954 b (K04403.01),CONFIRMED,,5.8835,1.27,11.8,227,1.0,"small planet (1.27 Re) at 5.9 d, modest MES",A-small
+KIC9643874,A,Kepler-856 b (K01457.01),CONFIRMED,,8.02768,8.43,459.3,142,1.0,"hot Jupiter (8.4 Re, 8.0 d), EB look-alike",A-hot
+KIC11498128,A,Kepler-1177 b (K02296.01),CONFIRMED,,106.24788,2.01,19.1,12,0.99,"long period (106 d, 12 transits)",A-long
+KIC9520838,A,Kepler-987 b (K01866.01),CONFIRMED,,105.30351,3.18,29.2,13,1.0,"long period (105 d, 13 transits)",A-long
+KIC5281113,A,Kepler-1602 b (K04411.01),CONFIRMED,,11.17932,1.81,11.9,95,0.994,"small planet (1.81 Re) at 11.2 d, modest MES",A-small
+KIC7769819,A,Kepler-1342 b (K02778.01),CONFIRMED,,2.21571,1.7,17.9,515,1.0,"short period (<3 d), 1.7 Re",A-short
+KIC6149910,A,Kepler-1840 b (K02469.01),CONFIRMED,,131.18792,2.34,16.6,10,1.0,"long period (131 d, 10 transits)",A-long
+KIC7549209,A,Kepler-875 b (K01518.01),CONFIRMED,,27.50711,2.58,27.2,48,1.0,"moderate MES (27) planet, 2.6 Re at 27.5 d",A-moderate
+KIC8355239,A,Kepler-189 b (K00574.02),CONFIRMED,,10.39986,1.5,18.4,127,0.999,"small planet (1.50 Re) at 10.4 d, modest MES (two-planet host)",A-two-planet
+KIC8355239,A,Kepler-189 c (K00574.01),CONFIRMED,,20.1349,2.98,53.6,69,1.0,"high-MES planet, 3.0 Re at 20.1 d (two-planet host)",A-two-planet
+KIC11337372,A,Kepler-920 b (K01650.01),CONFIRMED,,6.53194,3.09,32.7,129,1.0,"moderate MES (33) planet, 3.1 Re at 6.5 d (two-planet host)",A-two-planet
+KIC11337372,A,Kepler-920 c (K01650.02),CONFIRMED,,100.82767,4.35,30.9,8,1.0,"long period (101 d, 8 transits) (two-planet host)",A-two-planet
+KIC8628758,A,Kepler-804 c (K01279.02),CONFIRMED,,9.65188,1.08,16.2,138,0.971,"small planet (1.08 Re) at 9.7 d, modest MES (two-planet host)",A-two-planet
+KIC8628758,A,Kepler-804 b (K01279.01),CONFIRMED,,14.37458,1.94,42.9,95,1.0,"small planet (1.94 Re) at 14.4 d, modest MES (two-planet host)",A-two-planet
+KIC8937762,B,K04668.01 (K04668.01),FALSE POSITIVE,SS,15.07277,1.73,10.6,176,0.978,"[B4] high KOI score (0.98) false positive, 1.7 Re at 15.1 d",B4
+KIC7605600,B,K06893.01 (K06893.01),FALSE POSITIVE,SS,3.32619,14.72,3452.3,196,0.0,"[B1] SS eclipse, giant-planet radius 14.7 Re at 3.3 d",B1
+KIC5471688,B,K03499.01 (K03499.01),FALSE POSITIVE,NT+CO+EC,12.42813,0.85,16.7,96,0.0,"[B3] not transit-like, small-planet mimic 0.8 Re at 12.4 d",B3
+KIC4753561,B,K05996.01 (K05996.01),FALSE POSITIVE,SS+CO,4.94493,19.43,50.5,218,0.0,"[B1] SS eclipse, giant-planet radius 19.4 Re at 4.9 d",B1
+KIC8739209,B,K07084.01 (K07084.01),FALSE POSITIVE,NT,3.6973,1.07,8.2,378,0.0,"[B3] not transit-like, small-planet mimic 1.1 Re at 3.7 d",B3
+KIC5386163,B,K06006.01 (K06006.01),FALSE POSITIVE,NT+CO+EC,12.42499,2.06,10.9,112,0.0,"[B3] not transit-like, small-planet mimic 2.1 Re at 12.4 d",B3
+KIC9157908,B,K01400.01 (K01400.01),FALSE POSITIVE,SS+CO,9.41475,19.33,67.9,148,0.0,"[B1] SS eclipse, giant-planet radius 19.3 Re at 9.4 d",B1
+KIC12557713,B,K07541.01 (K07541.01),FALSE POSITIVE,SS,7.21472,16.79,1693.6,185,0.0,"[B1] SS eclipse, giant-planet radius 16.8 Re at 7.2 d",B1
+KIC7174617,B,K06156.01 (K06156.01),FALSE POSITIVE,SS,1.60836,19.36,3099.4,831,0.869,"[B1] SS eclipse, giant-planet radius 19.4 Re at 1.6 d",B1
+KIC5385773,B,K06005.01 (K06005.01),FALSE POSITIVE,NT+CO+EC,12.42542,0.84,13.5,111,0.0,"[B3] not transit-like, small-planet mimic 0.8 Re at 12.4 d",B3
+KIC3342592,B,K00402.01 (K00402.01),FALSE POSITIVE,SS,17.17733,15.29,1431.6,79,0.0,"[B1] SS eclipse, giant-planet radius 15.3 Re at 17.2 d",B1
+KIC11673674,B,K00133.01 (K00133.01),FALSE POSITIVE,SS+CO+EC,4.61877,7.48,746.5,287,0.0,"[B1] SS eclipse, giant-planet radius 7.5 Re at 4.6 d",B1
+KIC8766285,B,K05571.01 (K05571.01),FALSE POSITIVE,NT+EC,5.29731,1.49,15.4,262,0.0,"[B3] not transit-like, small-planet mimic 1.5 Re at 5.3 d",B3
+KIC4544623,B,K06423.01 (K06423.01),FALSE POSITIVE,SS+CO+EC,2.1891,13.92,28.2,523,0.0,"[B1] SS eclipse, giant-planet radius 13.9 Re at 2.2 d",B1
+KIC5385439,B,K02478.01 (K02478.01),FALSE POSITIVE,NT+CO+EC,12.42587,2.12,19.1,112,0.0,"[B3] not transit-like, small-planet mimic 2.1 Re at 12.4 d",B3
+KIC3970233,B,K00604.01 (K00604.01),FALSE POSITIVE,SS,8.25491,11.86,1356.8,133,0.027,"[B1] SS eclipse, giant-planet radius 11.9 Re at 8.3 d",B1
+KIC4743513,B,K00024.01 (K00024.01),FALSE POSITIVE,SS+CO+EC,2.08608,10.3,698.0,641,0.0,"[B1] SS eclipse, giant-planet radius 10.3 Re at 2.1 d",B1
+KIC11756821,B,K06088.01 (K06088.01),FALSE POSITIVE,SS,2.74512,9.55,732.3,259,0.0,"[B1] SS eclipse, giant-planet radius 9.6 Re at 2.7 d",B1
+KIC9549471,B,K06070.01 (K06070.01),FALSE POSITIVE,SS+CO+EC,15.71377,10.85,313.6,86,0.0,"[B1] SS eclipse, giant-planet radius 10.8 Re at 15.7 d",B1
+KIC5372966,B,K00832.01 (K00832.01),FALSE POSITIVE,SS,9.28636,17.61,1748.3,117,0.0,"[B1] SS eclipse, giant-planet radius 17.6 Re at 9.3 d",B1
+KIC3742855,B,K00045.01 (K00045.01),FALSE POSITIVE,SS,6.39719,15.02,591.2,212,0.0,"[B1] SS eclipse, giant-planet radius 15.0 Re at 6.4 d",B1
+KIC5218441,B,K00407.01 (K00407.01),FALSE POSITIVE,SS+CO,3.61376,7.05,492.8,371,0.0,"[B1] SS eclipse, giant-planet radius 7.0 Re at 3.6 d",B1
+KIC5014753,B,K00606.01 (K00606.01),FALSE POSITIVE,SS,3.17063,14.37,1215.5,339,0.002,"[B1] SS eclipse, giant-planet radius 14.4 Re at 3.2 d",B1
+KIC10338279,B,K03216.01 (K03216.01),FALSE POSITIVE,SS,5.66027,11.02,40.3,235,0.0,"[B1] SS eclipse, giant-planet radius 11.0 Re at 5.7 d",B1
+KIC9468382,B,K03409.01 (K03409.01),FALSE POSITIVE,SS+CO+EC,11.08261,7.34,32.3,127,0.0,"[B1] SS eclipse, giant-planet radius 7.3 Re at 11.1 d",B1
+KIC10485250,B,K00745.01 (K00745.01),FALSE POSITIVE,SS,16.46984,7.94,258.8,66,0.0,"[B1] SS eclipse, giant-planet radius 7.9 Re at 16.5 d",B1
+KIC9838975,B,K00218.01 (K00218.01),FALSE POSITIVE,SS,18.69286,14.81,1241.3,72,0.0,"[B1] SS eclipse, giant-planet radius 14.8 Re at 18.7 d",B1
+KIC7116236,B,K06828.01 (K06828.01),FALSE POSITIVE,SS+CO+EC,0.56679,1.17,11.1,2015,0.0,[B5] SS eclipse posing as a 1.2 Re planet at 0.6 d,B5
+KIC4568298,B,K02986.01 (K02986.01),FALSE POSITIVE,SS+CO+EC,0.56256,1.21,13.6,1902,0.0,[B5] SS eclipse posing as a 1.2 Re planet at 0.6 d,B5
+KIC6292162,B,K01125.01 (K01125.01),FALSE POSITIVE,SS,7.81484,5.33,92.3,147,0.0,[B5] SS eclipse posing as a 5.3 Re planet at 7.8 d,B5
+KIC7107561,B,K03100.01 (K03100.01),FALSE POSITIVE,SS+CO+EC,0.81259,1.54,14.5,1644,0.0,[B5] SS eclipse posing as a 1.5 Re planet at 0.8 d,B5
+KIC5471415,B,K06586.01 (K06586.01),FALSE POSITIVE,NT+CO+EC,12.42574,8.43,19.8,112,0.0,[B6] not transit-like signal posing as a 8.4 Re planet at 12.4 d,B6
+KIC2694632,B,K04600.01 (K04600.01),FALSE POSITIVE,NT,0.92226,1.29,8.3,1466,0.0,[B6] not transit-like signal posing as a 1.3 Re planet at 0.9 d,B6
+KIC5201115,B,K04044.01 (K04044.01),FALSE POSITIVE,SS+EC,1.72852,1.19,21.0,626,0.0,[B5] SS eclipse posing as a 1.2 Re planet at 1.7 d,B5
+KIC6314185,B,K03752.01 (K03752.01),FALSE POSITIVE,SS+EC,1.43326,5.67,240.6,939,0.0,[B5] SS eclipse posing as a 5.7 Re planet at 1.4 d,B5
+KIC7204073,B,K06847.01 (K06847.01),FALSE POSITIVE,NT+EC,0.5668,0.55,21.4,2360,0.0,[B6] not transit-like signal posing as a 0.6 Re planet at 0.6 d,B6
+KIC4455763,B,K05061.01 (K05061.01),FALSE POSITIVE,SS,0.7663,15.64,888.6,1591,0.0,[B5] SS eclipse posing as a 15.6 Re planet at 0.8 d,B5
+KIC5952309,B,K06636.01 (K06636.01),FALSE POSITIVE,SS+CO+EC,0.90568,0.78,9.0,1476,0.0,[B5] SS eclipse posing as a 0.8 Re planet at 0.9 d,B5
+KIC10227863,B,K03983.01 (K03983.01),FALSE POSITIVE,NT+CO+EC,5.14073,19.28,17.0,213,0.0,[B6] not transit-like signal posing as a 19.3 Re planet at 5.1 d,B6
+KIC5529501,B,K06592.01 (K06592.01),FALSE POSITIVE,NT+EC,1.51945,0.5,8.3,885,0.0,[B6] not transit-like signal posing as a 0.5 Re planet at 1.5 d,B6
+KIC5796186,B,K00651.01 (K00651.01),FALSE POSITIVE,SS+CO+EC,42.55931,5.45,135.5,32,0.0,[B5] SS eclipse posing as a 5.5 Re planet at 42.6 d,B5
+KIC4150624,B,K01334.02 (K01334.02),FALSE POSITIVE,NT+CO+EC,94.22594,1.93,15.9,15,0.0,[B6] not transit-like signal posing as a 1.9 Re planet at 94.2 d,B6
+KIC9761199,B,K01459.01 (K01459.01),FALSE POSITIVE,SS,0.69202,19.31,29.7,964,0.0,[B5] SS eclipse posing as a 19.3 Re planet at 0.7 d,B5
+KIC7282154,B,K07830.01 (K07830.01),FALSE POSITIVE,NT+EC,0.56679,0.63,8.4,2009,0.0,[B6] not transit-like signal posing as a 0.6 Re planet at 0.6 d,B6
+KIC10920420,B,K08038.01 (K08038.01),FALSE POSITIVE,NT+CO+EC,0.94389,1.45,8.7,1422,0.0,[B6] not transit-like signal posing as a 1.4 Re planet at 0.9 d,B6
+KIC4914737,B,K06471.01 (K06471.01),FALSE POSITIVE,SS+EC,8.65312,0.85,8.4,156,0.0,[B5] SS eclipse posing as a 0.8 Re planet at 8.7 d,B5
+KIC8179190,B,K04196.01 (K04196.01),FALSE POSITIVE,NT+CO,0.66246,8.3,10.9,1235,0.0,[B6] not transit-like signal posing as a 8.3 Re planet at 0.7 d,B6
+KIC4933476,B,K06122.01 (K06122.01),FALSE POSITIVE,SS+CO,1.2862,1.27,12.7,415,0.0,[B5] SS eclipse posing as a 1.3 Re planet at 1.3 d,B5
+KIC3353454,B,K07654.01 (K07654.01),FALSE POSITIVE,NT+CO,1.69119,6.36,7.2,20,0.01,[B6] not transit-like signal posing as a 6.4 Re planet at 1.7 d,B6
+KIC6792124,B,K06770.01 (K06770.01),FALSE POSITIVE,SS+EC,0.52881,1.84,13.2,2535,0.0,[B5] SS eclipse posing as a 1.8 Re planet at 0.5 d,B5
+KIC6307063,B,K02702.01 (K02702.01),FALSE POSITIVE,SS+CO+EC,75.378,3.82,21.5,16,0.0,[B5] SS eclipse posing as a 3.8 Re planet at 75.4 d,B5
+KIC10801951,B,K08032.01 (K08032.01),FALSE POSITIVE,NT+EC,1.10512,0.83,9.7,1219,0.0,[B6] not transit-like signal posing as a 0.8 Re planet at 1.1 d,B6
+KIC2851100,B,K01104.01 (K01104.01),FALSE POSITIVE,SS+CO,0.89011,1.25,13.8,1503,0.0,[B5] SS eclipse posing as a 1.2 Re planet at 0.9 d,B5
+KIC8345473,B,K07881.01 (K07881.01),FALSE POSITIVE,NT+CO,2.25021,19.94,8.9,87,0.0,[B6] not transit-like signal posing as a 19.9 Re planet at 2.3 d,B6
+KIC6032920,B,K07757.01 (K07757.01),FALSE POSITIVE,NT,10.82883,0.76,7.7,121,0.469,[B6] not transit-like signal posing as a 0.8 Re planet at 10.8 d,B6
+KIC9655005,B,K04047.01 (K04047.01),FALSE POSITIVE,SS,1.39863,2.39,13.2,975,0.196,[B5] SS eclipse posing as a 2.4 Re planet at 1.4 d,B5
+KIC6889235,B,K00074.01 (K00074.01),FALSE POSITIVE,NT,5.18867,5.2,393.0,260,0.0,[B6] not transit-like signal posing as a 5.2 Re planet at 5.2 d,B6
+KIC6182508,B,K08261.01 (K08261.01),FALSE POSITIVE,NT,85.97704,1.46,7.4,10,0.128,[B6] not transit-like signal posing as a 1.5 Re planet at 86.0 d,B6
+KIC4355503,B,K07691.01 (K07691.01),FALSE POSITIVE,SS+CO,0.57083,0.54,11.8,2329,0.0,[B5] SS eclipse posing as a 0.5 Re planet at 0.6 d,B5
+KIC8231299,B,K07874.01 (K07874.01),FALSE POSITIVE,SS,0.56227,0.73,8.3,2382,0.0,[B5] SS eclipse posing as a 0.7 Re planet at 0.6 d,B5
+KIC3444098,B,K04042.01 (K04042.01),FALSE POSITIVE,NT,0.7236,6.73,14.7,238,0.0,[B6] not transit-like signal posing as a 6.7 Re planet at 0.7 d,B6
+KIC9541094,B,K07944.01 (K07944.01),FALSE POSITIVE,NT+CO+EC,0.53665,0.67,12.9,1991,0.0,[B6] not transit-like signal posing as a 0.7 Re planet at 0.5 d,B6
+KIC4579598,B,K04414.01 (K04414.01),FALSE POSITIVE,NT+EC,0.86635,1.24,9.2,1234,0.0,[B6] not transit-like signal posing as a 1.2 Re planet at 0.9 d,B6
+KIC6778019,B,K02953.01 (K02953.01),FALSE POSITIVE,SS+CO+EC,0.94583,1.14,15.7,1416,0.0,[B5] SS eclipse posing as a 1.1 Re planet at 0.9 d,B5
+KIC7282008,B,K06858.01 (K06858.01),FALSE POSITIVE,NT+CO+EC,0.5668,0.65,8.9,2009,0.0,[B6] not transit-like signal posing as a 0.7 Re planet at 0.6 d,B6
+KIC9110357,B,K00016.01 (K00016.01),FALSE POSITIVE,SS+CO+EC,0.89528,9.27,202.3,1499,0.0,[B5] SS eclipse posing as a 9.3 Re planet at 0.9 d,B5
