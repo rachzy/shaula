@@ -1,0 +1,2 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags
+Kepler-1550b,225.585245,2455105.79566,0.46525,11.166,0.0007549,0.024932,0.066,89.98,157.86,0.0,0.3309840306896244,1.363,9.851951,16.416048,CONFIRMED,
