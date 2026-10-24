@@ -1,0 +1,2 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags
+Kepler-601b,5.378868001,2455002.61512,0.113425,2.7222,0.0004834,0.022038,0.758,85.81,10.37,0.0,0.16593808546703542,0.774,5.978721,49.556583,CONFIRMED,

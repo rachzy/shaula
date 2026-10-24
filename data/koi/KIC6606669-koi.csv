@@ -1,0 +1,2 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags
+K06741.01,0.970085646,2454965.4088,0.04704166666666667,1.129,0.000153,0.010926,0.035,89.7,6.66,0.0,1.6638415558925863,15.63,5.379608,16.753216,FALSE POSITIVE,ss+co

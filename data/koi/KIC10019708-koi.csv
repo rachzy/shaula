@@ -1,0 +1,3 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags
+Kepler-490b,3.268695042,2454970.4817205,0.14382833333333334,3.45188,0.0100914,0.091563,0.065,89.53,7.9079,0.0,1.508609153358908,1.691,93.92894,1341.4701,CONFIRMED,
+K00199.02,8.78458274,2454968.37812,0.269125,6.459,0.0002108,0.014093,0.681,85.03,7.85,0.0,0.23195646355607102,1.691,4.9553237,17.729378,FALSE POSITIVE,ss+co

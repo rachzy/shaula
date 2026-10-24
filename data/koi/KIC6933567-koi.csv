@@ -1,0 +1,2 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags
+Kepler-1301b,9.08233411,2454972.65489,0.08366666666666667,2.008,0.00029689999999999995,0.015633,0.262,89.56,33.91,0.0,0.12043893300026766,0.788,3.5330544,15.25862,CONFIRMED,

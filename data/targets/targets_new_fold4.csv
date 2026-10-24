@@ -1,0 +1,112 @@
+target,mission,group,name,reference
+KIC 6933567,Kepler,confirmed_host,Kepler-1301 b,data/koi/KIC6933567-koi.csv
+KIC 12066569,Kepler,confirmed_host,Kepler-1455 b,data/koi/KIC12066569-koi.csv
+KIC 9280239,Kepler,confirmed_host,Kepler-1536 b,data/koi/KIC9280239-koi.csv
+KIC 9529744,Kepler,mixed,"K01806.01, Kepler-320 b, Kepler-320 c",data/koi/KIC9529744-koi.csv
+KIC 8494410,Kepler,mixed,"Kepler-1516 b, K03685.01",data/koi/KIC8494410-koi.csv
+KIC 10555365,Kepler,koi_fp,K03771.01,data/koi/KIC10555365-koi.csv
+KIC 8409588,Kepler,koi_fp,K00690.01,data/koi/KIC8409588-koi.csv
+KIC 10664416,Kepler,koi_fp,K02599.01,data/koi/KIC10664416-koi.csv
+KIC 8016211,Kepler,koi_fp,K05460.01,data/koi/KIC8016211-koi.csv
+KIC 8094221,Kepler,koi_fp,K06962.01,data/koi/KIC8094221-koi.csv
+KIC 3834360,Kepler,koi_fp,K00493.01,data/koi/KIC3834360-koi.csv
+KIC 3830820,Kepler,koi_fp,K06360.01,data/koi/KIC3830820-koi.csv
+KIC 6545358,Kepler,koi_fp,K01233.01,data/koi/KIC6545358-koi.csv
+KIC 9774400,Kepler,koi_fp,K06212.01,data/koi/KIC9774400-koi.csv
+KIC 8488878,Kepler,koi_fp,K01248.01,data/koi/KIC8488878-koi.csv
+KIC 5282049,Kepler,koi_fp,K01545.01,data/koi/KIC5282049-koi.csv
+KIC 5385491,Kepler,koi_fp,K03988.01,data/koi/KIC5385491-koi.csv
+KIC 11601357,Kepler,koi_fp,K07459.01,data/koi/KIC11601357-koi.csv
+KIC 1868404,Kepler,koi_fp,K07625.01,data/koi/KIC1868404-koi.csv
+KIC 8750503,Kepler,koi_fp,K07910.01,data/koi/KIC8750503-koi.csv
+KIC 5385566,Kepler,koi_fp,K06004.01,data/koi/KIC5385566-koi.csv
+KIC 7916058,Kepler,koi_fp,K05445.01,data/koi/KIC7916058-koi.csv
+KIC 5736801,Kepler,koi_fp,K07739.01,data/koi/KIC5736801-koi.csv
+KIC 5385139,Kepler,koi_fp,K06000.01,data/koi/KIC5385139-koi.csv
+KIC 6762188,Kepler,koi_fp,K05323.01,data/koi/KIC6762188-koi.csv
+KIC 7137213,Kepler,koi_fp,K03907.01,data/koi/KIC7137213-koi.csv
+KIC 7008211,Kepler,confirmed_host,Kepler-1097 b,data/koi/KIC7008211-koi.csv
+KIC 11403530,Kepler,confirmed_host,Kepler-1412 b,data/koi/KIC11403530-koi.csv
+KIC 5357901,Kepler,confirmed_host,Kepler-425 b,data/koi/KIC5357901-koi.csv
+KIC 3762468,Kepler,confirmed_host,Kepler-493 b,data/koi/KIC3762468-koi.csv
+KIC 5938970,Kepler,confirmed_host,Kepler-1540 b,data/koi/KIC5938970-koi.csv
+KIC 10384798,Kepler,confirmed_host,Kepler-1043 b,data/koi/KIC10384798-koi.csv
+KIC 7382313,Kepler,confirmed_host,Kepler-1220 b,data/koi/KIC7382313-koi.csv
+KIC 11244137,Kepler,confirmed_host,Kepler-1402 b,data/koi/KIC11244137-koi.csv
+KIC 7585481,Kepler,confirmed_host,Kepler-714 b,data/koi/KIC7585481-koi.csv
+KIC 6291033,Kepler,confirmed_host,Kepler-557 b,data/koi/KIC6291033-koi.csv
+KIC 10329835,Kepler,confirmed_host,Kepler-1075 b,data/koi/KIC10329835-koi.csv
+KIC 4149450,Kepler,confirmed_host,Kepler-1772 b,data/koi/KIC4149450-koi.csv
+KIC 10904857,Kepler,confirmed_host,Kepler-488 b,data/koi/KIC10904857-koi.csv
+KIC 11769890,Kepler,confirmed_host,Kepler-1036 b,data/koi/KIC11769890-koi.csv
+KIC 6690082,Kepler,confirmed_host,"Kepler-280 b, Kepler-280 c",data/koi/KIC6690082-koi.csv
+KIC 7447200,Kepler,confirmed_host,"Kepler-210 b, Kepler-210 c",data/koi/KIC7447200-koi.csv
+KIC 3342794,Kepler,confirmed_host,"Kepler-376 b, Kepler-376 c",data/koi/KIC3342794-koi.csv
+KIC 4914423,Kepler,confirmed_host,"Kepler-103 b, Kepler-103 c",data/koi/KIC4914423-koi.csv
+KIC 9775938,Kepler,confirmed_host,"Kepler-258 b, Kepler-258 c",data/koi/KIC9775938-koi.csv
+KIC 9824928,Kepler,koi_fp,K04650.01,data/koi/KIC9824928-koi.csv
+KIC 3831523,Kepler,koi_fp,K06361.01,data/koi/KIC3831523-koi.csv
+KIC 5563057,Kepler,koi_fp,K05179.01,data/koi/KIC5563057-koi.csv
+KIC 5809372,Kepler,koi_fp,K06630.01,data/koi/KIC5809372-koi.csv
+KIC 5471769,Kepler,koi_fp,K06011.01,data/koi/KIC5471769-koi.csv
+KIC 6447326,Kepler,koi_fp,K06711.01,data/koi/KIC6447326-koi.csv
+KIC 5471202,Kepler,koi_fp,K02911.01,data/koi/KIC5471202-koi.csv
+KIC 9576197,Kepler,koi_fp,K06207.01,data/koi/KIC9576197-koi.csv
+KIC 7975727,Kepler,koi_fp,K00418.01,data/koi/KIC7975727-koi.csv
+KIC 5376836,Kepler,koi_fp,K00182.01,data/koi/KIC5376836-koi.csv
+KIC 5298620,Kepler,koi_fp,K06558.01,data/koi/KIC5298620-koi.csv
+KIC 10685175,Kepler,koi_fp,K07362.01,data/koi/KIC10685175-koi.csv
+KIC 2573108,Kepler,koi_fp,K03217.01,data/koi/KIC2573108-koi.csv
+KIC 8868686,Kepler,koi_fp,K07598.01,data/koi/KIC8868686-koi.csv
+KIC 3869825,Kepler,koi_fp,K01178.01,data/koi/KIC3869825-koi.csv
+KIC 5990753,Kepler,koi_fp,K06645.01,data/koi/KIC5990753-koi.csv
+KIC 5471690,Kepler,koi_fp,K04006.01,data/koi/KIC5471690-koi.csv
+KIC 3836399,Kepler,koi_fp,K03834.01,data/koi/KIC3836399-koi.csv
+KIC 10068383,Kepler,koi_fp,K00725.01,data/koi/KIC10068383-koi.csv
+KIC 9071386,Kepler,koi_fp,K00023.01,data/koi/KIC9071386-koi.csv
+KIC 6233483,Kepler,koi_fp,K03291.01,data/koi/KIC6233483-koi.csv
+KIC 6387450,Kepler,koi_fp,K01228.01,data/koi/KIC6387450-koi.csv
+KIC 4579313,Kepler,koi_fp,K03884.01,data/koi/KIC4579313-koi.csv
+KIC 5078879,Kepler,koi_fp,K06508.01,data/koi/KIC5078879-koi.csv
+KIC 5130369,Kepler,koi_fp,K00140.01,data/koi/KIC5130369-koi.csv
+KIC 6756669,Kepler,koi_fp,K00862.01,data/koi/KIC6756669-koi.csv
+KIC 8559863,Kepler,koi_fp,K07058.01,data/koi/KIC8559863-koi.csv
+KIC 3865567,Kepler,koi_fp,K01182.01,data/koi/KIC3865567-koi.csv
+KIC 3228988,Kepler,koi_fp,K03992.01,data/koi/KIC3228988-koi.csv
+KIC 1293031,Kepler,koi_fp,K04162.01,data/koi/KIC1293031-koi.csv
+KIC 3544689,Kepler,koi_fp,K01183.01,data/koi/KIC3544689-koi.csv
+KIC 3851134,Kepler,koi_fp,K06366.01,data/koi/KIC3851134-koi.csv
+KIC 7281694,Kepler,koi_fp,K07584.01,data/koi/KIC7281694-koi.csv
+KIC 11154043,Kepler,koi_fp,K07414.01,data/koi/KIC11154043-koi.csv
+KIC 10992011,Kepler,koi_fp,K04025.01,data/koi/KIC10992011-koi.csv
+KIC 11922722,Kepler,koi_fp,K02301.01,data/koi/KIC11922722-koi.csv
+KIC 5480884,Kepler,koi_fp,K04841.01,data/koi/KIC5480884-koi.csv
+KIC 9640976,Kepler,koi_fp,K00712.01,data/koi/KIC9640976-koi.csv
+KIC 6679504,Kepler,koi_fp,K07788.01,data/koi/KIC6679504-koi.csv
+KIC 9083470,Kepler,koi_fp,K04731.01,data/koi/KIC9083470-koi.csv
+KIC 4373195,Kepler,koi_fp,K07692.01,data/koi/KIC4373195-koi.csv
+KIC 8845026,Kepler,koi_fp,K00044.01,data/koi/KIC8845026-koi.csv
+KIC 9328641,Kepler,koi_fp,K03400.01,data/koi/KIC9328641-koi.csv
+KIC 8039925,Kepler,koi_fp,K06956.01,data/koi/KIC8039925-koi.csv
+KIC 5513897,Kepler,koi_fp,K02591.01,data/koi/KIC5513897-koi.csv
+KIC 6670075,Kepler,koi_fp,K02382.01,data/koi/KIC6670075-koi.csv
+KIC 7031992,Kepler,koi_fp,K06808.01,data/koi/KIC7031992-koi.csv
+KIC 10158990,Kepler,koi_fp,K01080.01,data/koi/KIC10158990-koi.csv
+KIC 5003117,Kepler,koi_fp,K00405.01,data/koi/KIC5003117-koi.csv
+KIC 7335713,Kepler,koi_fp,K03250.01,data/koi/KIC7335713-koi.csv
+KIC 9899607,Kepler,koi_fp,K05730.01,data/koi/KIC9899607-koi.csv
+KIC 9692345,Kepler,koi_fp,K01485.01,data/koi/KIC9692345-koi.csv
+KIC 10031500,Kepler,koi_fp,K03107.01,data/koi/KIC10031500-koi.csv
+KIC 5018787,Kepler,koi_fp,K06487.01,data/koi/KIC5018787-koi.csv
+KIC 5113809,Kepler,koi_fp,K06523.01,data/koi/KIC5113809-koi.csv
+KIC 8738244,Kepler,koi_fp,K03157.01,data/koi/KIC8738244-koi.csv
+KIC 10518725,Kepler,koi_fp,K00336.01,data/koi/KIC10518725-koi.csv
+KIC 9777990,Kepler,koi_fp,K07963.01,data/koi/KIC9777990-koi.csv
+KIC 2305255,Kepler,koi_fp,K04935.01,data/koi/KIC2305255-koi.csv
+KIC 10383729,Kepler,koi_fp,K08004.01,data/koi/KIC10383729-koi.csv
+KIC 6364143,Kepler,koi_fp,K05272.01,data/koi/KIC6364143-koi.csv
+KIC 10799735,Kepler,koi_fp,K00193.01,data/koi/KIC10799735-koi.csv
+KIC 5652237,Kepler,koi_fp,K00164.01,data/koi/KIC5652237-koi.csv
+KIC 7818447,Kepler,koi_fp,K04028.01,data/koi/KIC7818447-koi.csv
+KIC 8916492,Kepler,koi_fp,K01414.01,data/koi/KIC8916492-koi.csv
+KIC 4774646,Kepler,koi_fp,K07707.01,data/koi/KIC4774646-koi.csv
