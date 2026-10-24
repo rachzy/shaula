@@ -150,7 +150,7 @@ For each candidate, Shaula measures the features listed in the [table below](#ex
 - **Per-transit measurements** (`per_trans_stat.py`): depth of each individual transit and how much it varies.
 - **Noise and signal strength** (`cdpp.py`, `sesmes.py`): noise over 3, 6 and 12 hour windows (CDPP), and the single-event (SES) and multiple-event (MES) statistics.
 - **Vetting checks**: transit shape (box-like or V-shaped), a secondary eclipse halfway between transits, odd versus even transit depths, and ingress/egress symmetry. These are the usual signs of an eclipsing binary.
-- **Planet radius**, when the light curve carries the star's radius.
+- **Planet radius, orbital distance, speed, insolation and temperature**, when the light curve carries the star's catalogue values.
 
 The result is one row per candidate, sorted by period.
 
@@ -190,6 +190,12 @@ Depths are fractional (0.001 = 1,000 ppm = a 0.1% dip); positive means dimming.
 | `odd_even_depth_ratio`             | Mean odd-transit depth / mean even-transit depth; far from 1 suggests an eclipsing binary at twice the period     |
 | `ingress_egress_asymmetry`         | Difference between ingress and egress slopes of the folded transit; ~0 for a symmetric transit                   |
 | `planet_radius_rearth`             | Inferred planet radius (Earth radii); NaN when the star's radius is unknown |
+| `stellar_teff_k` / `stellar_logg` / `stellar_radius_rsun` | The star's temperature (K), surface gravity (log g, cgs) and radius (solar radii) from the light-curve header (KIC, EPIC or TIC); NaN when missing |
+| `stellar_mass_msun`                | Star's mass (solar masses), derived from log g and radius |
+| `semi_major_axis_au`               | Orbital distance (AU) from the period and stellar mass via Kepler's third law, assuming a circular orbit |
+| `orbital_speed_kms`                | Orbital speed (km/s) on that circular orbit |
+| `insolation_earth`                 | Starlight the planet receives, relative to Earth |
+| `equilibrium_temp_k`               | Equilibrium temperature (K), assuming a Bond albedo of 0.3 and full heat redistribution |
 | `detection_status`                 | `accepted` (passed the MES gate) or `provisional` (sub-threshold, MES ≥ 6); scripts can also write `rejected` or `harmonic_duplicate` |
 | `mes_threshold_used` / `is_provisional_detection` | The MES bar the row was judged against, and `1.0` for provisional rows (`0.0` otherwise) |
 | `candidate_label`                  | Training label: `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, from a period match against reference KOIs (scripts only) |

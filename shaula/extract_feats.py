@@ -9,6 +9,11 @@ from .folded_binned_metrics import folded_binned_metrics
 from .cdpp import calculate_cdpp
 from .sesmes import compute_SES_MES, fold_statistics, secondary_eclipse
 from .utils.ephemeris import canonical_epoch
+from .utils.stellar_properties import (
+    STELLAR_PROPERTY_COLUMNS,
+    orbital_properties,
+    stellar_parameters,
+)
 from .utils import (
     scaling_and_metrics,
     interp_cdpp,
@@ -339,6 +344,8 @@ def _extract_single_candidate_from_arrays(
     # Note: For CSV data, we don't have stellar radius information
     feats["planet_radius_rearth"] = np.nan
     feats["planet_radius_rjup"] = np.nan
+    for column in STELLAR_PROPERTY_COLUMNS:
+        feats[column] = np.nan
 
     # Which bar this row was judged against. Rows recovered below the detection
     # threshold are reported but never mask data, so downstream consumers need
@@ -1356,18 +1363,17 @@ def extract_features_from_lightcurve(
         progress=progress,
     )
 
-    # Add stellar radius information if available
-    # KIC stars without a catalogue radius carry RADIUS=None, not NaN.
-    try:
-        stellar_radius = float(lc.meta.get("RADIUS"))
-    except (TypeError, ValueError):
-        stellar_radius = np.nan
-    if np.isfinite(stellar_radius):
-        for feats in feature_rows:
+    # Add the star's catalogue values and what they give with the period.
+    star = stellar_parameters(lc.meta)
+    stellar_radius = star["stellar_radius_rsun"]
+    for feats in feature_rows:
+        if np.isfinite(stellar_radius):
             depth = feats["depth_mean_per_transit"]
             if np.isfinite(depth) and depth >= 0:
                 Rp_over_Rs = np.sqrt(depth)
                 feats["planet_radius_rearth"] = stellar_radius * 109.1 * Rp_over_Rs
                 feats["planet_radius_rjup"] = stellar_radius * 9.731 * Rp_over_Rs
+        feats.update(star)
+        feats.update(orbital_properties(feats.get("period_days"), star))
 
     return feature_rows
