@@ -1,0 +1,2 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags
+Kepler-1954b,5.88350251,2454969.9451,0.1065,2.556,0.00021769999999999998,0.013655,0.362,88.75,16.66,0.0,0.11330181104469624,0.849,3.278844,11.783633,CONFIRMED,
