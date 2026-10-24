@@ -1,52 +1,175 @@
-# LTP - Features
+# Shaula
 
-## Description
+**Shaula** is a Python library that takes the light curve of a star (its brightness measured over time) and searches it for the small, repeating dips that a planet causes when it passes in front of the star. For every dip pattern it finds, it returns one row of numbers ("features") that describe the signal: its period, depth and duration, how strong it is compared with the noise, and a set of checks that help tell real planets apart from look-alikes such as eclipsing binary stars.
 
-**Lightcurve Transit Photometry (LTP) - Features** is a python project for extracting features from light curve data useful for detecting exoplanets through the [Transit Photometry](https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Transit_photometry) method.
+Shaula is the pipeline used to build the training data for [Fang](https://github.com/rachzy/fang), and it currently runs inside the [Antares](https://github.com/rachzy/antares) project, which calls it through a gRPC service. Shaula itself is **not** a machine-learning model: it measures signals, and models such as Fang learn from those measurements.
 
-At first, it was intended to be pre-processing pipeline for digesting features to be consumed by ML model, but keep in mind that ,this is **NOT** a ML model, although it can be used as a pipeline for features digestion.
+The project is named after [Shaula](https://en.wikipedia.org/wiki/Lambda_Scorpii) (λ Scorpii), one of the stars of the constellation Scorpius, where it marks the tip of the scorpion's stinger. It was previously called `ltp-features` (Lightcurve Transit Photometry Features).
 
-### What is Transit Photometry
+## Background
 
-When a planet passes in front of its host star along our line of sight, it blocks a small fraction of the star’s light. Photometers record a periodic dip in brightness whose depth scales roughly with the squared ratio of planet radius to stellar radius, and whose spacing in time reveals the orbital period. Surveys such as Kepler and TESS monitor many stars for these repeating dimmings; candidates from such data still need careful vetting (stellar activity, eclipsing binaries, instrumental effects) before they can be treated as planet detections.
+### What is transit photometry
 
-<img width="487" height="271" alt="image" src="https://github.com/user-attachments/assets/0554c00d-14d5-44e3-9967-f115ecfa5ebc" />
+When a planet passes in front of its host star along our line of sight, it blocks a small fraction of the star's light. A telescope watching the star records a dip in brightness that repeats every orbit. The depth of the dip tells us roughly how big the planet is compared with its star (depth ≈ (planet radius / star radius)²), and the time between dips is the orbital period. Missions such as Kepler and TESS watched hundreds of thousands of stars looking for these repeating dips.
+
+A repeating dip is only a *candidate*. Spots on the star, two stars eclipsing each other, or instrument glitches can all produce dips, so candidates have to be vetted before they are called planets. Many of Shaula's features exist to help with that vetting.
+
+<img width="487" height="271" alt="Diagram of a planet transiting its star and the resulting dip in the light curve" src="https://github.com/user-attachments/assets/0554c00d-14d5-44e3-9967-f115ecfa5ebc" />
 <figcaption>
    Transit Photometry Example - <a href="https://www.apus.edu/academic-community/space-studies/exoplanet-transit-photometry/" target="_blank">Apus - Exoplanet Transit Photometry</a>
 </figcaption>
 
 ### What are light curves
 
-A **light curve** is the brightness of a star (or other source) measured over time—typically flux in detector units or normalized flux versus time in days. Space-based transit missions produce long, evenly or nearly evenly sampled series per target, often with millions of points. This repository treats those time and flux arrays as the raw input: cleaning, detrending, period search (e.g. BLS/TLS), folding at the trial period, and numerical summaries that describe shape, noise, and consistency of the signal.
+A **light curve** is a table of brightness (flux) against time. Kepler measured each of its stars about every 29.4 minutes for four years, which gives roughly 65,000 measurements per star; TESS measures every 2 minutes in about 27-day sectors. Each measurement is called a *cadence*. Shaula treats the time and flux columns as its raw input.
 
-<img width="288" height="180" alt="image" src="https://github.com/user-attachments/assets/e67310c7-315c-41ae-8c86-334a47d6caac" />
+<img width="288" height="180" alt="Example light curve" src="https://github.com/user-attachments/assets/e67310c7-315c-41ae-8c86-334a47d6caac" />
 <figcaption>
    Lightcurve Example - <a href="https://imagine.gsfc.nasa.gov/features/yba/M31_velocity/lightcurve/lightcurve_more.html" target="_blank">Nasa - Imagine the Universe!</a>
 </figcaption>
 
-## Pipeline and Extraction
+### Reference material
 
-As explained above, light curves are basically (but not just) gigantic CSVs containing flux data of brightness variation of a star.
+The detection statistics are modelled on the official Kepler pipeline, and results are checked against the Kepler catalogue:
 
-In order to know what to look for and what to calculate in this data, we use the following resources:
+- [NASA Exoplanet Archive, Kepler cumulative KOI table](https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=cumulative)
+- [Kepler Science Data Processing Pipeline](https://github.com/nasa/kepler-pipeline) and the [Kepler Data Processing Handbook](https://archive.stsci.edu/files/live/sites/mast/files/home/missions-and-data/kepler/_documents/KSCI-19081-003-KDPH.pdf)
 
-- [NASA Exoplanet Archive for the Kepler Mission](https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=cumulative)
-- [Kepler Science Data Processing Pipeline](https://github.com/nasa/kepler-pipeline)
+## Getting started
 
-#### Column meanings
+### Install
+
+Shaula needs Python 3.11 or newer. From a clone of this repository, [uv](https://docs.astral.sh/uv/) creates a virtual environment and installs the package in editable mode:
+
+```bash
+uv sync
+```
+
+To use it from another project, install it straight from GitHub:
+
+```bash
+pip install "shaula @ git+https://github.com/rachzy/shaula"
+```
+
+Two optional extras add features: `tls` (`transitleastsquares`, for an extra period refinement step) and `parallel` (`threadpoolctl`, used by the batch script). Install them with `uv sync --extra tls` or `pip install "shaula[tls]"`.
+
+Downloading light curves needs network access to MAST (the archive that hosts Kepler and TESS data).
+
+### Python API
+
+`shaula.api` is the public interface. `resolve()` turns a name, catalogue number or sky position into one exact star, and `extract()` downloads that star's light curve and returns its candidates:
+
+```python
+from shaula.api import extract, resolve
+
+star = resolve("Kepler-186")              # or resolve(ra_deg=..., dec_deg=...)
+print(star.designation)                   # "KIC 8120608"
+
+result = extract(star.designation, mission="Kepler", download_all=True)
+for row in result.features:               # one dict per candidate, sorted by period
+    print(row["period_days"], row["max_mes"], row["detection_status"])
+```
+
+- `mission` is `Kepler`, `K2` or `TESS` (case-insensitive). Planet names such as `Kepler-186f` are accepted and searched as their host star.
+- `download_all=True` downloads every quarter or sector and joins them; without it only the first file is used, which is much faster but finds far fewer planets.
+- `progress=` takes a callback that receives a `ProgressEvent` at each stage (`downloading`, `detrending`, `period_search`, `done`). Raising inside the callback cancels the run.
+- Feature values can be `NaN` when a measurement is impossible (for example the planet radius when the star's radius is unknown).
+- Set `SHAULA_LIGHTCURVE_CACHE` (or pass `cache_dir=`) to choose where downloaded light curves are stored.
+
+### Command line
+
+```bash
+uv run shaula-extract-lk --target Kepler-186 --mission Kepler --download-all \
+    --out-features out/kepler186_features.csv
+```
+
+Use `--input-lightkurve path/to.csv` instead of `--target` to start from a light curve saved earlier with `--out-lightkurve`. Other options: `--author` and `--exptime` to pick a different data product, `--sigma-clip` for outlier removal, and `--quiet`.
+
+`shaula-extract-csv` is a deprecated batch tool for "exoTrain"-style CSVs (one star per row, columns `FLUX1` … `FLUXN`).
+
+### Batch runs and validation scripts
+
+These run as modules from the repository root:
+
+- `python -m shaula.scripts.extract_multiple_stars --targets data/targets/training_targets.csv` extracts many stars in a row, skipping stars that already have an output file. `--label-output-candidates` labels each row `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, and `--invert` runs the search on the flipped light curve to produce negative training examples.
+- `python -m shaula.scripts.get_literature_data Kepler-90` downloads catalogue values for a star into `data/confirmed/`.
+- `python -m shaula.scripts.compare_confirmed_and_extracted` compares extracted features with those catalogue values (see the sanity check below).
+
+### Tests
+
+```bash
+uv run pytest
+```
+
+The notebooks (`shaula/lightcurve_analysis.ipynb`, `shaula/tests/unit_graph_test.ipynb`) are exploratory and not part of the test suite.
+
+## How the pipeline works
+
+This is what `extract()` does, step by step. Every module path below is under `shaula/`.
+
+### 1. Find the star
+
+A target can be a star or planet name (`Kepler-186`, `Kepler-186f`), a catalogue designation (`KIC 8120608`, `EPIC 201111557`, `TIC 307210830`) or, through `resolve()`, a sky position. Planet suffixes are stripped so the search is always for the host star.
+
+### 2. Download and clean the light curve
+
+`download_and_clean.py` searches MAST with [lightkurve](https://docs.lightkurve.org/) and keeps a single, consistent data product per mission: the official long-cadence (~29.4 min) light curves for Kepler and K2, and SPOC 2-minute light curves for TESS. Mixing products would put different noise levels side by side. With `download_all`, every quarter or sector is downloaded and stitched into one series. Then:
+
+```python
+lc = lc.remove_nans().normalize().remove_outliers(sigma_upper=5, sigma_lower=float("inf"))
+```
+
+Only *upward* outliers are removed, because a transit is a *downward* dip and must not be clipped away.
+
+### 3. Remove the star's own variability
+
+Stars flicker and spot, and the spacecraft drifts, so the raw brightness wanders far more than a planet's dip. `detrend_and_period.py` fits that slow trend and divides it out, leaving a flat series where the dips stand out. The light curve is first normalised piece by piece across data gaps, and the trend is fitted with the candidate transits held out, so the fit cannot "eat" the dips it is meant to reveal.
+
+### 4. Search for a periodic dip
+
+The search uses the Box Least Squares (BLS) algorithm (`astropy.timeseries.BoxLeastSquares`): it slides a box-shaped dip across many trial periods and durations and reports which ones line up with real dips. Periods from 0.5 days up to a third of the observing span are searched, so that at least three transits always fit. A second pass on a more aggressively flattened series is mixed in, which keeps short transits on very active stars from being hidden. The best peaks are then refined: the period is zoomed in on, checked for being a multiple or fraction of the true period, and the duration and transit time are re-fitted.
+
+### 5. Decide whether a signal is real
+
+Each refined peak is scored with the **multiple event statistic (MES)**: the combined signal-to-noise of all its transits, the same quantity the Kepler mission used (see `sesmes.py`). A candidate is **accepted** when `max_mes >= 7.1` (Kepler's own threshold) and at least three transits are observed. Shaula's MES is a time-domain approximation of Kepler's, not an exact reproduction.
+
+### 6. Look for more planets
+
+After a candidate is accepted, its transits are masked out and the search runs again on what is left, so the next-strongest planet in the same system can be found. Before masking, the candidate is re-checked at 2×, 3×, ½ and ⅓ of its period, because locking onto half the true period would mask every real transit and hide the planet for good. Isolated deep dips left over after masking are also removed so they cannot combine into a fake period. The loop stops after 12 candidates, when nothing passes the threshold, or when half the light curve is masked.
+
+### 7. Report near-misses
+
+If the search ends because nothing else clears 7.1, up to two of the best rejected signals with `max_mes >= 6.0` are returned with `detection_status = "provisional"`. They never mask anything, so they cannot affect the other candidates. This is how real planets close to the noise floor still show up.
+
+### 8. Measure the features
+
+For each candidate, Shaula measures the features listed in the [table below](#extracted-features):
+
+- **Shape of the flux distribution** (`utils/scaling_and_metrics.py`): robust scaling, skewness, kurtosis and outlier fraction.
+- **Folded light curve** (`folded_binned_metrics.py`): all transits stacked at the candidate's period, giving out-of-transit noise, depth consistency and the autocorrelation of the noise.
+- **Per-transit measurements** (`per_trans_stat.py`): depth of each individual transit and how much it varies.
+- **Noise and signal strength** (`cdpp.py`, `sesmes.py`): noise over 3, 6 and 12 hour windows (CDPP), and the single-event (SES) and multiple-event (MES) statistics.
+- **Vetting checks**: transit shape (box-like or V-shaped), a secondary eclipse halfway between transits, odd versus even transit depths, and ingress/egress symmetry. These are the usual signs of an eclipsing binary.
+- **Planet radius**, when the light curve carries the star's radius.
+
+The result is one row per candidate, sorted by period.
+
+## Extracted features
+
+Depths are fractional (0.001 = 1,000 ppm = a 0.1% dip); positive means dimming.
 
 | Column                             | Meaning                                                                                                          |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `period_days`                      | Orbital period from BLS/TLS vs catalog period                                                                    |
-| `t0`                               | Transit epoch phase error after mission zero-point conversion and modulo-period alignment, reported as % of transit duration |
+| `period_days`                      | Orbital period in days |
+| `t0`                               | Time of the first transit in the data (BKJD for Kepler/K2, BTJD for TESS). In the sanity check its % difference is the timing offset as a % of the transit duration |
 | `duration_days` / `duration_hours` | Transit duration in days and hours                                                                               |
-| `depth_mean_per_transit`           | Mean per-transit depth vs catalog depth                                                                          |
-| `planet_radius_rjup`               | Inferred planet radius (Jupiter radii); `n/a` when stellar radius was unavailable                                |
-| `mean_match_no_t0`                 | Mean of `max(0, 100 − \|%diff\|)` over all columns except `t0` (100% = perfect match, 0% = ≥100% off on average) |
+| `depth_mean_per_transit`           | Mean depth of the individual transits |
+| `planet_radius_rjup`               | Inferred planet radius (Jupiter radii); NaN when the star's radius is unknown |
 | `max_ses`                          | Strongest single-transit detection statistic (SES) of any one event; compared with the KOI `koi_max_sngle_ev`     |
 | `max_mes`                          | Multiple-event statistic (MES) at the best nearby phase; the detection gate requires ≥ 7.1. Compared with `koi_max_mult_ev` |
 | `MES`                              | Multiple-event statistic at the exact fitted ephemeris (no phase scan)                                            |
 | `SES_mean` / `SES_std`             | Mean and spread of the per-transit SES across all observed events                                                 |
+| `snr_per_transit_mean` / `snr_per_transit_std` | Mean and spread of the per-transit signal-to-noise |
 | `depth_std_per_transit`            | Scatter of the per-transit depths; large values suggest variable depth or a misfit period                        |
 | `depth_stability`                  | Std/mean of per-epoch depths from the folded light curve (0 = every transit equally deep)                        |
 | `npts_transit_median`              | Median number of cadences inside each transit                                                                    |
@@ -59,209 +182,59 @@ In order to know what to look for and what to calculate in this data, we use the
 | `scale_mean` / `scale_std`         | Mean and spread of the robust-scaled flux (median 0, MAD-based unit)                                             |
 | `scale_skewness` / `scale_kurtosis`| Shape of the scaled flux distribution; transits and eclipses push skewness negative                              |
 | `scale_outlier_resistance`         | % of cadences more than 5σ from the median                                                                       |
+| `skewness_flux` / `kurtosis_flux` / `outlier_resistance` | The same shape measures recomputed on the scaled flux during extraction |
 | `vshape_metric`                    | Transit shape from a trapezoid fit: 0 = flat-bottomed box, 1 = pure V (grazing transit or eclipsing binary)      |
 | `secondary_depth`                  | Signed depth at phase 0.5 (halfway between transits); ~0 when there is no secondary eclipse                      |
 | `secondary_depth_snr`              | Signed significance of that secondary, on the same scale as `MES`; high values suggest an eclipsing binary        |
+| `secondary_depth_snr_log` / `secondary_depth_snr_capped` | The same significance compressed as sign × log(1 + \|SNR\|), or clipped to ±100, for models that dislike large values |
 | `odd_even_depth_ratio`             | Mean odd-transit depth / mean even-transit depth; far from 1 suggests an eclipsing binary at twice the period     |
 | `ingress_egress_asymmetry`         | Difference between ingress and egress slopes of the folded transit; ~0 for a symmetric transit                   |
-| `planet_radius_rearth`             | Inferred planet radius (Earth radii); `n/a` when stellar radius was unavailable                                  |
+| `planet_radius_rearth`             | Inferred planet radius (Earth radii); NaN when the star's radius is unknown |
 | `detection_status`                 | `accepted` (passed the MES gate) or `provisional` (sub-threshold, MES ≥ 6); scripts can also write `rejected` or `harmonic_duplicate` |
+| `mes_threshold_used` / `is_provisional_detection` | The MES bar the row was judged against, and `1.0` for provisional rows (`0.0` otherwise) |
 | `candidate_label`                  | Training label: `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, from a period match against reference KOIs (scripts only) |
 | `matched_target` / `matched_period_ratio` | Reference planet the row was matched to, and how its period relates to the reference (`direct`, or an alias such as `2P`, `P/2`) |
 | `fp_source`                        | Why a row is `FALSE-POSITIVE`: the matched KOI's flags (e.g. `koi:nt`, `koi:ss+co`), `unmatched`, or `inverted`  |
 
-**What this suggests:** for quiet, deep hot-Jupiter hosts (Kepler-5b, HAT-P-7, Kepler-7b) the pipeline recovers period and duration to within a few percent and scores above ~96%. Their epochs also agree closely after converting BJD to BKJD and aligning transit numbers. Shallower or harder targets (aliases, grazing geometry, long-period / multi-planet systems such as Kepler-12b, Kepler-186f, Kepler-447) diverge more on depth, radius, and sometimes period—useful stress cases rather than failures of the comparison script itself.
+## Sanity check against the Kepler catalogue
 
-## Using the pipeline to extract lightcurve data
+To check the measurements, we compare features written to `data/extracted/` with catalogue values in `data/confirmed/` for a set of well-known confirmed Kepler planets, using `shaula/scripts/compare_confirmed_and_extracted.py`. Extracted files are named by catalogue number (`KIC<kepid>_<date>.csv`, using the latest normal, non-inverted run per star) and hold one row per candidate. Rows are paired by period, including small integer aliases (a candidate found at a third of the true period is labelled `P/3` rather than counted as a separate detection). Each cell is the percent difference `((extracted − confirmed) / |confirmed|) × 100`, and rows are sorted by `mean_match_no_t0`, the average agreement over every column except `t0`.
 
-The full pipeline flow and how to use it is explained below.
+All 18 planets of the 9 hosts below (Kepler-2, 4, 5, 7, 8, 11, 12, 15 and 186; KIC 10666592, 11853905, 8191672, 5780885, 6922244, 6541920, 11804465, 11359879 and 8120608) are recovered at their catalogue period, none through an alias.
 
-### 1. Choose a target
+| Candidate   | period_days | depth_mean_per_transit | duration_hours |  max_ses | max_mes | duration_days | planet_radius_rjup |      t0 | mean_match_no_t0 |
+| ----------- | ----------: | ---------------------: | -------------: | -------: | ------: | ------------: | -----------------: | ------: | ---------------: |
+| Kepler-5b   |      +0.00% |                 -3.96% |         +2.02% |  +13.81% |  -5.02% |        +2.02% |             +0.09% |  -0.51% |           96.15% |
+| Kepler-11c  |      +0.00% |                 -6.29% |         +7.40% |   +0.10% |  -4.53% |        +7.40% |             +6.99% |  -0.08% |           95.33% |
+| Kepler-11e  |      +0.00% |                 -5.07% |         +2.67% |  +22.46% |  -2.18% |        +2.67% |             +0.09% |  +1.27% |           94.98% |
+| Kepler-186b |      -0.00% |                -18.78% |         +3.50% |   -3.41% |  +1.59% |        +3.50% |             +4.50% |  -3.43% |           94.96% |
+| Kepler-8b   |      +0.00% |                 -3.58% |         +7.27% |  +11.72% |  -7.49% |        +7.27% |             -6.36% |  -0.36% |           93.76% |
+| Kepler-2b   |      +0.00% |                 -2.11% |         +6.63% |   +9.31% | -17.41% |        +6.63% |             +2.82% |  +0.12% |           93.58% |
+| Kepler-15b  |      +0.00% |                 -5.33% |         -1.64% |  +28.46% |  -6.74% |        -1.64% |             +2.37% |  -0.02% |           93.40% |
+| Kepler-12b  |      -0.00% |                 -4.34% |         +3.29% |  +40.51% |  -5.58% |        +3.29% |             -0.71% |  +0.71% |           91.76% |
+| Kepler-4b   |      +0.01% |                -19.01% |        +13.12% |   +8.94% |  -2.81% |       +13.12% |            +10.92% |  +0.52% |           90.30% |
+| Kepler-11g  |      -0.00% |                 +0.79% |         +9.82% |  -20.08% | -19.96% |        +9.82% |            +10.88% |  +4.62% |           89.81% |
+| Kepler-11d  |      +0.00% |                 -5.31% |         +7.01% |  +41.10% |  -5.68% |        +7.01% |             +7.50% |  -1.15% |           89.48% |
+| Kepler-186e |      -0.00% |                 -6.73% |         +7.19% |  +35.80% | +12.25% |        +7.19% |            +11.89% |  +7.45% |           88.42% |
+| Kepler-7b   |      -0.00% |                 -3.95% |         +6.35% |  +63.44% |  -7.02% |        +6.35% |             +0.36% |  -0.43% |           87.50% |
+| Kepler-11b  |      +0.00% |                 -9.69% |         +9.21% |  +62.40% | +11.81% |        +9.21% |             +4.77% |  +1.02% |           84.70% |
+| Kepler-186c |      +0.00% |                -11.28% |        +21.06% |  +49.35% |  +1.32% |       +21.06% |             +9.90% |  +0.28% |           83.72% |
+| Kepler-186d |      +0.00% |                 -7.00% |        +26.78% |  +53.06% |  +2.41% |       +26.78% |             +9.53% |  -9.09% |           82.06% |
+| Kepler-186f |      +0.00% |                -11.66% |         -9.94% |  +70.80% | +26.68% |        -9.94% |             -7.71% | -13.87% |           80.47% |
+| Kepler-11f  |      +0.00% |                 -7.37% |        +18.90% | +109.88% | +16.32% |       +18.90% |             +5.73% |  +0.66% |           76.11% |
 
-According to lightkurve's official documentation, a target can be any one of the following
+<figcaption>
+   Percent difference of pipeline-extracted features vs confirmed KOI catalog values (sorted by <code>mean_match_no_t0</code>)
+</figcaption>
 
-> - The name of the object as a string, e.g. “Kepler-10”.
-> - The KIC or EPIC identifier as an integer, e.g. 11904151.
-> - A coordinate string in decimal format, e.g. “285.67942179 +50.24130576”.
-> - A coordinate string in sexagesimal format, e.g. “19:02:43.1 +50:14:28.7”.
-> - An astropy.coordinates.SkyCoord object.
+**What this shows:**
 
-A specific mission can also be specified. We use "Kepler" by default.
-
-### 2. Download and clean light curve data
-
-After choosing the target, we first have to download its curve data.
-Let's use its host star, **Kepler-5**, as the example in this case:
-
-```python
-lc = lk.search_lightcurve(
-    "Kepler-5", mission="Kepler", author="Kepler", exptime="long"
-)
-lc = lc.download_all() # Download all available data for this target (recommended for more precise data)
-lc = lc.stitch() # Stitch all downloaded curves into a single one
-```
-
-The repository's downloader applies that product filtering automatically before
-stitching. Kepler and K2 default to their official long-cadence products; TESS
-defaults to SPOC short-cadence products. Use the CLI's `--author` and
-`--exptime` options when a different, but still internally consistent, product
-set is needed.
-
-Now that we have the light curve, we can use some lightkurve native functions to do some data cleaning:
-
-```python
-lc = lc.remove_nans().normalize().remove_outliers(sigma=5.0)
-```
-
-With that, we're ready to throw it into our pipeline!
-
-### 3. Pass the light curve into feature extraction
-
-`extract_features_from_lightcurve` in `shaula/extract_feats.py` reads time and flux from the Lightkurve object and delegates to the same path as CSV input. Every extraction entry point returns a list with one feature dictionary per MES-qualified transit candidate, sorted by period.
-
-```python
-time = lc.time.value
-flux = lc.flux.value
-candidate_rows = extract_features_from_arrays(time, flux, ...)
-```
-
-If `RADIUS` is present in `lc.meta`, stellar radius is used to fill planet-radius features; otherwise those fields stay empty.
-
-Candidate discovery is currently an experimental iterative masking search. On
-each iteration it computes a BLS periodogram, clusters nearby local maxima,
-keeps representatives across the searched period range, and evaluates them in
-descending BLS power. Rejecting a candidate rejects only that period, epoch,
-and duration neighborhood, so the next independent peak can still be tested.
-An accepted candidate must have `max_mes >= 7.1` and at least three observed
-events. Its predicted transit windows are then masked at 1.5 times the fitted
-duration before the next periodogram is calculated.
-
-Masking the windows a candidate predicts still leaves any deep dip it does not
-explain in the data, and BLS will thread a box train through a handful of those
-and report a high MES for a period no planet has. After each acceptance a
-deep-event sweep removes dips at or beyond 8σ that either sit on an accepted
-candidate's predicted transit (its own transits escaping an epoch-drifted mask)
-or form a group of similar-depth events too small to ever clear the
-three-event rule. Groups large enough to be detectable are left in place: those
-are real signals a later iteration can still find.
-
-Before an accepted candidate is masked, its harmonics are reconciled. A search
-that locks onto `P/2` reports a period wrong by a whole factor and — far worse
-here — masks the wrong windows: a `P/2` alias predicts a window over *every*
-real transit, so the planet can never be recovered afterwards. MES is already
-the right discriminator, because folding a true-period signal at `2P` drops
-half its events while folding at `P/2` pads it with empty windows; either costs
-a factor √2 in `ΣN/√ΣD`, so MES peaks at the true period. Each accepted
-candidate is therefore re-folded at `2P`, `3P`, `P/2` and `P/3` — reusing the
-same duration-matched statistics object, which carries no period or epoch of
-its own, so no noise model is rebuilt — and the best harmonic is adopted if it
-clears the incumbent by 15%. Only integer ratios are tried: Kepler-90d and e
-sit 2.6% from a 3:2 ratio, so half-integer trials would pit real planets
-against each other. Period de-duplication treats 2× and 3× ratios as the same
-signal for the same reason, at a tolerance tight enough to leave near-resonant
-pairs alone (Kepler-90b and i are only 3.1% from 2:1).
-
-When the search stops because no remaining peak clears 7.1 — as opposed to
-running out of iterations or masking budget — the peaks it already measured and
-rejected are reconsidered at a lower bar of 6.0. Up to two are reported and
-marked with `is_provisional_detection = 1.0` and the `mes_threshold_used` they
-were judged against. Nothing is masked afterwards, which is what makes the
-looser bar safe: an accepted candidate consumes an iteration slot and removes
-cadences from everything found after it, while a recovered one costs a row.
-This is how signals near the noise floor surface — Kepler-90i (87 ppm, ~101
-transits of which only 68 are observable on a light curve that lost four
-quarters to the Module 3 failure) measures around 6.2 and is genuinely below
-the detection gate rather than missed by the search.
-
-The 7.1 threshold is a first experimental stopping rule, not a calibrated
-Kepler TCE decision boundary: this pipeline's time-domain MES is not
-numerically equivalent to Kepler TPS. The search masks cadences rather than
-subtracting a fitted transit model, stops after eight accepted candidates or
-50% cumulative masking, and does not yet perform a final joint fit or common
-re-detrending pass.
-
-### 4. Detrending and period search
-
-`detrend_with_bls_mask` in `shaula/detrend_and_period.py` runs first: Box Least Squares (BLS), optional TLS refinement, iterative detrending, and transit masking. After detrending, it repeats a fixed-period/fixed-duration BLS phase fit and canonicalizes `t0` to the first predicted transit in the data interval. That refit is bounded to half a transit duration: BLS reports the best phase anywhere in the fold, so a shallow candidate measured while a deeper signal is still unmasked would otherwise be relocated onto it — measured on Kepler-90i, the unconstrained refit landed 55 durations from the truth, reading Kepler-90g and h instead. When the fit lands outside the window the phase is re-picked inside it. It returns detrended flux plus `best_period`, `t0`, and transit duration used everywhere below.
-
-The period search runs from 0.5 days up to a third of the observing baseline, which is the longest period that can still show the three transits a detection requires. There is no additional flat ceiling: over Kepler's ~1460 day baseline a 200 day one made every longer-period planet unsearchable by construction (Kepler-90g at 210.6 d and h at 331.6 d, for instance), and their unmodeled transits then fed the spurious candidates the deep-event sweep above now removes.
-
-```python
-flux_detr, trend, mask_transit, bls_info = detrend_with_bls_mask(
-    time_arr, flux_arr, refine_duration=True, use_tls=True
-)
-```
-
-### 5. Scaling metrics
-
-`scaling_and_metrics` in `shaula/utils/scaling_and_metrics.py` standardizes the detrended flux and records summary statistics (mean, standard deviation, skewness, kurtosis, outlier resistance) into the feature dict.
-
-### 6. Folded and binned metrics
-
-`folded_binned_metrics` in `shaula/folded_binned_metrics.py` folds the series in phase at the BLS period and `t0`, builds a median phase profile, estimates a transit width in phase, then computes:
-
-- **Cadence** from median short time steps (fed into CDPP later).
-- **`local_noise`**: robust scatter (MAD) using out-of-transit points.
-- **`depth_stability`**: how much per-epoch transit depths vary relative to the global folded depth.
-- **`acf_lags`**: flux autocorrelation at configured hour lags (e.g. 1–24 h).
-
-```python
-binned = folded_binned_metrics(
-    time_arr, flux_detr_full, period, t0, lags_hours=(1, 3, 6, 12, 24)
-)
-```
-
-### 7. Per-transit statistics
-
-`per_transit_stats_simple` in `shaula/per_trans_stat.py` walks each transit epoch, estimates a baseline outside the transit window, and collects per-transit depths and the number of samples actually inside each transit. Those median-based measurements remain inputs to the depth and shape features; SES/MES now use the duration-matched time series described below.
-
-**Execution order vs. in-file labels:** Inside `extract_features_from_arrays`, this block runs _before_ CDPP even though `per_trans_stat.py` is tagged `# 6` and `cdpp.py` is `# 4`. Treat the `# N` lines in source files as module tags, not strict pipeline ordering.
-
-### 8. CDPP
-
-`calculate_cdpp` in `shaula/cdpp.py` builds box-template depth series lasting 3 h, 6 h, and 12 h. It estimates a robust, time-dependent uncertainty in a local window spanning 30 template durations, retains correlated noise measured at the transit timescale, deweights partial coverage, and prevents the BLS transit windows from contaminating the noise model. Each CDPP feature is the median valid local uncertainty in ppm. These values are a time-domain duration-matched approximation, not an exact reproduction of Kepler's adaptive wavelet whitening.
-
-```python
-cdpp = calculate_cdpp(
-    flux_detr_full,
-    cadence_hours=feats["cadence_hours"],
-    time=time_arr,
-    exclude_mask=mask_transit,
-)
-```
-
-### 9. SES, MES, and remaining shape / vetting features
-
-`compute_SES_MES` in `shaula/sesmes.py` evaluates the exact BLS duration at every eligible cadence. For each measurement it constructs a local depth uncertainty and the coherent matched-filter components `N = depth / uncertainty²`, `D = 1 / uncertainty²`, and `SES = N / sqrt(D)`. `max_ses` is the largest positive cadence-level SES. `MES` folds `N` and `D` at the final BLS ephemeris, while `max_mes` searches only a nearby phase window at that fixed period and duration. `SES_mean` and related per-transit features summarize the exact-ephemeris event SES values. These are scientifically coherent time-domain approximations, not numerical reproductions of Kepler TPS wavelet statistics or a full MES period search.
-
-This change replaces the previous root-sum-square `MES` and global-CDPP SES semantics without changing the saved column names. Existing extracted CSVs and trained artifacts should be regenerated before they are compared or combined with new output.
-
-The same extraction pass then adds folded **v-shape** metrics, **secondary eclipse** depth (and CDPP-based SNR variants), **odd/even depth ratio**, **ingress/egress asymmetry**, global residual RMS, and **skewness/kurtosis** on scaled flux, all still anchored to the BLS period, epoch, and duration from step 4.
-
-## How to run the project
-
-1. **Python environment** — Install the project and its dependencies with [uv](https://docs.astral.sh/uv/) (this creates `.venv` and installs `shaula` in editable mode):
-
-   ```bash
-   uv sync
-   ```
-
-### CLI
-
-Run the installed console script:
-
-```bash
-uv run shaula-extract-lk --target HAT-P-7 --mission Kepler --out-features out/hatp7_features.csv
-```
-
-Use `--input-lightkurve path/to.csv` instead of `--target` if you already have a saved light curve file. Optional flags include `--mission` (e.g. `TESS`), `--author`, `--exptime`, `--sigma-clip`, `--download-all`, `--out-lightkurve` to write the downloaded/cleaned curve, and `--quiet`.
-
-### Notebooks
-
-Exploratory workflows live under `shaula/` (for example `lightcurve_analysis.ipynb`). The script `shaula/cli/extract_csv.py` is marked deprecated but may still reflect the batch CSV feature layout.
-
-You need network access when downloading data through Lightkurve; first-time use may also pull mission-specific calibration dependencies.
+- **Periods** match the catalogue to within 0.01% for every planet, including Kepler-186f, a small planet with only about a dozen transits in four years.
+- **Depths** are mostly within about 10%. Shaula tends to measure them slightly shallower than the catalogue, by up to ~19% for Kepler-4b and Kepler-186b. Planet radii follow, mostly within ~12%.
+- **Durations** agree within ~13% for most planets; the small, shallow planets (Kepler-186c, Kepler-186d, Kepler-11f) come out 19–27% longer, because their transit edges are hard to see in the noise.
+- **`max_mes`**, the detection statistic, is within ~20% of Kepler's for every planet except Kepler-186f (+27%). **`max_ses`**, the strongest single transit, runs higher than the catalogue (up to +110% for Kepler-11f), as expected for a time-domain approximation of Kepler's wavelet-based statistic.
+- Every host except Kepler-2 also has 1 to 6 extra candidates that match no confirmed planet, mostly at long periods with `max_mes` between 6 and 19. They are not shown in the table. The search deliberately favours finding every real planet over avoiding false alarms; telling the two apart is the job of the vetting features and the downstream classifier.
 
 ## Credits
 
-The prototype code used in this repository was originally meant for the Gatonautas team project for [Nasa Space Apps Challenge 2025](https://www.nasa.gov/nasa-space-apps-challenge-2025/)
+The prototype code in this repository was first written for the Gatonautas team's project at the [NASA Space Apps Challenge 2025](https://www.nasa.gov/nasa-space-apps-challenge-2025/).
