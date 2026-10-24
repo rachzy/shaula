@@ -72,6 +72,32 @@ Against a small set of confirmed Kepler planets, we compare features written to 
 | `depth_mean_per_transit`           | Mean per-transit depth vs catalog depth                                                                          |
 | `planet_radius_rjup`               | Inferred planet radius (Jupiter radii); `n/a` when stellar radius was unavailable                                |
 | `mean_match_no_t0`                 | Mean of `max(0, 100 − \|%diff\|)` over all columns except `t0` (100% = perfect match, 0% = ≥100% off on average) |
+| `max_ses`                          | Strongest single-transit detection statistic (SES) of any one event; compared with the KOI `koi_max_sngle_ev`     |
+| `max_mes`                          | Multiple-event statistic (MES) at the best nearby phase; the detection gate requires ≥ 7.1. Compared with `koi_max_mult_ev` |
+| `MES`                              | Multiple-event statistic at the exact fitted ephemeris (no phase scan)                                            |
+| `SES_mean` / `SES_std`             | Mean and spread of the per-transit SES across all observed events                                                 |
+| `depth_std_per_transit`            | Scatter of the per-transit depths; large values suggest variable depth or a misfit period                        |
+| `depth_stability`                  | Std/mean of per-epoch depths from the folded light curve (0 = every transit equally deep)                        |
+| `npts_transit_median`              | Median number of cadences inside each transit                                                                    |
+| `cadence_hours`                    | Median time between cadences (~0.49 h for Kepler long cadence)                                                   |
+| `cdpp_3h` / `cdpp_6h` / `cdpp_12h` | Noise (ppm) over 3, 6 and 12 hour windows, transits excluded; a time-domain stand-in for Kepler's CDPP           |
+| `snr_global`                       | Mean transit depth divided by the noise (CDPP) at the transit duration                                           |
+| `local_noise`                      | Robust (MAD-based) scatter of the out-of-transit flux                                                            |
+| `resid_rms_global`                 | Standard deviation of the whole detrended light curve                                                            |
+| `acf_lag_1h` … `acf_lag_24h`       | Autocorrelation of the flux at 1, 3, 6, 12 and 24 hour lags; high values mean correlated (red) noise             |
+| `scale_mean` / `scale_std`         | Mean and spread of the robust-scaled flux (median 0, MAD-based unit)                                             |
+| `scale_skewness` / `scale_kurtosis`| Shape of the scaled flux distribution; transits and eclipses push skewness negative                              |
+| `scale_outlier_resistance`         | % of cadences more than 5σ from the median                                                                       |
+| `vshape_metric`                    | Transit shape from a trapezoid fit: 0 = flat-bottomed box, 1 = pure V (grazing transit or eclipsing binary)      |
+| `secondary_depth`                  | Signed depth at phase 0.5 (halfway between transits); ~0 when there is no secondary eclipse                      |
+| `secondary_depth_snr`              | Signed significance of that secondary, on the same scale as `MES`; high values suggest an eclipsing binary        |
+| `odd_even_depth_ratio`             | Mean odd-transit depth / mean even-transit depth; far from 1 suggests an eclipsing binary at twice the period     |
+| `ingress_egress_asymmetry`         | Difference between ingress and egress slopes of the folded transit; ~0 for a symmetric transit                   |
+| `planet_radius_rearth`             | Inferred planet radius (Earth radii); `n/a` when stellar radius was unavailable                                  |
+| `detection_status`                 | `accepted` (passed the MES gate) or `provisional` (sub-threshold, MES ≥ 6); scripts can also write `rejected` or `harmonic_duplicate` |
+| `candidate_label`                  | Training label: `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, from a period match against reference KOIs (scripts only) |
+| `matched_target` / `matched_period_ratio` | Reference planet the row was matched to, and how its period relates to the reference (`direct`, or an alias such as `2P`, `P/2`) |
+| `fp_source`                        | Why a row is `FALSE-POSITIVE`: the matched KOI's flags (e.g. `koi:nt`, `koi:ss+co`), `unmatched`, or `inverted`  |
 
 **What this suggests:** for quiet, deep hot-Jupiter hosts (Kepler-5b, HAT-P-7, Kepler-7b) the pipeline recovers period and duration to within a few percent and scores above ~96%. Their epochs also agree closely after converting BJD to BKJD and aligning transit numbers. Shallower or harder targets (aliases, grazing geometry, long-period / multi-planet systems such as Kepler-12b, Kepler-186f, Kepler-447) diverge more on depth, radius, and sometimes period—useful stress cases rather than failures of the comparison script itself.
 
