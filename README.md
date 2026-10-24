@@ -33,35 +33,6 @@ In order to know what to look for and what to calculate in this data, we use the
 - [NASA Exoplanet Archive for the Kepler Mission](https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=cumulative)
 - [Kepler Science Data Processing Pipeline](https://github.com/nasa/kepler-pipeline)
 
-### Pipeline vs confirmed catalog (sanity check)
-
-Against a small set of confirmed Kepler planets, we compare features written to `data/extracted/` with catalog values in `data/confirmed/` using `shaula/scripts/compare_confirmed_and_extracted.py`. Files are keyed by host star and contain one row per transit candidate. Rows are paired by `period_days` proximity, including small integer aliases (a candidate recovered at `P/3` is labelled as such rather than reported as an unrelated detection); confirmed planets with no extracted counterpart and extracted candidates matching no catalog period are listed separately instead of being forced onto a neighbouring row. Confirmed files retain a `target` column for the planet label; extracted files do not require one. Each table cell is the percent difference `((extracted − confirmed) / |confirmed|) × 100`, sorted by match quality.
-
-| Candidate   | period_days | depth_mean_per_transit | duration_hours | max_ses | max_mes | duration_days | planet_radius_rjup |       t0 | mean_match_no_t0 |
-| ----------- | ----------: | ---------------------: | -------------: | ------: | ------: | ------------: | -----------------: | -------: | ---------------: |
-| Kepler-15b  |      +0.00% |                 -5.33% |         -1.64% |  +3.33% | -26.95% |        -1.64% |             +2.37% |    -0.02% |           94.10% |
-| Kepler-5b   |      -0.00% |                 -4.04% |         +3.01% | +18.47% | -16.89% |        +3.01% |             +0.05% |    +1.16% |           93.50% |
-| Kepler-11g  |      -0.00% |                 +8.49% |         +4.69% |  +3.58% | -10.95% |        +4.69% |            +13.18% |    +1.95% |           93.49% |
-| Kepler-186e |      -0.00% |                -11.70% |         +2.08% |  -4.95% | -30.27% |        +2.07% |             +1.69% |    +6.59% |           92.46% |
-| Kepler-11f  |      -0.01% |                 +1.71% |        +12.74% |  +7.82% | -10.77% |       +12.74% |             +8.15% |    +0.66% |           92.30% |
-| Kepler-11e  |      -0.01% |                 +0.79% |        +13.42% | +22.37% |  -5.49% |       +13.45% |             -0.19% |    +2.65% |           92.04% |
-| Kepler-186b |      +0.00% |                -23.67% |         -6.72% |  -2.85% | -16.16% |        -6.74% |             -4.95% |    -6.46% |           91.27% |
-| Kepler-7b   |      +0.00% |                 -3.82% |         +2.81% |  +6.44% | -45.05% |        +2.81% |             +0.43% |    -0.45% |           91.23% |
-| Kepler-186d |      +0.00% |                 -4.37% |         +4.84% | +11.08% | -35.40% |        +4.84% |             +2.28% |    -2.06% |           91.03% |
-| Kepler-2b   |      -0.00% |                 -2.11% |         +6.75% |  -3.32% | -41.20% |        +6.75% |             +2.82% |    +0.64% |           91.01% |
-| Kepler-8b   |      -0.00% |                 -3.55% |         +7.21% | +11.19% | -32.46% |        +7.21% |             -6.35% |    +1.40% |           90.29% |
-| Kepler-11d  |      +0.01% |                 +2.21% |         +5.70% | +43.18% |  +2.00% |        +5.68% |             +9.96% |    +0.47% |           90.18% |
-| Kepler-12b  |      +0.00% |                 -4.36% |         +3.82% | +40.37% | -19.89% |        +3.82% |             -0.72% |    +0.92% |           89.58% |
-| Kepler-4b   |      +0.01% |                -18.90% |        +12.45% | +25.62% |  -4.81% |       +12.45% |            +10.99% |    +0.82% |           87.82% |
-| Kepler-11c  |      +0.01% |                 -2.34% |         +8.79% | +75.46% |  +5.79% |        +8.81% |             +7.66% |    -0.44% |           84.45% |
-| Kepler-186c |      +0.00% |                -16.18% |        -12.54% | +67.00% | -16.04% |       -12.53% |             -0.03% |    -2.65% |           82.24% |
-| Kepler-11b  |      +0.00% |                 -2.33% |        +17.56% |+219.76% |  -1.32% |       +17.56% |             +8.72% |    +1.08% |           78.93% |
-| Kepler-186f |      -0.29% |                -40.34% |       +191.91% |+498.33% |+134.20% |       +192.12% |            -23.24% | +2004.95% |           33.73% |
-
-<figcaption>
-   Percent difference of pipeline-extracted features vs confirmed KOI catalog values (sorted by <code>mean_match_no_t0</code>)
-</figcaption>
-
 #### Column meanings
 
 | Column                             | Meaning                                                                                                          |
