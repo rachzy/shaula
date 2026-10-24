@@ -102715,3 +102715,2560 @@ Saved 1 candidate row(s) to: /home/user/shaula/data/extracted/KIC4579598_inverte
 Extracted features saved to: /home/user/shaula/data/extracted/KIC4579598_inverted_20261024.csv
 /root/.local/share/uv/python/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/multiprocessing/resource_tracker.py:475: UserWarning: resource_tracker: There appear to be 5 leaked semaphore objects to clean up at shutdown: {'/loky-4117-iftf7id3', '/loky-4117-04mu29ri', '/loky-4117-mqdxi9bq', '/loky-4117-zqf3ixaj', '/loky-4117-cw_hoak5'}
   warnings.warn(
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+/home/user/shaula/.venv/lib/python3.14/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.
+  warnings.warn(
+=== Skipping KIC 10684670: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5601258: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6269070: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7120108: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10975146: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5651104: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9305831: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3861595: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5124667: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10098844: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 2438513: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10350571: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10212441: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6609270: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5986270: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4649305: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5036537: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11548140: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9049673: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9899630: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8264070: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6198256: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3761319: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6384840: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5470851: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9291039: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5471480: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3838004: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6470149: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8560475: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7900450: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9593528: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9595686: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4150611: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5106313: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7703882: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9643874: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11498128: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9520838: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5281113: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7769819: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6149910: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7549209: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8355239: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11337372: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8628758: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8937762: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7605600: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5471688: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4753561: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8739209: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5386163: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9157908: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 12557713: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7174617: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5385773: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3342592: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11673674: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8766285: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4544623: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5385439: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3970233: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4743513: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11756821: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9549471: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5372966: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3742855: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5218441: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5014753: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10338279: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9468382: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10485250: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9838975: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7116236: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4568298: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6292162: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7107561: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5471415: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 2694632: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5201115: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6314185: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7204073: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4455763: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5952309: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10227863: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5529501: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5796186: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4150624: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9761199: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7282154: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10920420: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4914737: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8179190: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4933476: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3353454: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6792124: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6307063: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10801951: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 2851100: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8345473: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6032920: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9655005: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6889235: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6182508: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8231299: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3444098: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4579598: existing output found in /home/user/shaula/data/extracted ===
+
+Running 5 stars across 4 worker processes.
+
+/home/user/shaula/.venv/lib/python3.14/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.
+  warnings.warn(
+/home/user/shaula/.venv/lib/python3.14/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.
+  warnings.warn(
+/home/user/shaula/.venv/lib/python3.14/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.
+  warnings.warn(
+/home/user/shaula/.venv/lib/python3.14/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.
+  warnings.warn(
+
+=== [1/5] KIC 7282008 (koi_fp) -> ok ===
+
+=== Extract & compare: KIC 7282008 (Kepler) ===
+
+Downloading light curve for KIC 7282008 from Kepler...
+Selected 14 product(s): author=Kepler, exptime=long
+Downloading all 14 selected files...
+Downloaded 54909 data points.
+Removed 43928 cadences around the known signals in /home/user/shaula/data/koi/KIC7282008-koi.csv before inverting.
+
+Light curve inverted: every detection below is a false alarm.
+
+
+=== Transit search iteration 1 (10,981 active cadences) ===
+Starting feature extraction from arrays...
+Data loaded: 10,981 valid points
+Time range: 352.46 to 1590.94 days
+Flux range: 0.996950 to 1.002631
+Starting BLS detrending and period search...
+Pre-BLS stitching: 52 segments, winsor 0.3% per segment
+BLS input: 10,981 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 412.827 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00032
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 90457 periods × 24 durations = 2,170,968 combinations (needed 90,457, budget 151,777)
+Computing BLS periodogram...
+BLS periodogram computed successfully
+Fine-window BLS pass: window=0.75 d, durations <= 0.223 d
+dt_days = 0.02043431397032691
+dur grid: 0.030651470955490367 0.45 200
+best before refine: 0.4505766230457084
+Initial BLS result: P=0.5072 days, T14=0.4506 days, t0=352.77
+Clipping initial duration from 0.4506 to 0.0613 days
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=3.056472 (from 0.509254), epochs=405
+Fine period refinement: P=3.056394 (dP=-7.80e-05), T14=0.0613
+Trapezoid refit: T14=0.0646 days, center offset=+0.0087 days
+Transit mask created: 222 transit points, 10,759 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 10,719 points used for fitting
+Spline iteration 2: 10,719 points used for fitting
+Spline iteration 3: 10,719 points used for fitting
+Spline iteration 4: 10,719 points used for fitting
+Final epoch refinement: dt0=-0.008655 days (-12.46 min)
+BLS detrending completed in 379.49 seconds
+Final result: P=3.0564 days, T14=0.0646 days, t0=354.77
+BLS results: P=3.0564 days, T14=0.0646 days, t0=354.77
+Computing scaling metrics...
+Per-transit analysis: 109 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=1.68, max_ses=3.62, max_mes=1.75
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=0.683, asymmetry=0.002, sec_snr=1.16
+Feature extraction completed in 381.55 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 3.056393601390599
+t0: 354.7736719638239
+duration_days: 0.06456417585776018
+duration_hours: 1.5495402205862443
+scale_mean: -0.017028558401048513
+scale_std: 1.0
+scale_skewness: -0.09318655726517457
+scale_kurtosis: 0.4499484472882389
+scale_outlier_resistance: 0.0
+local_noise: 0.0006141377611691547
+depth_stability: 0.99610928523281
+acf_lag_1h: 0.16367865725687655
+acf_lag_3h: 0.15513475865110438
+acf_lag_6h: 0.1258745652215998
+acf_lag_12h: 0.0916008000716773
+acf_lag_24h: -0.02503823442816703
+cadence_hours: 0.4904234368877951
+depth_mean_per_transit: 0.00011089046215542513
+depth_std_per_transit: 0.0004915617585480108
+npts_transit_median: 2.0
+cdpp_3h: nan
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 0.3583977198319637
+SES_std: 1.1917540448033699
+MES: 1.6810343133846248
+max_ses: 3.621717708130784
+max_mes: 1.7533461929494436
+snr_global: nan
+snr_per_transit_mean: 0.3583977198319637
+snr_per_transit_std: 1.1917540448033699
+resid_rms_global: 0.0006358201437399732
+vshape_metric: 0.0
+secondary_depth: 0.0001057578456242981
+secondary_depth_snr: 1.1572789166011173
+secondary_depth_snr_log: 0.7688476666975369
+secondary_depth_snr_capped: 1.1572789166011173
+odd_even_depth_ratio: 0.6826236449874571
+ingress_egress_asymmetry: 0.0016375592983752033
+skewness_flux: -0.09318655726517457
+kurtosis_flux: 0.4499484472882389
+outlier_resistance: 0.0
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 10,981 valid points
+Time range: 352.46 to 1590.94 days
+Flux range: 0.996950 to 1.002631
+Starting BLS detrending and period search...
+Pre-BLS stitching: 52 segments, winsor 0.3% per segment
+BLS input: 10,981 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 412.827 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00032
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 90457 periods × 24 durations = 2,170,968 combinations (needed 90,457, budget 151,777)
+Refining queued BLS peak: P=21.405603 days, T14=0.0490 days
+dt_days = 0.02043431397032691
+dur grid: 0.030651470955490367 0.45 200
+best before refine: 0.04904235352878459
+Initial BLS result: P=21.4056 days, T14=0.0490 days, t0=361.26
+Starting period/duration refinement...
+Running period de-aliasing...
+Fine period refinement: P=21.405622 (dP=+1.07e-05), T14=0.0490
+Trapezoid refit: T14=0.0583 days, center offset=-0.0022 days
+Transit mask created: 30 transit points, 10,951 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 10,913 points used for fitting
+Spline iteration 2: 10,913 points used for fitting
+Spline iteration 3: 10,913 points used for fitting
+Spline iteration 4: 10,913 points used for fitting
+Final epoch refinement: dt0=-0.003992 days (-5.75 min)
+BLS detrending completed in 26.22 seconds
+Final result: P=21.4056 days, T14=0.0583 days, t0=361.25
+BLS results: P=21.4056 days, T14=0.0583 days, t0=361.25
+Computing scaling metrics...
+Per-transit analysis: 15 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=3.13, max_ses=3.73, max_mes=3.13
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.237, asymmetry=-0.009, sec_snr=-0.45
+Feature extraction completed in 27.83 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 21.40562206076922
+t0: 361.2512448026797
+duration_days: 0.05833893434922423
+duration_hours: 1.4001344243813816
+scale_mean: -0.017265138356177358
+scale_std: 1.0
+scale_skewness: -0.09333525159818017
+scale_kurtosis: 0.4498174126944967
+scale_outlier_resistance: 0.0
+local_noise: 0.0006167286514236553
+depth_stability: 1.102117755222089
+acf_lag_1h: 0.16367626053268536
+acf_lag_3h: 0.15513184313875772
+acf_lag_6h: 0.12587079276547677
+acf_lag_12h: 0.09159646616700191
+acf_lag_24h: -0.025040366574085714
+cadence_hours: 0.4904234368877951
+depth_mean_per_transit: 0.0001948349336742335
+depth_std_per_transit: 0.00039137612051159406
+npts_transit_median: 2.0
+cdpp_3h: nan
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 1.4000333833507708
+SES_std: 1.2782539674296585
+MES: 3.130569815941346
+max_ses: 3.7262126942256724
+max_mes: 3.130569815941346
+snr_global: nan
+snr_per_transit_mean: 1.4000333833507708
+snr_per_transit_std: 1.2782539674296585
+resid_rms_global: 0.0006358205820625977
+vshape_metric: 0.0
+secondary_depth: -9.087434727457948e-05
+secondary_depth_snr: -0.4468994316432278
+secondary_depth_snr_log: -0.3694229439508333
+secondary_depth_snr_capped: -0.4468994316432278
+odd_even_depth_ratio: 1.236998824419164
+ingress_egress_asymmetry: -0.009336482040358291
+skewness_flux: -0.09333525159818017
+kurtosis_flux: 0.4498174126944967
+outlier_resistance: 0.0
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Rejected BLS candidate P=21.405622 d: max_mes=3.13, events=5 (requires MES >= 7.1 and >= 3 events)
+Skipped queued peak P=1.743168 d: provisional max_mes=3.58, events=128
+Rejected BLS candidate P=3.056394 d: max_mes=1.75, events=22 (requires MES >= 7.1 and >= 3 events)
+Skipped queued peak P=185.422280 d: provisional max_mes=nan, events=0
+Skipped queued peak P=278.113654 d: provisional max_mes=nan, events=0
+Skipped queued peak P=139.062692 d: provisional max_mes=nan, events=0
+Skipped queued peak P=100.537961 d: provisional max_mes=nan, events=0
+Skipped queued peak P=76.155221 d: provisional max_mes=nan, events=0
+Skipped queued peak P=64.991349 d: provisional max_mes=nan, events=0
+Skipped queued peak P=47.056531 d: provisional max_mes=nan, events=0
+Skipped queued peak P=0.816734 d: provisional max_mes=nan, events=0
+Skipped queued peak P=26.744329 d: provisional max_mes=nan, events=0
+Skipped queued peak P=38.815693 d: provisional max_mes=nan, events=0
+Skipped queued peak P=12.723762 d: provisional max_mes=nan, events=0
+Skipped queued peak P=3.630690 d: provisional max_mes=nan, events=0
+Skipped queued peak P=13.753360 d: provisional max_mes=nan, events=0
+Skipped queued peak P=5.484602 d: provisional max_mes=nan, events=0
+Skipped queued peak P=6.880034 d: provisional max_mes=nan, events=0
+Skipped queued peak P=9.410270 d: provisional max_mes=nan, events=0
+Skipped queued peak P=1.317277 d: provisional max_mes=nan, events=0
+No remaining independent BLS peak passed the MES threshold
+Candidate labels: no candidate rows to label
+Saved 0 candidate row(s) to: /home/user/shaula/data/extracted/KIC7282008_inverted_20261024.csv
+
+Extracted features saved to: /home/user/shaula/data/extracted/KIC7282008_inverted_20261024.csv
+
+=== [2/5] KIC 6778019 (koi_fp) -> ok ===
+
+=== Extract & compare: KIC 6778019 (Kepler) ===
+
+Downloading light curve for KIC 6778019 from Kepler...
+Selected 17 product(s): author=Kepler, exptime=long
+Downloading all 17 selected files...
+Downloaded 64784 data points.
+Removed 31730 cadences around the known signals in /home/user/shaula/data/koi/KIC6778019-koi.csv before inverting.
+
+Light curve inverted: every detection below is a false alarm.
+
+
+=== Transit search iteration 1 (33,054 active cadences) ===
+Starting feature extraction from arrays...
+Data loaded: 33,054 valid points
+Time range: 131.76 to 1590.90 days
+Flux range: 0.993904 to 1.007296
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 33,054 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.381 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00118
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 50423 periods × 24 durations = 1,210,152 combinations (needed 109,178, budget 50,423)
+Computing BLS periodogram...
+BLS periodogram computed successfully
+Fine-window BLS pass: window=0.75 d, durations <= 0.223 d
+dt_days = 0.020433758560102433
+dur grid: 0.03065063784015365 0.45 200
+best before refine: 0.03065063784015365
+Initial BLS result: P=485.0550 days, T14=0.0307 days, t0=524.10
+Starting period/duration refinement...
+Running period de-aliasing...
+Fine period refinement: P=485.008783 (dP=-7.52e-03), T14=0.0409
+Transit mask created: 3 transit points, 33,051 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 32,984 points used for fitting
+Spline iteration 2: 32,981 points used for fitting
+Spline iteration 3: 32,935 points used for fitting
+Spline iteration 4: 32,929 points used for fitting
+Final epoch refinement: dt0=+0.000000 days (+0.00 min)
+BLS detrending completed in 409.17 seconds
+Final result: P=485.0088 days, T14=0.0409 days, t0=524.17
+BLS results: P=485.0088 days, T14=0.0409 days, t0=524.17
+Computing scaling metrics...
+Per-transit analysis: 2 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=9.04, max_ses=15.17, max_mes=15.80
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=0.941, asymmetry=nan, sec_snr=-0.76
+Feature extraction completed in 413.23 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 485.0087825047246
+t0: 524.1675005381039
+duration_days: 0.040867517120204866
+duration_hours: 0.9808204108849168
+scale_mean: -0.008679393794055216
+scale_std: 1.0
+scale_skewness: -0.1354736775123689
+scale_kurtosis: 1.094741942255185
+scale_outlier_resistance: 0.03327887698916924
+local_noise: 0.0006655633037330268
+depth_stability: 0.7780066413729947
+acf_lag_1h: 0.7869337427870727
+acf_lag_3h: 0.7397447332746632
+acf_lag_6h: 0.6735392510434658
+acf_lag_12h: 0.4931430191953149
+acf_lag_24h: 0.049751858911844714
+cadence_hours: 0.4904101606516633
+depth_mean_per_transit: 0.0050569568591460334
+depth_std_per_transit: 0.0015631534139823322
+npts_transit_median: 1.5
+cdpp_3h: 196.4768995927691
+cdpp_6h: 631.2195794162226
+cdpp_12h: nan
+SES_mean: 9.03903878317255
+SES_std: 0.0
+MES: 9.03903878317255
+max_ses: 15.174019202955476
+max_mes: 15.804489557838874
+snr_global: 25.738175172895208
+snr_per_transit_mean: 9.03903878317255
+snr_per_transit_std: 0.0
+resid_rms_global: 0.0006806643756810153
+vshape_metric: nan
+secondary_depth: -0.00016920410764532609
+secondary_depth_snr: -0.7578689126890273
+secondary_depth_snr_log: -0.564102230321828
+secondary_depth_snr_capped: -0.7578689126890273
+odd_even_depth_ratio: 0.9407152244879652
+ingress_egress_asymmetry: nan
+skewness_flux: -0.1354736775123689
+kurtosis_flux: 1.094741942255185
+outlier_resistance: 0.03327887698916924
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Rejected BLS candidate P=485.008783 d: max_mes=15.80, events=1 (requires MES >= 7.1 and >= 3 events)
+Skipped queued peak P=0.900655 d: provisional max_mes=2.48, events=93
+Skipped queued peak P=1.447455 d: provisional max_mes=1.90, events=99
+Skipped queued peak P=0.590564 d: provisional max_mes=1.25, events=140
+Skipped queued peak P=6.444742 d: provisional max_mes=1.07, events=13
+Skipped queued peak P=311.907434 d: provisional max_mes=nan, events=0
+Skipped queued peak P=148.981722 d: provisional max_mes=nan, events=0
+Skipped queued peak P=126.756193 d: provisional max_mes=nan, events=0
+Skipped queued peak P=131.011705 d: provisional max_mes=nan, events=0
+Skipped queued peak P=63.845248 d: provisional max_mes=nan, events=0
+Skipped queued peak P=44.460172 d: provisional max_mes=nan, events=0
+Skipped queued peak P=50.606797 d: provisional max_mes=nan, events=0
+Skipped queued peak P=57.697591 d: provisional max_mes=nan, events=0
+Skipped queued peak P=31.215428 d: provisional max_mes=nan, events=0
+Skipped queued peak P=0.506869 d: provisional max_mes=nan, events=0
+Skipped queued peak P=18.444329 d: provisional max_mes=nan, events=0
+Skipped queued peak P=14.661810 d: provisional max_mes=nan, events=0
+Skipped queued peak P=7.094545 d: provisional max_mes=nan, events=0
+Skipped queued peak P=6.148382 d: provisional max_mes=nan, events=0
+Skipped queued peak P=6.954607 d: provisional max_mes=nan, events=0
+No remaining independent BLS peak passed the MES threshold
+Candidate labels: no candidate rows to label
+Saved 0 candidate row(s) to: /home/user/shaula/data/extracted/KIC6778019_inverted_20261024.csv
+
+Extracted features saved to: /home/user/shaula/data/extracted/KIC6778019_inverted_20261024.csv
+
+=== [3/5] KIC 9541094 (koi_fp) -> ok ===
+
+=== Extract & compare: KIC 9541094 (Kepler) ===
+
+Downloading light curve for KIC 9541094 from Kepler...
+Selected 14 product(s): author=Kepler, exptime=long
+Downloading all 14 selected files...
+Downloaded 51652 data points.
+Removed 41309 cadences around the known signals in /home/user/shaula/data/koi/KIC9541094-koi.csv before inverting.
+
+Light curve inverted: every detection below is a false alarm.
+
+
+=== Transit search iteration 1 (10,343 active cadences) ===
+Starting feature extraction from arrays...
+Data loaded: 10,343 valid points
+Time range: 131.55 to 1591.00 days
+Flux range: 0.998834 to 1.001171
+Starting BLS detrending and period search...
+Pre-BLS stitching: 48 segments, winsor 0.3% per segment
+BLS input: 10,343 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.483 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00017
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 109201 periods × 24 durations = 2,620,824 combinations (needed 109,201, budget 161,140)
+Computing BLS periodogram...
+BLS periodogram computed successfully
+Fine-window BLS pass: window=0.75 d, durations <= 0.223 d
+dt_days = 0.020434329911950044
+dur grid: 0.030651494867925067 0.45 200
+best before refine: 0.4505769745584985
+Initial BLS result: P=0.5053 days, T14=0.4506 days, t0=131.83
+Clipping initial duration from 0.4506 to 0.0613 days
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=3.548003 (from 0.508133), epochs=411
+Fine period refinement: P=3.547973 (dP=-3.03e-05), T14=0.2493
+Trapezoid refit: T14=0.2325 days, center offset=+0.0199 days
+Transit mask created: 695 transit points, 9,648 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 9,540 points used for fitting
+Spline iteration 2: 9,533 points used for fitting
+Spline iteration 3: 9,530 points used for fitting
+Spline iteration 4: 9,529 points used for fitting
+Final epoch refinement: dt0=-0.016133 days (-23.23 min)
+BLS detrending completed in 523.04 seconds
+Final result: P=3.5480 days, T14=0.2325 days, t0=132.33
+BLS results: P=3.5480 days, T14=0.2325 days, t0=132.33
+Computing scaling metrics...
+Per-transit analysis: 296 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.071, asymmetry=-0.000, sec_snr=nan
+Feature extraction completed in 524.31 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 3.5479728194927076
+t0: 132.3293588634111
+duration_days: 0.23252622882134738
+duration_hours: 5.580629491712337
+scale_mean: -0.03974843948844808
+scale_std: 0.9999999999999999
+scale_skewness: -0.30136119937898337
+scale_kurtosis: 1.5182849025708496
+scale_outlier_resistance: 0.0
+local_noise: 0.0002097613376317377
+depth_stability: 0.8737021005386754
+acf_lag_1h: 0.4585592538701275
+acf_lag_3h: 0.4088549295231758
+acf_lag_6h: 0.3381884417949373
+acf_lag_12h: 0.18427099654923293
+acf_lag_24h: -0.05649735721568094
+cadence_hours: 0.4904238819144666
+depth_mean_per_transit: 3.801696939356612e-05
+depth_std_per_transit: 0.00016085974104835708
+npts_transit_median: 2.0
+cdpp_3h: nan
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: nan
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.00023386064112223908
+vshape_metric: 0.025
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 1.071424445686928
+ingress_egress_asymmetry: -8.45494948781034e-05
+skewness_flux: -0.30136119937898337
+kurtosis_flux: 1.5182849025708496
+outlier_resistance: 0.0
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Skipped queued peak P=2.361457 d: provisional max_mes=2.75, events=23
+Rejected BLS candidate P=3.547973 d: max_mes=nan, events=0 (requires MES >= 7.1 and >= 3 events)
+Skipped queued peak P=347.602595 d: provisional max_mes=nan, events=0
+Skipped queued peak P=231.738769 d: provisional max_mes=nan, events=0
+Skipped queued peak P=197.119302 d: provisional max_mes=nan, events=0
+Skipped queued peak P=111.410219 d: provisional max_mes=nan, events=0
+Skipped queued peak P=81.853127 d: provisional max_mes=nan, events=0
+Skipped queued peak P=86.902172 d: provisional max_mes=nan, events=0
+Skipped queued peak P=55.705598 d: provisional max_mes=nan, events=0
+Skipped queued peak P=29.995227 d: provisional max_mes=nan, events=0
+Skipped queued peak P=18.693425 d: provisional max_mes=nan, events=0
+Skipped queued peak P=2.981245 d: provisional max_mes=nan, events=0
+Skipped queued peak P=2.945397 d: provisional max_mes=nan, events=0
+Skipped queued peak P=14.482356 d: provisional max_mes=nan, events=0
+Skipped queued peak P=0.887000 d: provisional max_mes=nan, events=0
+Skipped queued peak P=5.512945 d: provisional max_mes=nan, events=0
+Skipped queued peak P=13.547565 d: provisional max_mes=nan, events=0
+Skipped queued peak P=0.707973 d: provisional max_mes=nan, events=0
+Skipped queued peak P=8.668339 d: provisional max_mes=nan, events=0
+Skipped queued peak P=7.766785 d: provisional max_mes=nan, events=0
+No remaining independent BLS peak passed the MES threshold
+Candidate labels: no candidate rows to label
+Saved 0 candidate row(s) to: /home/user/shaula/data/extracted/KIC9541094_inverted_20261024.csv
+
+Extracted features saved to: /home/user/shaula/data/extracted/KIC9541094_inverted_20261024.csv
+
+=== [4/5] KIC 9110357 (koi_fp) -> ok ===
+
+=== Extract & compare: KIC 9110357 (Kepler) ===
+
+Downloading light curve for KIC 9110357 from Kepler...
+Selected 18 product(s): author=Kepler, exptime=long
+Downloading all 18 selected files...
+Downloaded 65247 data points.
+Removed 49384 cadences around the known signals in /home/user/shaula/data/koi/KIC9110357-koi.csv before inverting.
+
+Light curve inverted: every detection below is a false alarm.
+
+
+=== Transit search iteration 1 (15,863 active cadences) ===
+Starting feature extraction from arrays...
+Data loaded: 15,863 valid points
+Time range: 120.62 to 1590.74 days
+Flux range: 0.997898 to 1.001081
+Starting BLS detrending and period search...
+Pre-BLS stitching: 62 segments, winsor 0.3% per segment
+BLS input: 15,863 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 490.038 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00013
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 105066 periods × 24 durations = 2,521,584 combinations (needed 110,118, budget 105,066)
+Computing BLS periodogram...
+BLS periodogram computed successfully
+Fine-window BLS pass: window=0.75 d, durations <= 0.223 d
+dt_days = 0.020433944529941073
+dur grid: 0.03065091679491161 0.45 200
+best before refine: 0.4505684768852007
+Initial BLS result: P=0.5983 days, T14=0.4506 days, t0=120.95
+Clipping initial duration from 0.4506 to 0.0718 days
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=1.786406 (from 0.597882), epochs=822
+Fine period refinement: P=1.786384 (dP=-2.24e-05), T14=0.2146
+Folded profile suggests narrower duration: 0.1265 days; capping to 0.1708 days
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 1,571 transit points, 14,292 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 14,134 points used for fitting
+Spline iteration 2: 14,127 points used for fitting
+Spline iteration 3: 14,127 points used for fitting
+Spline iteration 4: 14,127 points used for fitting
+Final epoch refinement: dt0=-0.007178 days (-10.34 min)
+BLS detrending completed in 506.26 seconds
+Final result: P=1.7864 days, T14=0.1708 days, t0=122.12
+BLS results: P=1.7864 days, T14=0.1708 days, t0=122.12
+Computing scaling metrics...
+Per-transit analysis: 447 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=0.970, asymmetry=-0.000, sec_snr=nan
+Feature extraction completed in 507.90 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 1.7863837421991597
+t0: 122.12005335812992
+duration_days: 0.17082294534779466
+duration_hours: 4.099750688347072
+scale_mean: -0.015724844089280682
+scale_std: 1.0
+scale_skewness: -0.4532140811840359
+scale_kurtosis: 3.3038098459456506
+scale_outlier_resistance: 0.13238353400996028
+local_noise: 0.00018976548730108278
+depth_stability: 1.1534316668733948
+acf_lag_1h: 0.38287369333271515
+acf_lag_3h: 0.15446046568735836
+acf_lag_6h: 0.028857428183221973
+acf_lag_12h: 0.19180669021997693
+acf_lag_24h: -0.06723037582834744
+cadence_hours: 0.49041454726830125
+depth_mean_per_transit: -6.750715952046776e-06
+depth_std_per_transit: 0.00012415799605187234
+npts_transit_median: 4.0
+cdpp_3h: 130.91563572174823
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: -0.05156539106142323
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.00022287584827631796
+vshape_metric: 0.8
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 0.9696254054299541
+ingress_egress_asymmetry: -9.213677493739424e-05
+skewness_flux: -0.4532140811840359
+kurtosis_flux: 3.3038098459456506
+outlier_resistance: 0.13238353400996028
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Skipped queued peak P=121.197542 d: provisional max_mes=8.43, events=1
+Skipped queued peak P=284.601724 d: provisional max_mes=7.50, events=1
+Skipped queued peak P=76.559758 d: provisional max_mes=7.49, events=1
+Starting feature extraction from arrays...
+Data loaded: 15,863 valid points
+Time range: 120.62 to 1590.74 days
+Flux range: 0.997898 to 1.001081
+Starting BLS detrending and period search...
+Pre-BLS stitching: 62 segments, winsor 0.3% per segment
+BLS input: 15,863 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 490.038 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00013
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 105066 periods × 24 durations = 2,521,584 combinations (needed 110,118, budget 105,066)
+Refining queued BLS peak: P=54.010749 days, T14=0.0889 days
+dt_days = 0.020433944529941073
+dur grid: 0.03065091679491161 0.45 200
+best before refine: 0.08888765870524368
+Initial BLS result: P=54.0107 days, T14=0.0889 days, t0=137.98
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=3.556808 (from 53.271105), epochs=413
+Fine period refinement: P=3.556972 (dP=+1.63e-04), T14=0.2832
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 1,264 transit points, 14,599 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 14,440 points used for fitting
+Spline iteration 2: 14,437 points used for fitting
+Spline iteration 3: 14,437 points used for fitting
+Spline iteration 4: 14,437 points used for fitting
+Final epoch refinement: dt0=-0.001618 days (-2.33 min)
+BLS detrending completed in 41.30 seconds
+Final result: P=3.5570 days, T14=0.2832 days, t0=121.41
+BLS results: P=3.5570 days, T14=0.2832 days, t0=121.41
+Computing scaling metrics...
+Per-transit analysis: 323 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=0.951, asymmetry=0.000, sec_snr=nan
+Feature extraction completed in 42.76 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 3.556971558742311
+t0: 121.40756412787054
+duration_days: 0.2832144711849832
+duration_hours: 6.797147308439597
+scale_mean: -0.01520144545587544
+scale_std: 1.0
+scale_skewness: -0.44448450501415304
+scale_kurtosis: 3.2970442464625966
+scale_outlier_resistance: 0.13238353400996028
+local_noise: 0.00019070145118904803
+depth_stability: 0.986053308467929
+acf_lag_1h: 0.3825978704158142
+acf_lag_3h: 0.1540817582225493
+acf_lag_6h: 0.028408674952900104
+acf_lag_12h: 0.19141670460164847
+acf_lag_24h: -0.06766213258604674
+cadence_hours: 0.49041454726830125
+depth_mean_per_transit: 4.839928397140037e-05
+depth_std_per_transit: 0.00017370452864737368
+npts_transit_median: 5.0
+cdpp_3h: 134.15946258103892
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: 0.36075937574783307
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.00022282835051995963
+vshape_metric: 0.65
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 0.9507092174863244
+ingress_egress_asymmetry: 0.00010509276526937152
+skewness_flux: -0.44448450501415304
+kurtosis_flux: 3.2970442464625966
+outlier_resistance: 0.13238353400996028
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 15,863 valid points
+Time range: 120.62 to 1590.74 days
+Flux range: 0.997898 to 1.001081
+Starting BLS detrending and period search...
+Pre-BLS stitching: 62 segments, winsor 0.3% per segment
+BLS input: 15,863 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 490.038 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00013
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 105066 periods × 24 durations = 2,521,584 combinations (needed 110,118, budget 105,066)
+Refining queued BLS peak: P=54.010749 days, T14=0.0889 days
+dt_days = 0.020433944529941073
+dur grid: 0.03065091679491161 0.45 200
+best before refine: 0.08888765870524368
+Initial BLS result: P=54.0107 days, T14=0.0889 days, t0=137.98
+Starting period/duration refinement...
+Fine period refinement: P=53.271078 (dP=-2.66e-05), T14=0.0409
+Trapezoid refit: T14=0.0409 days, center offset=+0.0000 days
+Transit mask created: 1 transit points, 15,862 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 15,661 points used for fitting
+Spline iteration 2: 15,655 points used for fitting
+Spline iteration 3: 15,655 points used for fitting
+Spline iteration 4: 15,655 points used for fitting
+Final epoch refinement: dt0=+0.000000 days (+0.00 min)
+BLS detrending completed in 15.99 seconds
+Final result: P=53.2711 days, T14=0.0409 days, t0=157.24
+BLS results: P=53.2711 days, T14=0.0409 days, t0=157.24
+Computing scaling metrics...
+Per-transit analysis: 1 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=6.12, max_mes=6.12
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=nan, asymmetry=nan, sec_snr=nan
+Feature extraction completed in 18.20 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 53.27107797288675
+t0: 157.2378564956307
+duration_days: 0.040867889059882145
+duration_hours: 0.9808293374371715
+scale_mean: -0.01557842948017478
+scale_std: 1.0
+scale_skewness: -0.4417859342515854
+scale_kurtosis: 3.2943585847122385
+scale_outlier_resistance: 0.13238353400996028
+local_noise: 0.0001904571028910224
+depth_stability: 0.4140775323725603
+acf_lag_1h: 0.3825504599309264
+acf_lag_3h: 0.154016607968271
+acf_lag_6h: 0.02832990073567086
+acf_lag_12h: 0.1913461590315674
+acf_lag_24h: -0.0677320705237188
+cadence_hours: 0.49041454726830125
+depth_mean_per_transit: 0.0016038944521464815
+depth_std_per_transit: 0.0
+npts_transit_median: 1.0
+cdpp_3h: 132.606653588651
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: 6.122017357411423
+max_mes: 6.122017357411423
+snr_global: 12.09512802518794
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.0002228207265768953
+vshape_metric: nan
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: nan
+ingress_egress_asymmetry: nan
+skewness_flux: -0.4417859342515854
+kurtosis_flux: 3.2943585847122385
+outlier_resistance: 0.13238353400996028
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Rejected BLS candidate P=3.556972 d: max_mes=nan, events=0 (requires MES >= 7.1 and >= 3 events)
+Skipped queued peak P=1.071864 d: provisional max_mes=3.06, events=35
+Skipped queued peak P=152.714765 d: provisional max_mes=2.48, events=1
+Rejected BLS candidate P=1.786384 d: max_mes=nan, events=0 (requires MES >= 7.1 and >= 3 events)
+Skipped queued peak P=432.054062 d: provisional max_mes=nan, events=0
+Skipped queued peak P=337.224680 d: provisional max_mes=nan, events=0
+Skipped queued peak P=5.368596 d: provisional max_mes=nan, events=0
+Skipped queued peak P=124.842515 d: provisional max_mes=nan, events=0
+Skipped queued peak P=142.267057 d: provisional max_mes=nan, events=0
+Skipped queued peak P=33.870898 d: provisional max_mes=nan, events=0
+Skipped queued peak P=20.890157 d: provisional max_mes=nan, events=0
+Skipped queued peak P=74.456148 d: provisional max_mes=nan, events=0
+Skipped queued peak P=10.594294 d: provisional max_mes=nan, events=0
+Skipped queued peak P=7.113059 d: provisional max_mes=nan, events=0
+Skipped queued peak P=3.579305 d: provisional max_mes=nan, events=0
+No remaining independent BLS peak passed the MES threshold
+Candidate labels: no candidate rows to label
+Saved 0 candidate row(s) to: /home/user/shaula/data/extracted/KIC9110357_inverted_20261024.csv
+
+Extracted features saved to: /home/user/shaula/data/extracted/KIC9110357_inverted_20261024.csv
+
+=== [5/5] KIC 4355503 (koi_fp) -> ok ===
+
+=== Extract & compare: KIC 4355503 (Kepler) ===
+
+Downloading light curve for KIC 4355503 from Kepler...
+Selected 17 product(s): author=Kepler, exptime=long
+Downloading all 17 selected files...
+Downloaded 64781 data points.
+Removed 26001 cadences around the known signals in /home/user/shaula/data/koi/KIC4355503-koi.csv before inverting.
+
+Light curve inverted: every detection below is a false alarm.
+
+
+=== Transit search iteration 1 (38,780 active cadences) ===
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 42977 periods × 24 durations = 1,031,448 combinations (needed 109,208, budget 42,977)
+Computing BLS periodogram...
+BLS periodogram computed successfully
+Fine-window BLS pass: window=0.75 d, durations <= 0.223 d
+dt_days = 0.02043382584815845
+dur grid: 0.030650738772237673 0.45 200
+best before refine: 0.4505658599518938
+Initial BLS result: P=0.5425 days, T14=0.4506 days, t0=131.74
+Clipping initial duration from 0.4506 to 0.0651 days
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=5.428827 (from 0.542364), epochs=268
+Fine period refinement: P=5.428679 (dP=-1.48e-04), T14=0.3310
+Folded profile suggests narrower duration: 0.1357 days; capping to 0.1832 days
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 1,280 transit points, 37,500 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 36,514 points used for fitting
+Spline iteration 2: 36,357 points used for fitting
+Spline iteration 3: 36,333 points used for fitting
+Spline iteration 4: 36,329 points used for fitting
+Final epoch refinement: dt0=+0.090167 days (+129.84 min)
+BLS detrending completed in 220.64 seconds
+Final result: P=5.4287 days, T14=0.1832 days, t0=132.48
+BLS results: P=5.4287 days, T14=0.1832 days, t0=132.48
+Computing scaling metrics...
+Per-transit analysis: 248 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=7.50, max_ses=19.82, max_mes=7.71
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=2.230, asymmetry=0.010, sec_snr=-0.86
+Feature extraction completed in 225.13 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 5.428679259437056
+t0: 132.48012986510236
+duration_days: 0.18321792500600065
+duration_hours: 4.3972302001440156
+scale_mean: -0.10396774003944442
+scale_std: 1.0
+scale_skewness: -9.379282453478428
+scale_kurtosis: 181.51898650093426
+scale_outlier_resistance: 0.4564208354822073
+local_noise: 0.0008754169239579607
+depth_stability: 0.5906924921497183
+acf_lag_1h: 0.36640933465688835
+acf_lag_3h: 0.12525069308610262
+acf_lag_6h: 0.0016270129278690795
+acf_lag_12h: -0.08401590777426737
+acf_lag_24h: 0.023353515406090444
+cadence_hours: 0.4904117868281901
+depth_mean_per_transit: 0.00016256630686107168
+depth_std_per_transit: 0.0008957486227513011
+npts_transit_median: 5.0
+cdpp_3h: 576.3876288704568
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 1.122163933168996
+SES_std: 2.0383061226535433
+MES: 7.496532823251498
+max_ses: 19.817014509587338
+max_mes: 7.71480140269744
+snr_global: 0.28204336581555695
+snr_per_transit_mean: 1.122163933168996
+snr_per_transit_std: 2.0383061226535433
+resid_rms_global: 0.0016198028097557696
+vshape_metric: 0.0
+secondary_depth: -0.00011327230639933937
+secondary_depth_snr: -0.8623029847177287
+secondary_depth_snr_log: -0.6218138856591501
+secondary_depth_snr_capped: -0.8623029847177287
+odd_even_depth_ratio: 2.2304603521188873
+ingress_egress_asymmetry: 0.01007845480540131
+skewness_flux: -9.379282453478428
+kurtosis_flux: 181.51898650093426
+outlier_resistance: 0.4564208354822073
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 42977 periods × 24 durations = 1,031,448 combinations (needed 109,208, budget 42,977)
+Refining queued BLS peak: P=110.220115 days, T14=0.0613 days
+dt_days = 0.02043382584815845
+dur grid: 0.030650738772237673 0.45 200
+best before refine: 0.06130147754447535
+Initial BLS result: P=110.2201 days, T14=0.0613 days, t0=190.52
+Starting period/duration refinement...
+Running period de-aliasing...
+Fine period refinement: P=110.223632 (dP=+3.47e-03), T14=0.0450
+Trapezoid refit: T14=0.0409 days, center offset=+0.0087 days
+Transit mask created: 15 transit points, 38,765 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 37,719 points used for fitting
+Spline iteration 2: 37,546 points used for fitting
+Spline iteration 3: 37,508 points used for fitting
+Spline iteration 4: 37,487 points used for fitting
+Final epoch refinement: dt0=-0.010762 days (-15.50 min)
+BLS detrending completed in 49.54 seconds
+Final result: P=110.2236 days, T14=0.0409 days, t0=190.49
+BLS results: P=110.2236 days, T14=0.0409 days, t0=190.49
+Computing scaling metrics...
+Per-transit analysis: 8 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=59.34, max_ses=66.25, max_mes=67.42
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=28.326, asymmetry=nan, sec_snr=0.72
+Feature extraction completed in 55.52 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 110.2236317047575
+t0: 190.4929341491952
+duration_days: 0.0408676516963169
+duration_hours: 0.9808236407116055
+scale_mean: -0.10659102668224553
+scale_std: 1.0
+scale_skewness: -9.360132119780078
+scale_kurtosis: 181.19932973976913
+scale_outlier_resistance: 0.4667354306343476
+local_noise: 0.0008737130043928711
+depth_stability: 0.36032884247894786
+acf_lag_1h: 0.36946053040039906
+acf_lag_3h: 0.12932274805433455
+acf_lag_6h: 0.005186280075390437
+acf_lag_12h: -0.08495402742779869
+acf_lag_24h: 0.02533216417208995
+cadence_hours: 0.4904117868281901
+depth_mean_per_transit: 0.012656328918127194
+depth_std_per_transit: 0.01721337394669997
+npts_transit_median: 2.0
+cdpp_3h: 581.7039140149617
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 24.227204945294048
+SES_std: 26.31729161186807
+MES: 59.34429071881074
+max_ses: 66.25388297665688
+max_mes: 67.41825406179262
+snr_global: 21.75733842114335
+snr_per_transit_mean: 24.227204945294048
+snr_per_transit_std: 26.31729161186807
+resid_rms_global: 0.0016231265204793668
+vshape_metric: 0.0
+secondary_depth: 0.00014499337795884624
+secondary_depth_snr: 0.7240383291747391
+secondary_depth_snr_log: 0.5446694046943232
+secondary_depth_snr_capped: 0.7240383291747391
+odd_even_depth_ratio: 28.325703373257028
+ingress_egress_asymmetry: nan
+skewness_flux: -9.360132119780078
+kurtosis_flux: 181.19932973976913
+outlier_resistance: 0.4667354306343476
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Accepted candidate 1: P=110.223632 d, max_mes=67.42
+
+=== Transit search iteration 2 (38,757 active cadences) ===
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 23 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 43003 periods × 24 durations = 1,032,072 combinations (needed 109,208, budget 43,003)
+Computing BLS periodogram...
+BLS periodogram computed successfully
+Fine-window BLS pass: window=0.75 d, durations <= 0.223 d
+dt_days = 0.02043382654665038
+dur grid: 0.03065073981997557 0.45 200
+best before refine: 0.45056587535364084
+Initial BLS result: P=0.5423 days, T14=0.4506 days, t0=131.83
+Clipping initial duration from 0.4506 to 0.0651 days
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=5.428554 (from 0.542468), epochs=268
+Fine period refinement: P=5.428677 (dP=+1.23e-04), T14=0.3310
+Folded profile suggests narrower duration: 0.1357 days; capping to 0.1832 days
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 1,281 transit points, 37,499 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 36,499 points used for fitting
+Spline iteration 2: 36,338 points used for fitting
+Spline iteration 3: 36,306 points used for fitting
+Spline iteration 4: 36,297 points used for fitting
+Final epoch refinement: dt0=+0.079173 days (+114.01 min)
+BLS detrending completed in 222.00 seconds
+Final result: P=5.4287 days, T14=0.1832 days, t0=132.47
+BLS results: P=5.4287 days, T14=0.1832 days, t0=132.47
+Computing scaling metrics...
+Per-transit analysis: 248 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=5.57, max_ses=19.73, max_mes=7.47
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=2.277, asymmetry=-0.002, sec_snr=-1.01
+Feature extraction completed in 226.90 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 5.428677335845704
+t0: 132.46913645071328
+duration_days: 0.18321786008479252
+duration_hours: 4.397228642035021
+scale_mean: -0.10608498213038398
+scale_std: 1.0
+scale_skewness: -8.059223241147143
+scale_kurtosis: 140.40490627773025
+scale_outlier_resistance: 0.4747529478545811
+local_noise: 0.0008743344771034008
+depth_stability: 0.5766946814505655
+acf_lag_1h: 0.3855513589119006
+acf_lag_3h: 0.1365603536587577
+acf_lag_6h: 0.004736400503347872
+acf_lag_12h: -0.09247776358059875
+acf_lag_24h: 0.028460547082902875
+cadence_hours: 0.49041179521009326
+depth_mean_per_transit: 0.0001445817466667578
+depth_std_per_transit: 0.0008952694338581409
+npts_transit_median: 5.0
+cdpp_3h: 577.532672071045
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 0.8598834972442253
+SES_std: 1.7346875698772624
+MES: 5.569249539388489
+max_ses: 19.73396248088769
+max_mes: 7.474408928689835
+snr_global: 0.25034383967972657
+snr_per_transit_mean: 0.8598834972442253
+snr_per_transit_std: 1.7346875698772624
+resid_rms_global: 0.0015436692336408537
+vshape_metric: 0.0
+secondary_depth: -0.00012926696342810962
+secondary_depth_snr: -1.0146095227423308
+secondary_depth_snr_log: -0.7004253913803227
+secondary_depth_snr_capped: -1.0146095227423308
+odd_even_depth_ratio: 2.277311801642432
+ingress_egress_asymmetry: -0.0017946125681793657
+skewness_flux: -8.059223241147143
+kurtosis_flux: 140.40490627773025
+outlier_resistance: 0.4747529478545811
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Skipped queued peak P=486.496308 d: provisional max_mes=50.59, events=1
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 23 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 43003 periods × 24 durations = 1,032,072 combinations (needed 109,208, budget 43,003)
+Refining queued BLS peak: P=196.437019 days, T14=0.0705 days
+dt_days = 0.02043382654665038
+dur grid: 0.03065073981997557 0.45 200
+best before refine: 0.0704967015859438
+Initial BLS result: P=196.4370 days, T14=0.0705 days, t0=244.13
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=16.284874 (from 194.603128), epochs=89
+Fine period refinement: P=16.287383 (dP=+2.51e-03), T14=0.4782
+Folded profile suggests narrower duration: 0.1357 days; capping to 0.1832 days
+Trapezoid refit: T14=0.1344 days, center offset=-0.0244 days
+Transit mask created: 342 transit points, 38,438 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 37,393 points used for fitting
+Spline iteration 2: 37,217 points used for fitting
+Spline iteration 3: 37,178 points used for fitting
+Spline iteration 4: 37,158 points used for fitting
+Final epoch refinement: dt0=-0.044342 days (-63.85 min)
+BLS detrending completed in 38.31 seconds
+Final result: P=16.2874 days, T14=0.1344 days, t0=132.21
+BLS results: P=16.2874 days, T14=0.1344 days, t0=132.21
+Computing scaling metrics...
+Per-transit analysis: 84 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=2.26, max_ses=32.63, max_mes=3.21
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.202, asymmetry=-0.024, sec_snr=0.76
+Feature extraction completed in 43.93 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 16.28738309929909
+t0: 132.20900821184046
+duration_days: 0.13437091056921752
+duration_hours: 3.2249018536612204
+scale_mean: -0.10694203558854176
+scale_std: 1.0
+scale_skewness: -8.057655378333314
+scale_kurtosis: 140.53635674488046
+scale_outlier_resistance: 0.4824934850478624
+local_noise: 0.0008748592208100159
+depth_stability: 0.40461351638414833
+acf_lag_1h: 0.3878353812367584
+acf_lag_3h: 0.13988292243410827
+acf_lag_6h: 0.008449275781467395
+acf_lag_12h: -0.09224500548222685
+acf_lag_24h: 0.028679762897594784
+cadence_hours: 0.49041179521009326
+depth_mean_per_transit: 0.00011724119162185404
+depth_std_per_transit: 0.0007120919950036347
+npts_transit_median: 4.0
+cdpp_3h: 580.6061074273211
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 0.6143221943030894
+SES_std: 1.265328340127168
+MES: 2.2598861177764418
+max_ses: 32.62903676085625
+max_mes: 3.213109088161087
+snr_global: 0.20192896719835143
+snr_per_transit_mean: 0.6143221943030894
+snr_per_transit_std: 1.265328340127168
+resid_rms_global: 0.0015461459573781608
+vshape_metric: 0.05
+secondary_depth: 0.00012035162435538577
+secondary_depth_snr: 0.7648170560480853
+secondary_depth_snr_log: 0.56804703404887
+secondary_depth_snr_capped: 0.7648170560480853
+odd_even_depth_ratio: 1.202126636614441
+ingress_egress_asymmetry: -0.02366704950934034
+skewness_flux: -8.057655378333314
+kurtosis_flux: 140.53635674488046
+outlier_resistance: 0.4824934850478624
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 23 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 43003 periods × 24 durations = 1,032,072 combinations (needed 109,208, budget 43,003)
+Refining queued BLS peak: P=196.437019 days, T14=0.0705 days
+dt_days = 0.02043382654665038
+dur grid: 0.03065073981997557 0.45 200
+best before refine: 0.0704967015859438
+Initial BLS result: P=196.4370 days, T14=0.0705 days, t0=244.13
+Starting period/duration refinement...
+Fine period refinement: P=194.605173 (dP=+2.04e-03), T14=0.0450
+Trapezoid refit: T14=0.0409 days, center offset=-0.0087 days
+Transit mask created: 9 transit points, 38,771 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 37,701 points used for fitting
+Spline iteration 2: 37,547 points used for fitting
+Spline iteration 3: 37,505 points used for fitting
+Spline iteration 4: 37,484 points used for fitting
+Final epoch refinement: dt0=+0.000954 days (+1.37 min)
+BLS detrending completed in 52.88 seconds
+Final result: P=194.6052 days, T14=0.0409 days, t0=253.27
+BLS results: P=194.6052 days, T14=0.0409 days, t0=253.27
+Computing scaling metrics...
+Per-transit analysis: 4 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=36.75, max_ses=58.55, max_mes=37.16
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.113, asymmetry=nan, sec_snr=-1.66
+Feature extraction completed in 58.95 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 194.60517266638766
+t0: 253.26810337581787
+duration_days: 0.04086765309330076
+duration_hours: 0.9808236742392182
+scale_mean: -0.10730758374557486
+scale_std: 1.0
+scale_skewness: -8.024249394438538
+scale_kurtosis: 139.2194436322388
+scale_outlier_resistance: 0.48765384317671645
+local_noise: 0.0008761842066905564
+depth_stability: 0.3320530342442247
+acf_lag_1h: 0.38662790724018076
+acf_lag_3h: 0.13802497528842733
+acf_lag_6h: 0.006811674850477556
+acf_lag_12h: -0.08995077640765166
+acf_lag_24h: 0.02597152760847933
+cadence_hours: 0.49041179521009326
+depth_mean_per_transit: 0.012502238468471788
+depth_std_per_transit: 0.011564355563706108
+npts_transit_median: 2.0
+cdpp_3h: 581.6692022175334
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 21.215577299786535
+SES_std: 26.45093521929525
+MES: 36.74645779513521
+max_ses: 58.5517152818677
+max_mes: 37.15999147212355
+snr_global: 21.493726022984767
+snr_per_transit_mean: 21.215577299786535
+snr_per_transit_std: 26.45093521929525
+resid_rms_global: 0.0015442803037498008
+vshape_metric: nan
+secondary_depth: -0.00046970787217861414
+secondary_depth_snr: -1.658089389665684
+secondary_depth_snr_log: -0.9776075901490715
+secondary_depth_snr_capped: -1.658089389665684
+odd_even_depth_ratio: 1.113104723735383
+ingress_egress_asymmetry: nan
+skewness_flux: -8.024249394438538
+kurtosis_flux: 139.2194436322388
+outlier_resistance: 0.48765384317671645
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Accepted candidate 2: P=194.605173 d, max_mes=37.16
+
+=== Transit search iteration 3 (38,744 active cadences) ===
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 36 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 43017 periods × 24 durations = 1,032,408 combinations (needed 109,208, budget 43,017)
+Computing BLS periodogram...
+BLS periodogram computed successfully
+Fine-window BLS pass: window=0.75 d, durations <= 0.223 d
+dt_days = 0.020433826772205066
+dur grid: 0.0306507401583076 0.45 200
+best before refine: 0.4505658803271217
+Initial BLS result: P=0.6023 days, T14=0.4506 days, t0=131.74
+Clipping initial duration from 0.4506 to 0.0723 days
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=5.428690 (from 0.602320), epochs=268
+Fine period refinement: P=5.428616 (dP=-7.40e-05), T14=0.3310
+Folded profile suggests narrower duration: 0.1810 days; capping to 0.2443 days
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 1,740 transit points, 37,040 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 36,043 points used for fitting
+Spline iteration 2: 35,879 points used for fitting
+Spline iteration 3: 35,836 points used for fitting
+Spline iteration 4: 35,821 points used for fitting
+Final epoch refinement: dt0=+0.039403 days (+56.74 min)
+BLS detrending completed in 218.37 seconds
+Final result: P=5.4286 days, T14=0.2443 days, t0=132.45
+BLS results: P=5.4286 days, T14=0.2443 days, t0=132.45
+Computing scaling metrics...
+Per-transit analysis: 250 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.828, asymmetry=0.007, sec_snr=nan
+Feature extraction completed in 222.18 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 5.428615817975923
+t0: 132.44591828018073
+duration_days: 0.24428771180891656
+duration_hours: 5.862905083413997
+scale_mean: -0.10994521108568794
+scale_std: 1.0
+scale_skewness: -7.318224661327358
+scale_kurtosis: 123.16142656252575
+scale_outlier_resistance: 0.5136279165806318
+local_noise: 0.0008739525586632702
+depth_stability: 0.5650363959710429
+acf_lag_1h: 0.3940457118063798
+acf_lag_3h: 0.1570189339989054
+acf_lag_6h: 0.013418329927954806
+acf_lag_12h: -0.09596098240315608
+acf_lag_24h: 0.019346969068028023
+cadence_hours: 0.4904118006234057
+depth_mean_per_transit: 0.00014899242692812553
+depth_std_per_transit: 0.001007329725207523
+npts_transit_median: 7.0
+cdpp_3h: 576.4950775848164
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: 0.25844527164450093
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.0015115823556029458
+vshape_metric: 0.375
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 1.828448620403585
+ingress_egress_asymmetry: 0.007497310842149805
+skewness_flux: -7.318224661327358
+kurtosis_flux: 123.16142656252575
+outlier_resistance: 0.5136279165806318
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 36 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 43017 periods × 24 durations = 1,032,408 combinations (needed 109,208, budget 43,017)
+Refining queued BLS peak: P=271.568479 days, T14=0.0429 days
+dt_days = 0.020433826772205066
+dur grid: 0.0306507401583076 0.45 200
+best before refine: 0.04291103622163064
+Initial BLS result: P=271.5685 days, T14=0.0429 days, t0=244.15
+Starting period/duration refinement...
+Running period de-aliasing...
+Fine period refinement: P=271.570351 (dP=+1.77e-03), T14=0.0450
+Transit mask created: 6 transit points, 38,774 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 37,681 points used for fitting
+Spline iteration 2: 37,526 points used for fitting
+Spline iteration 3: 37,484 points used for fitting
+Spline iteration 4: 37,475 points used for fitting
+Final epoch refinement: dt0=+0.000000 days (+0.00 min)
+BLS detrending completed in 78.29 seconds
+Final result: P=271.5704 days, T14=0.0450 days, t0=244.15
+Duration audit: T14 0.0450 -> 0.0899 days (higher MES)
+BLS results: P=271.5704 days, T14=0.0899 days, t0=244.15
+Computing scaling metrics...
+Per-transit analysis: 5 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=36.11, max_ses=36.89, max_mes=48.96
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=-0.065, asymmetry=nan, sec_snr=2.08
+Feature extraction completed in 84.95 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 271.5703507066117
+t0: 244.1460357721422
+duration_days: 0.08990883779770228
+duration_hours: 2.1578121071448546
+scale_mean: -0.10841864114845355
+scale_std: 1.0
+scale_skewness: -7.36997359743847
+scale_kurtosis: 124.61345383110347
+scale_outlier_resistance: 0.5007226925459426
+local_noise: 0.0008754095585287101
+depth_stability: 0.2683379350030921
+acf_lag_1h: 0.38517011692479597
+acf_lag_3h: 0.14705395445791894
+acf_lag_6h: 0.01022246819790778
+acf_lag_12h: -0.09329366069258838
+acf_lag_24h: 0.019013063364766103
+cadence_hours: 0.4904118006234057
+depth_mean_per_transit: 0.007711195729897558
+depth_std_per_transit: 0.010505727827465993
+npts_transit_median: 4.0
+cdpp_3h: 581.1820371458406
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 20.522191597339173
+SES_std: 14.790206544551946
+MES: 36.10718479185108
+max_ses: 36.893670806294665
+max_mes: 48.95911407223811
+snr_global: 13.268124678744202
+snr_per_transit_mean: 20.522191597339173
+snr_per_transit_std: 14.790206544551946
+resid_rms_global: 0.0015002113062925183
+vshape_metric: 0.17500000000000002
+secondary_depth: 0.0007882143829130031
+secondary_depth_snr: 2.0773820659777917
+secondary_depth_snr_log: 1.1240792569702285
+secondary_depth_snr_capped: 2.0773820659777917
+odd_even_depth_ratio: -0.0652617108272686
+ingress_egress_asymmetry: nan
+skewness_flux: -7.36997359743847
+kurtosis_flux: 124.61345383110347
+outlier_resistance: 0.5007226925459426
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Accepted candidate 3: P=271.570351 d, max_mes=48.96
+
+=== Transit search iteration 4 (38,724 active cadences) ===
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 56 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 43040 periods × 24 durations = 1,032,960 combinations (needed 109,208, budget 43,040)
+Computing BLS periodogram...
+BLS periodogram computed successfully
+Fine-window BLS pass: window=0.75 d, durations <= 0.223 d
+dt_days = 0.02043382700503571
+dur grid: 0.030650740507553564 0.45 200
+best before refine: 0.45056588546103743
+Initial BLS result: P=0.5425 days, T14=0.4506 days, t0=131.74
+Clipping initial duration from 0.4506 to 0.0651 days
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=5.428605 (from 0.542473), epochs=268
+Fine period refinement: P=5.428679 (dP=+7.40e-05), T14=0.3310
+Folded profile suggests narrower duration: 0.1357 days; capping to 0.1832 days
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 1,282 transit points, 37,498 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 36,484 points used for fitting
+Spline iteration 2: 36,336 points used for fitting
+Spline iteration 3: 36,305 points used for fitting
+Spline iteration 4: 36,292 points used for fitting
+Final epoch refinement: dt0=+0.090166 days (+129.84 min)
+BLS detrending completed in 225.53 seconds
+Final result: P=5.4287 days, T14=0.1832 days, t0=132.48
+BLS results: P=5.4287 days, T14=0.1832 days, t0=132.48
+Computing scaling metrics...
+Per-transit analysis: 248 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=7.43, max_ses=17.81, max_mes=7.66
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=2.230, asymmetry=-0.001, sec_snr=-0.76
+Feature extraction completed in 230.03 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 5.4286786818599975
+t0: 132.4801297621781
+duration_days: 0.18321790551277492
+duration_hours: 4.397229732306598
+scale_mean: -0.1055302258090877
+scale_std: 1.0
+scale_skewness: -6.8748226878829914
+scale_kurtosis: 116.33455935012886
+scale_outlier_resistance: 0.49065179217023036
+local_noise: 0.0008725400133530978
+depth_stability: 0.5797463233925028
+acf_lag_1h: 0.3780483218190102
+acf_lag_3h: 0.14690536866452947
+acf_lag_6h: 0.008453337291472624
+acf_lag_12h: -0.10390126384502106
+acf_lag_24h: 0.028788777236769297
+cadence_hours: 0.49041180359199643
+depth_mean_per_transit: 0.00015445470662226037
+depth_std_per_transit: 0.0009091959355480768
+npts_transit_median: 5.0
+cdpp_3h: 575.5060992067245
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 1.1125134875541605
+SES_std: 2.0430689088236904
+MES: 7.432504961256491
+max_ses: 17.809692321441897
+max_mes: 7.656018654175961
+snr_global: 0.2683806597969338
+snr_per_transit_mean: 1.1125134875541605
+snr_per_transit_std: 2.0430689088236904
+resid_rms_global: 0.0014508194818126316
+vshape_metric: 0.35000000000000003
+secondary_depth: -9.817748539593057e-05
+secondary_depth_snr: -0.7557354577579293
+secondary_depth_snr_log: -0.5628878333844625
+secondary_depth_snr_capped: -0.7557354577579293
+odd_even_depth_ratio: 2.230364071531283
+ingress_egress_asymmetry: -0.0010141507145506403
+skewness_flux: -6.8748226878829914
+kurtosis_flux: 116.33455935012886
+outlier_resistance: 0.49065179217023036
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 56 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 43040 periods × 24 durations = 1,032,960 combinations (needed 109,208, budget 43,040)
+Refining queued BLS peak: P=34.117620 days, T14=0.0705 days
+dt_days = 0.02043382700503571
+dur grid: 0.030650740507553564 0.45 200
+best before refine: 0.0704967031673732
+Initial BLS result: P=34.1176 days, T14=0.0705 days, t0=134.35
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=170.695885 (from 34.125840), epochs=8
+Fine period refinement: P=170.662210 (dP=-3.37e-02), T14=0.9890
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 189 transit points, 38,591 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 37,471 points used for fitting
+Spline iteration 2: 37,334 points used for fitting
+Spline iteration 3: 37,292 points used for fitting
+Spline iteration 4: 37,283 points used for fitting
+Final epoch refinement: dt0=+0.000000 days (+0.00 min)
+BLS detrending completed in 32.43 seconds
+Final result: P=170.6622 days, T14=0.9890 days, t0=272.05
+BLS results: P=170.6622 days, T14=0.9890 days, t0=272.05
+Computing scaling metrics...
+Per-transit analysis: 7 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.732, asymmetry=-0.135, sec_snr=nan
+Feature extraction completed in 35.85 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 170.66221032196603
+t0: 272.04924518398445
+duration_days: 0.9889972270437284
+duration_hours: 23.735933449049483
+scale_mean: -0.11747581933107709
+scale_std: 0.9999999999999999
+scale_skewness: -6.651220178478965
+scale_kurtosis: 108.70438660421999
+scale_outlier_resistance: 0.503563681437868
+local_noise: 0.0008708972362023353
+depth_stability: 0.36556001766948676
+acf_lag_1h: 0.389352550439922
+acf_lag_3h: 0.1604083472092639
+acf_lag_6h: 0.02238869230123468
+acf_lag_12h: -0.09052196169129943
+acf_lag_24h: 0.023752254592336836
+cadence_hours: 0.49041180359199643
+depth_mean_per_transit: 0.0019483635778074929
+depth_std_per_transit: 0.0018089574813226618
+npts_transit_median: 31.0
+cdpp_3h: 584.1611057492618
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: 3.3353189019807576
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.0014648199369925237
+vshape_metric: 0.47500000000000003
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 1.7316934051886923
+ingress_egress_asymmetry: -0.13515821477337386
+skewness_flux: -6.651220178478965
+kurtosis_flux: 108.70438660421999
+outlier_resistance: 0.503563681437868
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 56 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 43040 periods × 24 durations = 1,032,960 combinations (needed 109,208, budget 43,040)
+Refining queued BLS peak: P=34.117620 days, T14=0.0705 days
+dt_days = 0.02043382700503571
+dur grid: 0.030650740507553564 0.45 200
+best before refine: 0.0704967031673732
+Initial BLS result: P=34.1176 days, T14=0.0705 days, t0=134.35
+Starting period/duration refinement...
+Fine period refinement: P=34.125187 (dP=-6.54e-04), T14=0.5586
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 606 transit points, 38,174 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 37,118 points used for fitting
+Spline iteration 2: 36,947 points used for fitting
+Spline iteration 3: 36,908 points used for fitting
+Spline iteration 4: 36,902 points used for fitting
+Final epoch refinement: dt0=+0.005586 days (+8.04 min)
+BLS detrending completed in 6.25 seconds
+Final result: P=34.1252 days, T14=0.5586 days, t0=151.63
+BLS results: P=34.1252 days, T14=0.5586 days, t0=151.63
+Computing scaling metrics...
+Per-transit analysis: 38 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=0.721, asymmetry=-0.003, sec_snr=nan
+Feature extraction completed in 9.53 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 34.12518669115315
+t0: 151.62717243236838
+duration_days: 0.5585790950096561
+duration_hours: 13.405898280231746
+scale_mean: -0.10955225733773866
+scale_std: 1.0
+scale_skewness: -6.8121434797634555
+scale_kurtosis: 113.38379817575264
+scale_outlier_resistance: 0.5009813035843405
+local_noise: 0.0008667144979231387
+depth_stability: 1.1144325823664925
+acf_lag_1h: 0.38173560644730165
+acf_lag_3h: 0.15060806168712704
+acf_lag_6h: 0.011483888637512589
+acf_lag_12h: -0.0978662426867475
+acf_lag_24h: 0.02928945045011129
+cadence_hours: 0.49041180359199643
+depth_mean_per_transit: 1.2828203100460242e-05
+depth_std_per_transit: 0.0014464899135396634
+npts_transit_median: 16.0
+cdpp_3h: 578.7491738427218
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: 0.02216539336943637
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.0014567178432893743
+vshape_metric: 0.0
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 0.721175728646735
+ingress_egress_asymmetry: -0.0031482405295803896
+skewness_flux: -6.8121434797634555
+kurtosis_flux: 113.38379817575264
+outlier_resistance: 0.5009813035843405
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Rejected BLS candidate P=170.662210 d: max_mes=nan, events=0 (requires MES >= 7.1 and >= 3 events)
+Harmonic reconciliation: P=5.428679 d (max_mes=7.66) -> 10.857357 d (max_mes=8.98); re-measuring
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 56 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00912
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 43040 periods × 24 durations = 1,032,960 combinations (needed 109,208, budget 43,040)
+Refining queued BLS peak: P=10.857357 days, T14=0.1832 days
+dt_days = 0.02043382700503571
+dur grid: 0.030650740507553564 0.45 200
+best before refine: 0.18321790551277492
+Initial BLS result: P=10.8574 days, T14=0.1832 days, t0=137.91
+Folded profile suggests narrower duration: 0.0905 days; capping to 0.1221 days
+Starting period/duration refinement...
+Fine period refinement: P=10.858072 (dP=-1.60e-04), T14=0.4294
+Folded profile suggests narrower duration: 0.1810 days; capping to 0.2443 days
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 883 transit points, 37,897 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 36,848 points used for fitting
+Spline iteration 2: 36,709 points used for fitting
+Spline iteration 3: 36,666 points used for fitting
+Spline iteration 4: 36,655 points used for fitting
+Final epoch refinement: dt0=+0.106772 days (+153.75 min)
+BLS detrending completed in 3.73 seconds
+Final result: P=10.8581 days, T14=0.2443 days, t0=137.85
+BLS results: P=10.8581 days, T14=0.2443 days, t0=137.85
+Computing scaling metrics...
+Per-transit analysis: 125 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=0.783, asymmetry=-0.014, sec_snr=nan
+Feature extraction completed in 7.83 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 10.858071900770938
+t0: 137.84516675360027
+duration_days: 0.2443066177673461
+duration_hours: 5.863358826416307
+scale_mean: -0.10864133927029034
+scale_std: 1.0
+scale_skewness: -6.8771060600827125
+scale_kurtosis: 116.20393849956939
+scale_outlier_resistance: 0.4803222807561202
+local_noise: 0.0008578714077896055
+depth_stability: 0.6081022928394458
+acf_lag_1h: 0.3760677100592937
+acf_lag_3h: 0.14455237137981033
+acf_lag_6h: 0.007924082325381237
+acf_lag_12h: -0.0994911085870515
+acf_lag_24h: 0.03157406550507399
+cadence_hours: 0.49041180359199643
+depth_mean_per_transit: 0.00031439682412746174
+depth_std_per_transit: 0.0012254316252344507
+npts_transit_median: 7.0
+cdpp_3h: 573.7786316056539
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: 0.5479409772505089
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.0014494516211906974
+vshape_metric: 0.625
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 0.7830495808447536
+ingress_egress_asymmetry: -0.013613148318532931
+skewness_flux: -6.8771060600827125
+kurtosis_flux: 116.20393849956939
+outlier_resistance: 0.4803222807561202
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Harmonic re-measure did not confirm the longer period; keeping the original candidate
+Accepted candidate 4: P=5.428679 d, max_mes=7.66
+Deep-event sweep: 1 event(s) removed (1 residual of accepted candidates, 0 too few to be detectable), 11 left for later iterations, 7 cadences
+
+=== Transit search iteration 5 (36,754 active cadences) ===
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 2,026 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00901
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 45347 periods × 24 durations = 1,088,328 combinations (needed 109,208, budget 45,347)
+Computing BLS periodogram...
+BLS periodogram computed successfully
+Fine-window BLS pass: window=0.75 d, durations <= 0.223 d
+dt_days = 0.020433833065908402
+dur grid: 0.030650749598862603 0.45 200
+best before refine: 0.45056601910328026
+Initial BLS result: P=0.5424 days, T14=0.4506 days, t0=131.75
+Clipping initial duration from 0.4506 to 0.0651 days
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=5.427011 (from 0.542489), epochs=268
+Fine period refinement: P=5.426888 (dP=-1.23e-04), T14=0.3310
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 2,349 transit points, 36,431 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 34,404 points used for fitting
+Spline iteration 2: 34,273 points used for fitting
+Spline iteration 3: 34,243 points used for fitting
+Spline iteration 4: 34,226 points used for fitting
+Final epoch refinement: dt0=-0.122480 days (-176.37 min)
+BLS detrending completed in 246.71 seconds
+Final result: P=5.4269 days, T14=0.3310 days, t0=132.40
+BLS results: P=5.4269 days, T14=0.3310 days, t0=132.40
+Computing scaling metrics...
+Per-transit analysis: 253 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.275, asymmetry=-0.002, sec_snr=nan
+Feature extraction completed in 250.20 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 5.42688775946805
+t0: 132.39989451746013
+duration_days: 0.3310280956677161
+duration_hours: 7.9446742960251875
+scale_mean: -0.1069412965290177
+scale_std: 1.0
+scale_skewness: -6.263049909921093
+scale_kurtosis: 100.79030367053923
+scale_outlier_resistance: 0.516950535996082
+local_noise: 0.0008581100576987847
+depth_stability: 0.796737910400485
+acf_lag_1h: 0.37992775117733213
+acf_lag_3h: 0.14757169261052563
+acf_lag_6h: 0.007420361568613575
+acf_lag_12h: -0.0875398663799548
+acf_lag_24h: 0.020341618238659362
+cadence_hours: 0.49041194189339876
+depth_mean_per_transit: 0.00046705005208952003
+depth_std_per_transit: 0.0013114780960519266
+npts_transit_median: 8.0
+cdpp_3h: 573.2131815071978
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: 0.8147929377015823
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.0014286630927341057
+vshape_metric: 0.0
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 1.2746144053818482
+ingress_egress_asymmetry: -0.002160123191342795
+skewness_flux: -6.263049909921093
+kurtosis_flux: 100.79030367053923
+outlier_resistance: 0.516950535996082
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 2,026 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00901
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 45347 periods × 24 durations = 1,088,328 combinations (needed 109,208, budget 45,347)
+Refining queued BLS peak: P=39.151510 days, T14=0.0490 days
+dt_days = 0.020433833065908402
+dur grid: 0.030650749598862603 0.45 200
+best before refine: 0.04904119935818017
+Initial BLS result: P=39.1515 days, T14=0.0490 days, t0=163.75
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=230.557945 (from 38.454705), epochs=6
+Fine period refinement: P=230.555411 (dP=-2.53e-03), T14=0.8010
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 166 transit points, 38,614 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 35,685 points used for fitting
+Spline iteration 2: 35,553 points used for fitting
+Spline iteration 3: 35,523 points used for fitting
+Spline iteration 4: 35,511 points used for fitting
+Final epoch refinement: dt0=-0.040050 days (-57.67 min)
+BLS detrending completed in 37.40 seconds
+Final result: P=230.5554 days, T14=0.8010 days, t0=187.10
+BLS results: P=230.5554 days, T14=0.8010 days, t0=187.10
+Computing scaling metrics...
+Per-transit analysis: 7 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=0.406, asymmetry=-0.049, sec_snr=nan
+Feature extraction completed in 40.65 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 230.55541097991647
+t0: 187.10257340021315
+duration_days: 0.8010062561836093
+duration_hours: 19.224150148406622
+scale_mean: -0.11277573521555898
+scale_std: 1.0
+scale_skewness: -6.651435227493413
+scale_kurtosis: 110.5789153451379
+scale_outlier_resistance: 0.47613865157533874
+local_noise: 0.0008617737744347012
+depth_stability: 0.289915649763263
+acf_lag_1h: 0.37576560050107854
+acf_lag_3h: 0.1420893061106186
+acf_lag_6h: 0.003937091787007416
+acf_lag_12h: -0.09321150595881605
+acf_lag_24h: 0.024350570433978636
+cadence_hours: 0.49041194189339876
+depth_mean_per_transit: 0.0011049797622739246
+depth_std_per_transit: 0.002133173757555545
+npts_transit_median: 21.0
+cdpp_3h: 576.9565736747053
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: 1.9151870568631821
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.0014201470774561783
+vshape_metric: 0.42500000000000004
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 0.40596360441584
+ingress_egress_asymmetry: -0.04933764555427456
+skewness_flux: -6.651435227493413
+kurtosis_flux: 110.5789153451379
+outlier_resistance: 0.47613865157533874
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 2,026 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00901
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 45347 periods × 24 durations = 1,088,328 combinations (needed 109,208, budget 45,347)
+Refining queued BLS peak: P=39.151510 days, T14=0.0490 days
+dt_days = 0.020433833065908402
+dur grid: 0.030650749598862603 0.45 200
+best before refine: 0.04904119935818017
+Initial BLS result: P=39.1515 days, T14=0.0490 days, t0=163.75
+Starting period/duration refinement...
+Fine period refinement: P=38.443841 (dP=-1.09e-02), T14=0.6545
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 654 transit points, 38,126 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 35,229 points used for fitting
+Spline iteration 2: 35,108 points used for fitting
+Spline iteration 3: 35,074 points used for fitting
+Spline iteration 4: 35,065 points used for fitting
+Final epoch refinement: dt0=-0.124346 days (-179.06 min)
+BLS detrending completed in 6.45 seconds
+Final result: P=38.4438 days, T14=0.6545 days, t0=164.99
+BLS results: P=38.4438 days, T14=0.6545 days, t0=164.99
+Computing scaling metrics...
+Per-transit analysis: 37 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.106, asymmetry=-0.016, sec_snr=nan
+Feature extraction completed in 9.89 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 38.443841329151745
+t0: 164.99464706712087
+duration_days: 0.6544548054349144
+duration_hours: 15.706915330437946
+scale_mean: -0.10723334891445095
+scale_std: 1.0
+scale_skewness: -6.519603881021343
+scale_kurtosis: 107.36671089430288
+scale_outlier_resistance: 0.4979049899330685
+local_noise: 0.0008600513778473988
+depth_stability: 0.7120183556985862
+acf_lag_1h: 0.37465279220044884
+acf_lag_3h: 0.1411944443375407
+acf_lag_6h: 0.0059286294944038385
+acf_lag_12h: -0.08956625786924219
+acf_lag_24h: 0.02375344354796084
+cadence_hours: 0.49041194189339876
+depth_mean_per_transit: 0.0006679943590755567
+depth_std_per_transit: 0.0018200870459403934
+npts_transit_median: 18.0
+cdpp_3h: 583.0640677382247
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: 1.1456620224717102
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.0014182029920713623
+vshape_metric: 0.625
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 1.1062747333492944
+ingress_egress_asymmetry: -0.01586729274312884
+skewness_flux: -6.519603881021343
+kurtosis_flux: 107.36671089430288
+outlier_resistance: 0.4979049899330685
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Rejected BLS candidate P=230.555411 d: max_mes=nan, events=0 (requires MES >= 7.1 and >= 3 events)
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 2,026 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00901
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 45347 periods × 24 durations = 1,088,328 combinations (needed 109,208, budget 45,347)
+Refining queued BLS peak: P=1.355922 days, T14=0.1257 days
+dt_days = 0.020433833065908402
+dur grid: 0.030650749598862603 0.45 200
+best before refine: 0.12566807335533667
+Initial BLS result: P=1.3559 days, T14=0.1257 days, t0=132.73
+Starting period/duration refinement...
+Running period de-aliasing...
+De-alias selected P=5.427117 (from 1.356140), epochs=268
+Fine period refinement: P=5.426895 (dP=-2.22e-04), T14=0.3310
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 2,351 transit points, 36,429 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 34,407 points used for fitting
+Spline iteration 2: 34,269 points used for fitting
+Spline iteration 3: 34,239 points used for fitting
+Spline iteration 4: 34,229 points used for fitting
+Final epoch refinement: dt0=-0.122480 days (-176.37 min)
+BLS detrending completed in 4.66 seconds
+Final result: P=5.4269 days, T14=0.3310 days, t0=132.40
+BLS results: P=5.4269 days, T14=0.3310 days, t0=132.40
+Computing scaling metrics...
+Per-transit analysis: 253 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=nan, max_ses=nan, max_mes=nan
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.305, asymmetry=-0.002, sec_snr=nan
+Feature extraction completed in 8.79 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 5.426895136076981
+t0: 132.39989451746013
+duration_days: 0.3310280956677161
+duration_hours: 7.9446742960251875
+scale_mean: -0.10685382844226693
+scale_std: 1.0
+scale_skewness: -6.239512193467134
+scale_kurtosis: 100.39038744210006
+scale_outlier_resistance: 0.5196713282907983
+local_noise: 0.000858656738004434
+depth_stability: 0.7841591256083349
+acf_lag_1h: 0.3796579762817957
+acf_lag_3h: 0.14728954231497873
+acf_lag_6h: 0.00730112143147392
+acf_lag_12h: -0.08815188264776151
+acf_lag_24h: 0.0205692373451222
+cadence_hours: 0.49041194189339876
+depth_mean_per_transit: 0.0004704920482605043
+depth_std_per_transit: 0.0013002978987239735
+npts_transit_median: 8.0
+cdpp_3h: 573.4183732374601
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: nan
+SES_std: nan
+MES: nan
+max_ses: nan
+max_mes: nan
+snr_global: 0.8205039639803579
+snr_per_transit_mean: nan
+snr_per_transit_std: nan
+resid_rms_global: 0.001428589962632425
+vshape_metric: 0.0
+secondary_depth: nan
+secondary_depth_snr: nan
+secondary_depth_snr_log: nan
+secondary_depth_snr_capped: nan
+odd_even_depth_ratio: 1.3050293053591637
+ingress_egress_asymmetry: -0.001844105186375988
+skewness_flux: -6.239512193467134
+kurtosis_flux: 100.39038744210006
+outlier_resistance: 0.5196713282907983
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Starting feature extraction from arrays...
+Data loaded: 38,780 valid points
+Gapped by accepted candidates: 2,026 cadences
+Time range: 131.51 to 1591.00 days
+Flux range: 0.955217 to 1.029622
+Starting BLS detrending and period search...
+Pre-BLS stitching: 58 segments, winsor 0.3% per segment
+BLS input: 38,780 valid points
+Masked eclipses: 0 points
+Period search range: 0.500 to 486.496 days
+Pre-BLS variability removal: window=1.35 d, trend rms=0.00901
+Duration search range: 0.0307 to 0.4500 days
+Search grid: 45347 periods × 24 durations = 1,088,328 combinations (needed 109,208, budget 45,347)
+Refining queued BLS peak: P=1.355922 days, T14=0.1257 days
+dt_days = 0.020433833065908402
+dur grid: 0.030650749598862603 0.45 200
+best before refine: 0.12566807335533667
+Initial BLS result: P=1.3559 days, T14=0.1257 days, t0=132.73
+Starting period/duration refinement...
+Fine period refinement: P=1.356158 (dP=+1.82e-05), T14=0.1226
+Trapezoid duration refit hit upper bound; keeping BLS duration
+Transit mask created: 3,493 transit points, 35,287 out-of-transit points
+Starting iterative spline detrending...
+Spline iteration 1: 32,620 points used for fitting
+Spline iteration 2: 32,470 points used for fitting
+Spline iteration 3: 32,426 points used for fitting
+Spline iteration 4: 32,421 points used for fitting
+Final epoch refinement: dt0=-0.040459 days (-58.26 min)
+BLS detrending completed in 3.07 seconds
+Final result: P=1.3562 days, T14=0.1226 days, t0=132.62
+Duration audit: T14 0.1226 -> 0.0613 days (higher MES)
+BLS results: P=1.3562 days, T14=0.0613 days, t0=132.62
+Computing scaling metrics...
+Per-transit analysis: 692 transits analyzed
+Computing CDPP...
+Computing SES/MES...
+SES/MES computed: MES=0.21, max_ses=42.30, max_mes=3.95
+Computing EB/grazing discriminants...
+EB/Grazing features: odd_even_ratio=1.421, asymmetry=-0.002, sec_snr=-0.71
+Feature extraction completed in 8.43 seconds
+Total features extracted: 47
+
+=== Extracted features (ordered) ===
+period_days: 1.3561581215254577
+t0: 132.6247484165174
+duration_days: 0.06130149919772521
+duration_hours: 1.471235980745405
+scale_mean: -0.10707981225043238
+scale_std: 1.0
+scale_skewness: -6.625071831933801
+scale_kurtosis: 112.23823014773191
+scale_outlier_resistance: 0.478859443870055
+local_noise: 0.0008490791231769049
+depth_stability: 3.1918819994885967
+acf_lag_1h: 0.37016591742909705
+acf_lag_3h: 0.13680245344850345
+acf_lag_6h: 0.0028803083639380674
+acf_lag_12h: -0.08570739613737319
+acf_lag_24h: 0.022821771603659873
+cadence_hours: 0.49041194189339876
+depth_mean_per_transit: 7.868080384290398e-05
+depth_std_per_transit: 0.0012094264054809997
+npts_transit_median: 3.0
+cdpp_3h: 570.6224138858496
+cdpp_6h: nan
+cdpp_12h: nan
+SES_mean: 0.010366481440842318
+SES_std: 1.9306691513683751
+MES: 0.20990525091089252
+max_ses: 42.295079397102754
+max_mes: 3.948810420079083
+snr_global: 0.1378859328484838
+snr_per_transit_mean: 0.010366481440842318
+snr_per_transit_std: 1.9306691513683751
+resid_rms_global: 0.0014146484244685414
+vshape_metric: 0.025
+secondary_depth: -1.697018494966129e-05
+secondary_depth_snr: -0.7093881345083335
+secondary_depth_snr_log: -0.5361354904061233
+secondary_depth_snr_capped: -0.7093881345083335
+odd_even_depth_ratio: 1.4214405303524142
+ingress_egress_asymmetry: -0.0022024561904064647
+skewness_flux: -6.625071831933801
+kurtosis_flux: 112.23823014773191
+outlier_resistance: 0.478859443870055
+planet_radius_rearth: nan
+planet_radius_rjup: nan
+mes_threshold_used: 7.1
+is_provisional_detection: 0.0
+detection_status: accepted
+Skipped queued peak P=0.602316 d: provisional max_mes=-1.77, events=58
+Skipped queued peak P=0.903436 d: provisional max_mes=-7.14, events=451
+Skipped queued peak P=466.614480 d: provisional max_mes=nan, events=0
+Skipped queued peak P=244.627805 d: provisional max_mes=nan, events=0
+Skipped queued peak P=202.089173 d: provisional max_mes=nan, events=0
+Skipped queued peak P=93.623657 d: provisional max_mes=nan, events=0
+Skipped queued peak P=1.793414 d: provisional max_mes=nan, events=0
+Skipped queued peak P=27.127673 d: provisional max_mes=nan, events=0
+Skipped queued peak P=66.555817 d: provisional max_mes=nan, events=0
+Skipped queued peak P=8.136989 d: provisional max_mes=nan, events=0
+Skipped queued peak P=37.981259 d: provisional max_mes=nan, events=0
+Skipped queued peak P=235.486482 d: provisional max_mes=nan, events=0
+Skipped queued peak P=159.276823 d: provisional max_mes=nan, events=0
+No remaining independent BLS peak passed the MES threshold
+Candidate labels: FALSE-POSITIVE=4
+Saved 4 candidate row(s) to: /home/user/shaula/data/extracted/KIC4355503_inverted_20261024.csv
+
+Extracted features saved to: /home/user/shaula/data/extracted/KIC4355503_inverted_20261024.csv
+
+=== Batch extraction complete ===
+Succeeded: 5 ['KIC 4355503', 'KIC 6778019', 'KIC 7282008', 'KIC 9110357', 'KIC 9541094']
+Skipped:   107 ['KIC 10098844', 'KIC 10212441', 'KIC 10227863', 'KIC 10338279', 'KIC 10350571', 'KIC 10485250', 'KIC 10684670', 'KIC 10801951', 'KIC 10920420', 'KIC 10975146', 'KIC 11337372', 'KIC 11498128', 'KIC 11548140', 'KIC 11673674', 'KIC 11756821', 'KIC 12557713', 'KIC 2438513', 'KIC 2694632', 'KIC 2851100', 'KIC 3342592', 'KIC 3353454', 'KIC 3444098', 'KIC 3742855', 'KIC 3761319', 'KIC 3838004', 'KIC 3861595', 'KIC 3970233', 'KIC 4150611', 'KIC 4150624', 'KIC 4455763', 'KIC 4544623', 'KIC 4568298', 'KIC 4579598', 'KIC 4649305', 'KIC 4743513', 'KIC 4753561', 'KIC 4914737', 'KIC 4933476', 'KIC 5014753', 'KIC 5036537', 'KIC 5106313', 'KIC 5124667', 'KIC 5201115', 'KIC 5218441', 'KIC 5281113', 'KIC 5372966', 'KIC 5385439', 'KIC 5385773', 'KIC 5386163', 'KIC 5470851', 'KIC 5471415', 'KIC 5471480', 'KIC 5471688', 'KIC 5529501', 'KIC 5601258', 'KIC 5651104', 'KIC 5796186', 'KIC 5952309', 'KIC 5986270', 'KIC 6032920', 'KIC 6149910', 'KIC 6182508', 'KIC 6198256', 'KIC 6269070', 'KIC 6292162', 'KIC 6307063', 'KIC 6314185', 'KIC 6384840', 'KIC 6470149', 'KIC 6609270', 'KIC 6792124', 'KIC 6889235', 'KIC 7107561', 'KIC 7116236', 'KIC 7120108', 'KIC 7174617', 'KIC 7204073', 'KIC 7282154', 'KIC 7549209', 'KIC 7605600', 'KIC 7703882', 'KIC 7769819', 'KIC 7900450', 'KIC 8179190', 'KIC 8231299', 'KIC 8264070', 'KIC 8345473', 'KIC 8355239', 'KIC 8560475', 'KIC 8628758', 'KIC 8739209', 'KIC 8766285', 'KIC 8937762', 'KIC 9049673', 'KIC 9157908', 'KIC 9291039', 'KIC 9305831', 'KIC 9468382', 'KIC 9520838', 'KIC 9549471', 'KIC 9593528', 'KIC 9595686', 'KIC 9643874', 'KIC 9655005', 'KIC 9761199', 'KIC 9838975', 'KIC 9899630']
+Failed:    0 []
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+/home/user/shaula/.venv/lib/python3.14/site-packages/lightkurve/prf/__init__.py:7: UserWarning: Warning: the tpfmodel submodule is not available without oktopus installed, which requires a current version of autograd. See #1452 for details.
+  warnings.warn(
+=== Skipping KIC 10684670: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5601258: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6269070: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7120108: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10975146: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5651104: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9305831: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3861595: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5124667: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10098844: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 2438513: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10350571: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10212441: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6609270: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5986270: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4649305: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5036537: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11548140: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9049673: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9899630: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8264070: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6198256: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3761319: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6384840: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5470851: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9291039: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5471480: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3838004: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6470149: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8560475: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7900450: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9593528: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9595686: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4150611: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5106313: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7703882: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9643874: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11498128: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9520838: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5281113: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7769819: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6149910: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7549209: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8355239: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11337372: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8628758: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8937762: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7605600: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5471688: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4753561: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8739209: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5386163: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9157908: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 12557713: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7174617: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5385773: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3342592: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11673674: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8766285: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4544623: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5385439: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3970233: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4743513: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 11756821: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9549471: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5372966: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3742855: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5218441: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5014753: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10338279: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9468382: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10485250: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9838975: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7116236: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4568298: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6292162: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7107561: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5471415: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 2694632: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5201115: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6314185: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7204073: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4455763: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5952309: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10227863: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5529501: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 5796186: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4150624: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9761199: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7282154: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10920420: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4914737: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8179190: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4933476: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3353454: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6792124: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6307063: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 10801951: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 2851100: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8345473: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6032920: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9655005: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6889235: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6182508: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4355503: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 8231299: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 3444098: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9541094: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 4579598: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 6778019: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 7282008: existing output found in /home/user/shaula/data/extracted ===
+=== Skipping KIC 9110357: existing output found in /home/user/shaula/data/extracted ===
+
+=== Batch extraction complete ===
+Succeeded: 0 []
+Skipped:   112 ['KIC 10098844', 'KIC 10212441', 'KIC 10227863', 'KIC 10338279', 'KIC 10350571', 'KIC 10485250', 'KIC 10684670', 'KIC 10801951', 'KIC 10920420', 'KIC 10975146', 'KIC 11337372', 'KIC 11498128', 'KIC 11548140', 'KIC 11673674', 'KIC 11756821', 'KIC 12557713', 'KIC 2438513', 'KIC 2694632', 'KIC 2851100', 'KIC 3342592', 'KIC 3353454', 'KIC 3444098', 'KIC 3742855', 'KIC 3761319', 'KIC 3838004', 'KIC 3861595', 'KIC 3970233', 'KIC 4150611', 'KIC 4150624', 'KIC 4355503', 'KIC 4455763', 'KIC 4544623', 'KIC 4568298', 'KIC 4579598', 'KIC 4649305', 'KIC 4743513', 'KIC 4753561', 'KIC 4914737', 'KIC 4933476', 'KIC 5014753', 'KIC 5036537', 'KIC 5106313', 'KIC 5124667', 'KIC 5201115', 'KIC 5218441', 'KIC 5281113', 'KIC 5372966', 'KIC 5385439', 'KIC 5385773', 'KIC 5386163', 'KIC 5470851', 'KIC 5471415', 'KIC 5471480', 'KIC 5471688', 'KIC 5529501', 'KIC 5601258', 'KIC 5651104', 'KIC 5796186', 'KIC 5952309', 'KIC 5986270', 'KIC 6032920', 'KIC 6149910', 'KIC 6182508', 'KIC 6198256', 'KIC 6269070', 'KIC 6292162', 'KIC 6307063', 'KIC 6314185', 'KIC 6384840', 'KIC 6470149', 'KIC 6609270', 'KIC 6778019', 'KIC 6792124', 'KIC 6889235', 'KIC 7107561', 'KIC 7116236', 'KIC 7120108', 'KIC 7174617', 'KIC 7204073', 'KIC 7282008', 'KIC 7282154', 'KIC 7549209', 'KIC 7605600', 'KIC 7703882', 'KIC 7769819', 'KIC 7900450', 'KIC 8179190', 'KIC 8231299', 'KIC 8264070', 'KIC 8345473', 'KIC 8355239', 'KIC 8560475', 'KIC 8628758', 'KIC 8739209', 'KIC 8766285', 'KIC 8937762', 'KIC 9049673', 'KIC 9110357', 'KIC 9157908', 'KIC 9291039', 'KIC 9305831', 'KIC 9468382', 'KIC 9520838', 'KIC 9541094', 'KIC 9549471', 'KIC 9593528', 'KIC 9595686', 'KIC 9643874', 'KIC 9655005', 'KIC 9761199', 'KIC 9838975', 'KIC 9899630']
+Failed:    0 []
