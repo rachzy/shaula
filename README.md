@@ -68,11 +68,14 @@ print(star.designation)                   # "KIC 8120608"
 result = extract(star.designation, mission="Kepler", download_all=True)
 for row in result.features:               # one dict per candidate, sorted by period
     print(row["period_days"], row["max_mes"], row["detection_status"])
+
+print(result.star.teff_k, result.star.radius_rsun, result.star.source)  # once per target
 ```
 
 - `mission` is `Kepler`, `K2` or `TESS` (case-insensitive). Planet names such as `Kepler-186f` are accepted and searched as their host star.
 - `download_all=True` downloads every quarter or sector and joins them; without it only the first file is used, which is much faster but finds far fewer planets.
 - `progress=` takes a callback that receives a `ProgressEvent` at each stage (`downloading`, `detrending`, `period_search`, `done`). Raising inside the callback cancels the run.
+- `result.star` holds the host star once: `teff_k`, `logg`, `radius_rsun`, `mass_msun` (derived from log g and radius) and `source` (`KIC`, `EPIC` or `TIC`), read from the light-curve file header. Kepler's KIC values are rough (radius off by 25-40%). These describe the star, so they are not repeated on candidate rows; each candidate's orbit (distance, speed, insolation, temperature) is on its row.
 - Feature values can be `NaN` when a measurement is impossible (for example the planet radius when the star's radius is unknown).
 - Set `SHAULA_LIGHTCURVE_CACHE` (or pass `cache_dir=`) to choose where downloaded light curves are stored.
 
@@ -190,6 +193,10 @@ Depths are fractional (0.001 = 1,000 ppm = a 0.1% dip); positive means dimming.
 | `odd_even_depth_ratio`             | Mean odd-transit depth / mean even-transit depth; far from 1 suggests an eclipsing binary at twice the period     |
 | `ingress_egress_asymmetry`         | Difference between ingress and egress slopes of the folded transit; ~0 for a symmetric transit                   |
 | `planet_radius_rearth`             | Inferred planet radius (Earth radii); NaN when the star's radius is unknown |
+| `semi_major_axis_au`               | Orbital distance (AU), from the period and the star's mass via Kepler's third law (circular orbit); NaN without the star's catalogue values |
+| `orbital_speed_kms`                | Orbital speed (km/s) on that orbit |
+| `insolation_earth`                 | Starlight the planet receives, relative to Earth |
+| `equilibrium_temp_k`               | Equilibrium temperature (K), assuming a Bond albedo of 0.3 and full heat redistribution |
 | `detection_status`                 | `accepted` (passed the MES gate) or `provisional` (sub-threshold, MES ≥ 6); scripts can also write `rejected` or `harmonic_duplicate` |
 | `mes_threshold_used` / `is_provisional_detection` | The MES bar the row was judged against, and `1.0` for provisional rows (`0.0` otherwise) |
 | `candidate_label`                  | Training label: `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, from a period match against reference KOIs (scripts only) |
