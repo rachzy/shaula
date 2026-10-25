@@ -68,11 +68,15 @@ print(star.designation)                   # "KIC 8120608"
 result = extract(star.designation, mission="Kepler", download_all=True)
 for row in result.features:               # one dict per candidate, sorted by period
     print(row["period_days"], row["max_mes"], row["detection_status"])
+
+print(result.star.teff_k, result.star.radius_rsun, result.star.source)  # once per target
+print(result.star.orbit(result.features[0]["period_days"]))             # distance, speed, insolation, Teq
 ```
 
 - `mission` is `Kepler`, `K2` or `TESS` (case-insensitive). Planet names such as `Kepler-186f` are accepted and searched as their host star.
 - `download_all=True` downloads every quarter or sector and joins them; without it only the first file is used, which is much faster but finds far fewer planets.
 - `progress=` takes a callback that receives a `ProgressEvent` at each stage (`downloading`, `detrending`, `period_search`, `done`). Raising inside the callback cancels the run.
+- `result.star` holds the host star once: `teff_k`, `logg`, `radius_rsun`, `mass_msun` (derived from log g and radius) and `source` (`KIC`, `EPIC` or `TIC`), read from the light-curve file header. `star.orbit(period_days)` returns `semi_major_axis_au`, `orbital_speed_kms`, `insolation_earth` and `equilibrium_temp_k` for a circular orbit with Bond albedo 0.3. Kepler's KIC values are rough (radius off by 25-40%). The candidate CSVs do not carry these.
 - Feature values can be `NaN` when a measurement is impossible (for example the planet radius when the star's radius is unknown).
 - Set `SHAULA_LIGHTCURVE_CACHE` (or pass `cache_dir=`) to choose where downloaded light curves are stored.
 
@@ -150,7 +154,7 @@ For each candidate, Shaula measures the features listed in the [table below](#ex
 - **Per-transit measurements** (`per_trans_stat.py`): depth of each individual transit and how much it varies.
 - **Noise and signal strength** (`cdpp.py`, `sesmes.py`): noise over 3, 6 and 12 hour windows (CDPP), and the single-event (SES) and multiple-event (MES) statistics.
 - **Vetting checks**: transit shape (box-like or V-shaped), a secondary eclipse halfway between transits, odd versus even transit depths, and ingress/egress symmetry. These are the usual signs of an eclipsing binary.
-- **Planet radius, orbital distance, speed, insolation and temperature**, when the light curve carries the star's catalogue values.
+- **Planet radius**, when the light curve carries the star's radius.
 
 The result is one row per candidate, sorted by period.
 
@@ -190,12 +194,6 @@ Depths are fractional (0.001 = 1,000 ppm = a 0.1% dip); positive means dimming.
 | `odd_even_depth_ratio`             | Mean odd-transit depth / mean even-transit depth; far from 1 suggests an eclipsing binary at twice the period     |
 | `ingress_egress_asymmetry`         | Difference between ingress and egress slopes of the folded transit; ~0 for a symmetric transit                   |
 | `planet_radius_rearth`             | Inferred planet radius (Earth radii); NaN when the star's radius is unknown |
-| `stellar_teff_k` / `stellar_logg` / `stellar_radius_rsun` | The star's temperature (K), surface gravity (log g, cgs) and radius (solar radii) from the light-curve header (KIC, EPIC or TIC); NaN when missing |
-| `stellar_mass_msun`                | Star's mass (solar masses), derived from log g and radius |
-| `semi_major_axis_au`               | Orbital distance (AU) from the period and stellar mass via Kepler's third law, assuming a circular orbit |
-| `orbital_speed_kms`                | Orbital speed (km/s) on that circular orbit |
-| `insolation_earth`                 | Starlight the planet receives, relative to Earth |
-| `equilibrium_temp_k`               | Equilibrium temperature (K), assuming a Bond albedo of 0.3 and full heat redistribution |
 | `rho_star_transit`                 | Star's mean density (g/cm³) implied by the transit's period, duration and depth (circular orbit, central transit) |
 | `log_rho_ratio`                    | log10 of that over the density from the header's log g and radius: ~0 for a planet of that star; far from 0 when the event does not fit the star (eclipsing binary, blend); grazing planets read somewhat high |
 | `detection_status`                 | `accepted` (passed the MES gate) or `provisional` (sub-threshold, MES ≥ 6); scripts can also write `rejected` or `harmonic_duplicate` |

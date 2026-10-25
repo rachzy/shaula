@@ -116,8 +116,8 @@ def fill_csv(path: Path, star: dict) -> int:
             row.get("period_days"),
             row.get("duration_days"),
             row.get("depth_mean_per_transit"),
-            star["stellar_logg"],
-            star["stellar_radius_rsun"],
+            star["logg"],
+            star["radius_rsun"],
         )
         for row in df.to_dict("records")
     ]
@@ -172,7 +172,7 @@ def process_fold(
                 print(f"[{label}] {path.name}: FAILED {exc!r}", flush=True)
         print(
             f"[{label}] {done}/{len(fold)} {prefix}{number}: "
-            f"logg={star['stellar_logg']:.3f} R={star['stellar_radius_rsun']:.3f}",
+            f"logg={star['logg']:.3f} R={star['radius_rsun']:.3f}",
             flush=True,
         )
     return summary

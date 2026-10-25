@@ -1,4 +1,4 @@
-"""Physical planet properties from the period and the star's catalogue values.
+"""The host star's catalogue values, and the orbit they give with a period.
 
 Kepler, K2 and TESS light-curve files carry the target's catalogue parameters
 in their primary header (KIC, EPIC or TIC), and lightkurve copies them into
@@ -19,17 +19,6 @@ DAYS_PER_YEAR = 365.25
 SECONDS_PER_DAY = 86400.0
 # A common choice for planets of unknown albedo; Earth's Bond albedo is ~0.3.
 EQUILIBRIUM_BOND_ALBEDO = 0.3
-
-STELLAR_PROPERTY_COLUMNS = (
-    "stellar_teff_k",
-    "stellar_logg",
-    "stellar_radius_rsun",
-    "stellar_mass_msun",
-    "semi_major_axis_au",
-    "orbital_speed_kms",
-    "insolation_earth",
-    "equilibrium_temp_k",
-)
 
 
 def _positive_float(value) -> float:
@@ -52,10 +41,10 @@ def stellar_parameters(meta) -> dict:
     # g = G M / R^2, so in solar units M = (g / g_sun) * R^2.
     mass = 10.0 ** (logg - SOLAR_LOGG_CGS) * radius**2
     return {
-        "stellar_teff_k": teff,
-        "stellar_logg": logg,
-        "stellar_radius_rsun": radius,
-        "stellar_mass_msun": float(mass),
+        "teff_k": teff,
+        "logg": logg,
+        "radius_rsun": radius,
+        "mass_msun": float(mass),
     }
 
 
@@ -65,10 +54,10 @@ def orbital_properties(period_days, star: dict) -> dict:
     Assumes a circular orbit and a planet much lighter than its star.
     """
     period_days = _positive_float(period_days)
-    teff = star["stellar_teff_k"]
-    radius = star["stellar_radius_rsun"]
+    teff = star["teff_k"]
+    radius = star["radius_rsun"]
     # Kepler's third law in AU, years and solar masses: a^3 = M P^2.
-    a_au = (star["stellar_mass_msun"] * (period_days / DAYS_PER_YEAR) ** 2) ** (1 / 3)
+    a_au = (star["mass_msun"] * (period_days / DAYS_PER_YEAR) ** 2) ** (1 / 3)
     speed = 2.0 * np.pi * a_au * AU_KM / (period_days * SECONDS_PER_DAY)
     insolation = radius**2 * (teff / SOLAR_TEFF_K) ** 4 / a_au**2
     t_eq = (
