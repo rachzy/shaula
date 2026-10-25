@@ -14,6 +14,7 @@ from astropy.coordinates import SkyCoord
 from . import __version__, download_and_clean
 from .download_and_clean import download_and_clean_lightcurve
 from .extract_feats import extract_features_from_lightcurve
+from .utils.stellar_density import catalogue_stellar_density
 from .utils.stellar_properties import stellar_parameters
 from .utils.target_names import host_star_name
 
@@ -42,14 +43,15 @@ class StellarParameters:
     """The host star, once per target: catalogue values from the file header.
 
     ``source`` names the catalogue (``KIC``, ``EPIC`` or ``TIC``). Each value
-    is NaN when the catalogue has none; ``mass_msun`` is derived from
-    ``logg`` and ``radius_rsun``.
+    is NaN when the catalogue has none; ``mass_msun`` and ``density_gcc``
+    (mean density, g/cm^3) are derived from ``logg`` and ``radius_rsun``.
     """
 
     teff_k: float = math.nan
     logg: float = math.nan
     radius_rsun: float = math.nan
     mass_msun: float = math.nan
+    density_gcc: float = math.nan
     source: str = ""
 
 
@@ -146,9 +148,16 @@ def extract(
         mission=mission,
         features=features,
         shaula_version=__version__,
-        star=StellarParameters(
-            **stellar_parameters(lc.meta), source=MISSION_CATALOGS[mission]
-        ),
+        star=_star_from_meta(lc.meta, mission),
+    )
+
+
+def _star_from_meta(meta, mission: str) -> StellarParameters:
+    params = stellar_parameters(meta)
+    return StellarParameters(
+        **params,
+        density_gcc=catalogue_stellar_density(params["logg"], params["radius_rsun"]),
+        source=MISSION_CATALOGS[mission],
     )
 
 
