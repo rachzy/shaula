@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import importlib.util
 import io
+import math
 from typing import ClassVar
 from unittest.mock import patch
 
@@ -58,6 +59,24 @@ def test_returns_features_and_version(stubbed):
     assert result.target == "Kepler-11"
     assert result.mission == "Kepler"
     assert result.shaula_version
+
+
+def test_returns_the_star_once_from_the_header(stubbed, monkeypatch):
+    monkeypatch.setattr(
+        _FakeLightCurve, "meta", {"TEFF": 5627, "LOGG": 4.342, "RADIUS": 1.056}
+    )
+    result = extract("Kepler-10", "Kepler")
+    assert result.star.teff_k == 5627.0
+    assert result.star.radius_rsun == 1.056
+    assert result.star.mass_msun == pytest.approx(0.894, abs=1e-3)
+    assert result.star.source == "KIC"
+    assert "teff_k" not in result.features[0]
+
+
+def test_a_star_without_catalogue_values_is_nan(stubbed):
+    star = extract("Kepler-11", "TESS").star
+    assert math.isnan(star.teff_k) and math.isnan(star.radius_rsun)
+    assert star.source == "TIC"
 
 
 def test_works_without_a_progress_callback(stubbed):

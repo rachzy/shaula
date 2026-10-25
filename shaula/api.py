@@ -14,6 +14,7 @@ from astropy.coordinates import SkyCoord
 from . import __version__, download_and_clean
 from .download_and_clean import download_and_clean_lightcurve
 from .extract_feats import extract_features_from_lightcurve
+from .utils.stellar_properties import orbital_properties, stellar_parameters
 from .utils.target_names import host_star_name
 
 STAGES: tuple[str, ...] = (
@@ -37,13 +38,43 @@ ProgressCallback = Callable[[ProgressEvent], None]
 
 
 @dataclass(frozen=True)
+class StellarParameters:
+    """The host star, once per target: catalogue values from the file header.
+
+    ``source`` names the catalogue (``KIC``, ``EPIC`` or ``TIC``). Each value
+    is NaN when the catalogue has none; ``mass_msun`` is derived from
+    ``logg`` and ``radius_rsun``.
+    """
+
+    teff_k: float = math.nan
+    logg: float = math.nan
+    radius_rsun: float = math.nan
+    mass_msun: float = math.nan
+    source: str = ""
+
+    def orbit(self, period_days: float) -> dict[str, float]:
+        """Orbit of a planet with ``period_days`` around this star.
+
+        Returns ``semi_major_axis_au``, ``orbital_speed_kms``,
+        ``insolation_earth`` and ``equilibrium_temp_k`` (circular orbit, Bond
+        albedo 0.3); NaN where a stellar value is missing.
+        """
+        return orbital_properties(period_days, self.__dict__)
+
+
+@dataclass(frozen=True)
 class ExtractionResult:
-    """Candidate feature rows for one target, with the version that made them."""
+    """Candidate feature rows for one target, with the version that made them.
+
+    ``star`` holds the host star's parameters once; ``features`` has one row
+    per candidate.
+    """
 
     target: str
     mission: str
     features: list[dict[str, Any]] = field(default_factory=list)
     shaula_version: str = __version__
+    star: StellarParameters = field(default_factory=StellarParameters)
 
 
 def _emit(
@@ -124,6 +155,9 @@ def extract(
         mission=mission,
         features=features,
         shaula_version=__version__,
+        star=StellarParameters(
+            **stellar_parameters(lc.meta), source=MISSION_CATALOGS[mission]
+        ),
     )
 
 

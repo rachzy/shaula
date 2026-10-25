@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 294 passed, 19 subtests
+uv run pytest                        # tests: 296 passed, 19 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
@@ -17,12 +17,13 @@ uv run ruff check <paths>            # lint only the files you touch
 
 ## Public surface: `shaula/api.py`
 
-The only module an external consumer imports (the `apps/shaula` gRPC service in Antares): `extract()`, `resolve()`, `ProgressEvent`, `ExtractionResult`, `ResolvedTarget`, `TargetNotFound`, `STAGES`. Changing their signatures is a breaking change for that service.
+The only module an external consumer imports (the `apps/shaula` gRPC service in Antares): `extract()`, `resolve()`, `ProgressEvent`, `ExtractionResult`, `StellarParameters`, `ResolvedTarget`, `TargetNotFound`, `STAGES`. Changing their signatures is a breaking change for that service.
 
 - `STAGES` has exactly four entries: `downloading`, `detrending`, `period_search`, `done`. Every declared stage must actually be emitted; a stage that never fires is a broken contract, and a test pins it. `period_search` is emitted from inside `extract_features_from_arrays`, once per search iteration.
 - The `progress` callback may raise to cancel. `extract()` deliberately does not catch it. Never wrap a callback invocation in `try`/`except`.
 - `resolve()` returns an exact catalogue identifier (`KIC`/`EPIC`/`TIC`). The caller uses `catalog_id` as a cache key, so `resolve()` raises `TargetNotFound` for an unusable identifier or non-finite coordinates instead of returning a plausible-looking value.
 - `resolve()` takes either a `query` or both `ra_deg` and `dec_deg` (never both, never one coordinate); a blank query counts as none. A position resolves to the nearest star with light curves within `POSITION_MATCH_RADIUS_ARCSEC` (4 arcseconds) and sets `display_name` to the designation. `0.0` is a valid coordinate, so test with `is None`, never truthiness.
+- `ExtractionResult.star` is a `StellarParameters` (`teff_k`, `logg`, `radius_rsun`, `mass_msun`, `source`) built once per target in `api.py` by `utils/stellar_properties.stellar_parameters` from `lc.meta` (`TEFF`, `LOGG`, `RADIUS` in the KIC/EPIC/TIC file header; mass = 10^(logg - 4.438) x R^2; NaN when missing). Star values stay out of the per-candidate rows and the CSVs by design (Henrique, 2026-10-25): they would repeat on every row. `star.orbit(period_days)` gives semi-major axis, orbital speed, insolation and equilibrium temperature on demand.
 - `extract()` returns accepted detections plus up to two `provisional` sub-threshold rows; it never asks for false candidates or labels (those are CLI/script options).
 
 ## Pipeline workflow
@@ -46,7 +47,7 @@ What `extract(target, mission)` does, end to end. Module paths are under `shaula
 6. **Noise model, CDPP and SES/MES** (`cdpp.py`, `sesmes.py`). `duration_matched_statistics` builds a local box matched filter at T14, with noise from a robust median/MAD of half-duration-spaced anchors, excluding transit windows. Each box's depth is measured against its flanks (1, 2, 3 or 5 box widths per side) or the series median, whichever gives the lowest noise (`flank_durations="auto"`, `ADAPTIVE_FLANK_DURATIONS`); this removes stellar variability the final spline leaves in the flux, which otherwise cuts MES several-fold on active stars. Before features are measured, `_mes_optimal_duration` scores T14 x 0.5 to 4 by `max_mes` and adopts a trial that beats the refit T14 by 10%. `compute_SES_MES` folds its numerator/denominator at the ephemeris (MES = sum N / sqrt(sum D)), and `max_mes` scans a small phase offset. This is a time-domain approximation of Kepler TPS; it deliberately does not reproduce TPS's adaptive wavelet whitening. Synthetic validation of both lives in `experiments/mes_accuracy/` (`LOG.md`).
 7. **Detection gate** (`_candidate_passes_mes`): `max_mes >= MES_DETECTION_THRESHOLD` (7.1, the Kepler TPS threshold) with at least 3 observed events. Queued peaks are tried in order of quick MES, not BLS power, and pre-screened at MES 4.0 before full refinement. When de-aliasing moves a queued peak by more than 1% (`DEALIAS_RETRY_TOLERANCE`) and the result fails the gate, the peak is refined again at its queued period with `dealias=False`. The `_mes_optimal_duration` audit is capped by `detrend_and_period.max_physical_duration`, the same limit the BLS refits use. `_reconcile_accepted_harmonic` refolds the same statistics object at 2P, 3P, P/2 and P/3 and adopts one only if its MES beats the original by `HARMONIC_ADOPT_MARGIN` (1.15).
 8. **Feature measurement** (`_extract_single_candidate_from_arrays`). See the table below.
-9. **Recovery, sort and radius** (`extract_features_from_arrays`, `extract_features_from_lightcurve`). When the search runs out of signal, up to 2 rejected peaks with `max_mes >= 6.0` come back as `provisional` rows (they never masked anything). Rows are sorted by `period_days`. When `lc.meta["RADIUS"]` is finite, planet radius = R* x sqrt(depth) x 109.1 (Earth) or 9.731 (Jupiter); otherwise NaN. The header's stellar values and the orbit derived from them are added to every row the same way.
+9. **Recovery, sort and radius** (`extract_features_from_arrays`, `extract_features_from_lightcurve`). When the search runs out of signal, up to 2 rejected peaks with `max_mes >= 6.0` come back as `provisional` rows (they never masked anything). Rows are sorted by `period_days`. When `lc.meta["RADIUS"]` is finite, planet radius = R* x sqrt(depth) x 109.1 (Earth) or 9.731 (Jupiter); otherwise NaN.
 10. **Return** (`api.py`). Each row becomes a plain `dict` in `ExtractionResult.features`, with `shaula_version`. The CLIs instead write CSV or JSON via `save.save_features`, one row per candidate.
 
 ## Extracted features
@@ -71,8 +72,6 @@ One row per candidate. Depths are fractional flux deficits (positive = dimming);
 | `odd_even_depth_ratio` | Mean odd-epoch depth over mean even-epoch depth; far from 1 suggests an EB at twice the period. |
 | `ingress_egress_asymmetry` | Difference of absolute linear slopes either side of the folded minimum. |
 | `planet_radius_rearth`, `planet_radius_rjup` | From stellar radius and depth (step 9), else NaN. |
-| `stellar_teff_k`, `stellar_logg`, `stellar_radius_rsun`, `stellar_mass_msun` | `utils/stellar_properties.stellar_parameters`: `TEFF`, `LOGG`, `RADIUS` from `lc.meta` (the KIC/EPIC/TIC values in the file header); mass = 10^(logg - 4.438) x R^2. NaN when missing or <= 0, and always NaN on the arrays/CSV path. Kepler's KIC values are poor (radius 25-40%). |
-| `semi_major_axis_au`, `orbital_speed_kms`, `insolation_earth`, `equilibrium_temp_k` | `stellar_properties.orbital_properties`: Kepler's third law on `period_days` and the derived mass, circular orbit; Teq uses `EQUILIBRIUM_BOND_ALBEDO` (0.3) and full redistribution. |
 | `mes_threshold_used`, `is_provisional_detection`, `detection_status` | Gate the row was judged against; `1.0` and `"provisional"` for recovered sub-threshold rows, `0.0` and `"accepted"` otherwise. Scripts can also emit `"rejected"` and `"harmonic_duplicate"`. |
 | `candidate_label`, `matched_target`, `matched_period_ratio`, `fp_source` | Only with `label_output_candidates` (CLI/scripts): `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, by period match (`utils/label_candidates`) against `data/confirmed/` or a KOI reference table. With a reference table, a match to a `FALSE POSITIVE` KOI is `FALSE-POSITIVE` only when it carries the `nt` or `ss` flag (`fp_source` `koi:<flags>`); a centroid/ephemeris-only false positive or an open `CANDIDATE` is `UNKNOWN`. An unmatched row is `FALSE-POSITIVE` with `fp_source` `unmatched`; every row of an `--invert` run is `FALSE-POSITIVE` with `fp_source` `inverted`. |
 
