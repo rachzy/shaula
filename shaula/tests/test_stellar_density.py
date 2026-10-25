@@ -11,6 +11,7 @@ from ..utils.stellar_density import (
     stellar_density_features,
     transit_stellar_density,
 )
+from ..utils.stellar_properties import ORBIT_COLUMNS
 
 SUN_DENSITY = 1.41  # g/cm^3
 SUN_LOGG = 4.438
@@ -102,7 +103,9 @@ def test_lightcurve_rows_carry_the_density(monkeypatch):
 
 
 def write_kepler_file(directory, kepid, logg, radius):
-    header = fits.Header({"OBJECT": f"KIC {kepid}", "LOGG": logg, "RADIUS": radius})
+    header = fits.Header(
+        {"OBJECT": f"KIC {kepid}", "TEFF": 5772.0, "LOGG": logg, "RADIUS": radius}
+    )
     path = directory / f"kplr{kepid:09d}-2009350155506_llc.fits"
     fits.PrimaryHDU(header=header).writeto(path)
     return path
@@ -134,11 +137,48 @@ def test_script_fills_every_csv_from_the_cached_header(tmp_path):
     assert status == 0
     for name in ("KIC42_20261020.csv", "KIC42_inverted_20261020.csv"):
         out = pd.read_csv(extracted / name)
-        assert list(out.columns) == list(rows.columns) + list(STELLAR_DENSITY_COLUMNS)
+        assert list(out.columns) == (
+            list(rows.columns) + list(ORBIT_COLUMNS) + list(STELLAR_DENSITY_COLUMNS)
+        )
         pd.testing.assert_frame_equal(out[rows.columns], rows)
+        assert out["semi_major_axis_au"][0] == pytest.approx(1.0, abs=1e-3)
         assert out["log_rho_ratio"][0] == pytest.approx(0.0, abs=0.01)
         assert np.isnan(out["log_rho_ratio"][1])
     assert (extracted / "KIC42_inverted_20261021.csv").read_text() == "\n"
+
+
+def test_script_places_the_columns_where_a_new_run_writes_them(tmp_path):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    write_kepler_file(cache, 42, SUN_LOGG, 1.0)
+    extracted = tmp_path / "extracted"
+    extracted.mkdir()
+    # An earlier backfill appended the density columns at the end.
+    pd.DataFrame(
+        {
+            "period_days": [10.0],
+            "duration_days": [0.1],
+            "depth_mean_per_transit": [1e-3],
+            "planet_radius_rjup": [0.3],
+            "fp_source": ["unmatched"],
+            "rho_star_transit": [99.0],
+            "log_rho_ratio": [99.0],
+        }
+    ).to_csv(extracted / "KIC42_20261020.csv", index=False)
+
+    add_stellar_density.main([str(extracted), "--cache-dir", str(cache), "--no-download"])
+
+    out = pd.read_csv(extracted / "KIC42_20261020.csv")
+    assert list(out.columns) == [
+        "period_days",
+        "duration_days",
+        "depth_mean_per_transit",
+        "planet_radius_rjup",
+        *ORBIT_COLUMNS,
+        *STELLAR_DENSITY_COLUMNS,
+        "fp_source",
+    ]
+    assert out["log_rho_ratio"][0] != 99.0
 
 
 def test_script_reports_a_star_it_cannot_find(tmp_path):

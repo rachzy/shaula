@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
-"""Add the stellar-density columns to every feature CSV in a directory.
+"""Add the star-derived candidate columns to every feature CSV in a directory.
 
-Feature CSVs written before ``utils/stellar_density`` existed lack
-``rho_star_transit`` and ``log_rho_ratio``. This
-script fills them with the same function the pipeline now uses, so old and new
-rows agree.
+Feature CSVs written before these columns existed lack the orbit columns
+(``semi_major_axis_au``, ``orbital_speed_kms``, ``insolation_earth``,
+``equilibrium_temp_k``) and the density columns (``rho_star_transit``,
+``log_rho_ratio``). This script fills them with the same functions the
+pipeline now uses, so old and new rows agree.
 
-The transit density needs only ``period_days``, ``duration_days`` and
-``depth_mean_per_transit``, which every CSV has. The catalogue density also
-needs the star's log g and radius, which older CSVs do not carry, so they are
-read from the primary header of one of the star's light-curve files, exactly
-as ``extract_features_from_lightcurve`` reads them from ``lc.meta``. Files are
-looked up in the lightkurve cache first; a star with no cached file gets one
-file downloaded (one quarter or sector, not the whole light curve) unless
-``--no-download`` is given.
+Each row supplies ``period_days``, ``duration_days`` and
+``depth_mean_per_transit``. The star's Teff, log g and radius are not in the
+CSVs, so they are read from the primary header of one of the star's
+light-curve files, exactly as ``extract_features_from_lightcurve`` reads them
+from ``lc.meta``. Files are looked up in the lightkurve cache first; a star
+with no cached file gets one file downloaded (one quarter or sector, not the
+whole light curve) unless ``--no-download`` is given.
 
 The star comes from the file name (``KIC<id>_...``, ``EPIC<id>_...`` or
 ``TIC<id>_...``), and a normal and an ``_inverted_`` CSV of the same star get
-the same catalogue values. Existing columns are left untouched; the two
-columns are appended, or overwritten in place when a CSV already has them.
-Empty CSVs are skipped.
+the same catalogue values. Existing values are left untouched. The new
+columns are placed right after ``planet_radius_rjup``, in the order a new run
+writes them (appended when that column is missing), and are recomputed in
+place when a CSV already has them. Empty CSVs are skipped.
 
 Usage (from the repo root)::
 
@@ -41,8 +42,15 @@ import pandas as pd
 
 from ..paths import lightcurve_cache_dir
 from ..utils.stellar_density import STELLAR_DENSITY_COLUMNS, stellar_density_features
-from ..utils.stellar_properties import stellar_parameters
+from ..utils.stellar_properties import (
+    ORBIT_COLUMNS,
+    orbital_properties,
+    stellar_parameters,
+)
 
+# Same order as a new run writes them, after ``planet_radius_rjup``.
+FILLED_COLUMNS = ORBIT_COLUMNS + STELLAR_DENSITY_COLUMNS
+ANCHOR_COLUMN = "planet_radius_rjup"
 STAR_FROM_FILENAME = re.compile(r"^(KIC|EPIC|TIC)(\d+)_")
 MISSION_BY_PREFIX = {"KIC": "Kepler", "EPIC": "K2", "TIC": "TESS"}
 # The id as it appears in the archive's light-curve file names.
@@ -108,21 +116,30 @@ def downloaded_star(prefix: str, number: int, cache_dir: Path | None) -> dict:
 
 
 def fill_csv(path: Path, star: dict) -> int:
-    """Write the density columns into one CSV; return the number of rows."""
+    """Write the orbit and density columns into one CSV; return its row count."""
     # round_trip keeps every existing value byte-for-byte when it is rewritten.
     df = pd.read_csv(path, float_precision="round_trip")
     values = [
-        stellar_density_features(
-            row.get("period_days"),
-            row.get("duration_days"),
-            row.get("depth_mean_per_transit"),
-            star["logg"],
-            star["radius_rsun"],
-        )
+        {
+            **orbital_properties(row.get("period_days"), star),
+            **stellar_density_features(
+                row.get("period_days"),
+                row.get("duration_days"),
+                row.get("depth_mean_per_transit"),
+                star["logg"],
+                star["radius_rsun"],
+            ),
+        }
         for row in df.to_dict("records")
     ]
-    for column in STELLAR_DENSITY_COLUMNS:
-        df[column] = [v[column] for v in values]
+    df = df.drop(columns=[c for c in FILLED_COLUMNS if c in df.columns])
+    position = (
+        df.columns.get_loc(ANCHOR_COLUMN) + 1
+        if ANCHOR_COLUMN in df.columns
+        else len(df.columns)
+    )
+    for offset, column in enumerate(FILLED_COLUMNS):
+        df.insert(position + offset, column, [v[column] for v in values])
     # Write beside the target and rename, so an interrupted run never leaves
     # a half-written CSV.
     fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
