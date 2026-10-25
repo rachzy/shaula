@@ -66,7 +66,6 @@ def test_impossible_transits_give_nan(period, duration, depth):
     assert np.isnan(transit_stellar_density(period, duration, depth))
     feats = stellar_density_features(period, duration, depth, SUN_LOGG, 1.0)
     assert np.isnan(feats["log_rho_ratio"])
-    assert feats["rho_star_catalogue"] == pytest.approx(SUN_DENSITY, rel=0.01)
 
 
 @pytest.mark.parametrize(
@@ -76,7 +75,7 @@ def test_impossible_transits_give_nan(period, duration, depth):
 def test_a_missing_catalogue_value_gives_nan_never_inf(logg, radius):
     feats = stellar_density_features(10.0, 0.1, 1e-3, logg, radius)
     assert np.isfinite(feats["rho_star_transit"])
-    assert np.isnan(feats["rho_star_catalogue"])
+    assert np.isnan(catalogue_stellar_density(logg, radius))
     assert np.isnan(feats["log_rho_ratio"])
 
 

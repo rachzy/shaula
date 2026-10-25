@@ -21,9 +21,10 @@ GRAVITATIONAL_CONSTANT_CGS = 6.674e-8
 SOLAR_RADIUS_CM = 6.957e10
 SECONDS_PER_DAY = 86400.0
 
+# Per-candidate columns. The catalogue density is a property of the star
+# alone, so it is not repeated on every candidate row.
 STELLAR_DENSITY_COLUMNS = (
     "rho_star_transit",
-    "rho_star_catalogue",
     "log_rho_ratio",
 )
 
@@ -89,6 +90,5 @@ def stellar_density_features(
         ratio = np.log10(rho_transit / rho_catalogue)
     return {
         "rho_star_transit": rho_transit,
-        "rho_star_catalogue": rho_catalogue,
         "log_rho_ratio": float(ratio) if np.isfinite(ratio) else float("nan"),
     }

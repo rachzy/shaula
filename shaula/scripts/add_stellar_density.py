@@ -2,7 +2,7 @@
 """Add the stellar-density columns to every feature CSV in a directory.
 
 Feature CSVs written before ``utils/stellar_density`` existed lack
-``rho_star_transit``, ``rho_star_catalogue`` and ``log_rho_ratio``. This
+``rho_star_transit`` and ``log_rho_ratio``. This
 script fills them with the same function the pipeline now uses, so old and new
 rows agree.
 

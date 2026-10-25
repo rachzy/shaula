@@ -77,7 +77,6 @@ EXPECTED_ARRAY_FEATURE_KEYS = [
     "insolation_earth",
     "equilibrium_temp_k",
     "rho_star_transit",
-    "rho_star_catalogue",
     "log_rho_ratio",
     "mes_threshold_used",
     "is_provisional_detection",
