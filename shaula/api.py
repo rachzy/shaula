@@ -15,7 +15,7 @@ from . import __version__, download_and_clean
 from .download_and_clean import download_and_clean_lightcurve
 from .extract_feats import extract_features_from_lightcurve
 from .utils.stellar_density import catalogue_stellar_density
-from .utils.stellar_properties import orbital_properties, stellar_parameters
+from .utils.stellar_properties import stellar_parameters
 from .utils.target_names import host_star_name
 
 STAGES: tuple[str, ...] = (
@@ -53,15 +53,6 @@ class StellarParameters:
     mass_msun: float = math.nan
     density_gcc: float = math.nan
     source: str = ""
-
-    def orbit(self, period_days: float) -> dict[str, float]:
-        """Orbit of a planet with ``period_days`` around this star.
-
-        Returns ``semi_major_axis_au``, ``orbital_speed_kms``,
-        ``insolation_earth`` and ``equilibrium_temp_k`` (circular orbit, Bond
-        albedo 0.3); NaN where a stellar value is missing.
-        """
-        return orbital_properties(period_days, self.__dict__)
 
 
 @dataclass(frozen=True)

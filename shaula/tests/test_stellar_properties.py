@@ -1,8 +1,11 @@
 import numpy as np
 import pytest
 
-from ..api import StellarParameters
-from ..utils.stellar_properties import orbital_properties, stellar_parameters
+from ..utils.stellar_properties import (
+    ORBIT_COLUMNS,
+    orbital_properties,
+    stellar_parameters,
+)
 
 SUN = {"TEFF": 5772.0, "LOGG": 4.438, "RADIUS": 1.0}
 HEADER_KEYS = {"TEFF": "teff_k", "LOGG": "logg", "RADIUS": "radius_rsun"}
@@ -36,7 +39,21 @@ def test_a_missing_input_gives_nan_not_an_error(missing, value):
     assert np.isnan(orbit["semi_major_axis_au"]) == (missing != "TEFF")
 
 
-def test_stellar_parameters_object_gives_the_orbit():
-    star = StellarParameters(**stellar_parameters(SUN), source="KIC")
-    assert star.orbit(365.25)["semi_major_axis_au"] == pytest.approx(1.0)
-    assert np.isnan(StellarParameters().orbit(365.25)["semi_major_axis_au"])
+def test_lightcurve_rows_carry_the_orbit_but_not_the_star(monkeypatch):
+    import lightkurve as lk
+
+    from .. import extract_feats
+
+    monkeypatch.setattr(
+        extract_feats,
+        "extract_features_from_arrays",
+        lambda *a, **k: [{"period_days": 365.25, "depth_mean_per_transit": 1e-4}],
+    )
+    time = np.arange(0.0, 10.0, 0.02)
+    lc = lk.LightCurve(time=time, flux=np.ones_like(time))
+    lc.meta.update(SUN)
+    row = extract_feats.extract_features_from_lightcurve(lc)[0]
+    assert set(ORBIT_COLUMNS) <= set(row)
+    assert row["semi_major_axis_au"] == pytest.approx(1.0)
+    assert row["planet_radius_rearth"] == pytest.approx(109.1 * 0.01)
+    assert "teff_k" not in row

@@ -71,6 +71,10 @@ DESIRED_FEATURE_ORDER = [
     "outlier_resistance",
     "planet_radius_rearth",
     "planet_radius_rjup",
+    "semi_major_axis_au",
+    "orbital_speed_kms",
+    "insolation_earth",
+    "equilibrium_temp_k",
     "rho_star_transit",
     "log_rho_ratio",
 ]

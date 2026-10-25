@@ -70,13 +70,12 @@ for row in result.features:               # one dict per candidate, sorted by pe
     print(row["period_days"], row["max_mes"], row["detection_status"])
 
 print(result.star.teff_k, result.star.radius_rsun, result.star.source)  # once per target
-print(result.star.orbit(result.features[0]["period_days"]))             # distance, speed, insolation, Teq
 ```
 
 - `mission` is `Kepler`, `K2` or `TESS` (case-insensitive). Planet names such as `Kepler-186f` are accepted and searched as their host star.
 - `download_all=True` downloads every quarter or sector and joins them; without it only the first file is used, which is much faster but finds far fewer planets.
 - `progress=` takes a callback that receives a `ProgressEvent` at each stage (`downloading`, `detrending`, `period_search`, `done`). Raising inside the callback cancels the run.
-- `result.star` holds the host star once: `teff_k`, `logg`, `radius_rsun`, `mass_msun` (derived from log g and radius) and `source` (`KIC`, `EPIC` or `TIC`), read from the light-curve file header. `star.orbit(period_days)` returns `semi_major_axis_au`, `orbital_speed_kms`, `insolation_earth` and `equilibrium_temp_k` for a circular orbit with Bond albedo 0.3. Kepler's KIC values are rough (radius off by 25-40%). The candidate CSVs do not carry these.
+- `result.star` holds the host star once: `teff_k`, `logg`, `radius_rsun`, `mass_msun` (derived from log g and radius) and `source` (`KIC`, `EPIC` or `TIC`), read from the light-curve file header. Kepler's KIC values are rough (radius off by 25-40%). These describe the star, so they are not repeated on candidate rows; each candidate's orbit (distance, speed, insolation, temperature) is on its row.
 - Feature values can be `NaN` when a measurement is impossible (for example the planet radius when the star's radius is unknown).
 - Set `SHAULA_LIGHTCURVE_CACHE` (or pass `cache_dir=`) to choose where downloaded light curves are stored.
 
@@ -194,6 +193,10 @@ Depths are fractional (0.001 = 1,000 ppm = a 0.1% dip); positive means dimming.
 | `odd_even_depth_ratio`             | Mean odd-transit depth / mean even-transit depth; far from 1 suggests an eclipsing binary at twice the period     |
 | `ingress_egress_asymmetry`         | Difference between ingress and egress slopes of the folded transit; ~0 for a symmetric transit                   |
 | `planet_radius_rearth`             | Inferred planet radius (Earth radii); NaN when the star's radius is unknown |
+| `semi_major_axis_au`               | Orbital distance (AU), from the period and the star's mass via Kepler's third law (circular orbit); NaN without the star's catalogue values |
+| `orbital_speed_kms`                | Orbital speed (km/s) on that orbit |
+| `insolation_earth`                 | Starlight the planet receives, relative to Earth |
+| `equilibrium_temp_k`               | Equilibrium temperature (K), assuming a Bond albedo of 0.3 and full heat redistribution |
 | `rho_star_transit`                 | Star's mean density (g/cm³) implied by the transit's period, duration and depth (circular orbit, central transit) |
 | `log_rho_ratio`                    | log10 of that over the density from the header's log g and radius: ~0 for a planet of that star; far from 0 when the event does not fit the star (eclipsing binary, blend); grazing planets read somewhat high |
 | `detection_status`                 | `accepted` (passed the MES gate) or `provisional` (sub-threshold, MES ≥ 6); scripts can also write `rejected` or `harmonic_duplicate` |
