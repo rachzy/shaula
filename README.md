@@ -200,6 +200,8 @@ Depths are fractional (0.001 = 1,000 ppm = a 0.1% dip); positive means dimming.
 | `orbital_speed_kms`                | Orbital speed (km/s) on that orbit |
 | `insolation_earth`                 | Starlight the planet receives, relative to Earth |
 | `equilibrium_temp_k`               | Equilibrium temperature (K), assuming a Bond albedo of 0.3 and full heat redistribution |
+| `rho_star_transit`                 | Star's mean density (g/cm³) implied by the transit's period, duration and depth (circular orbit, central transit) |
+| `log_rho_ratio`                    | log10 of that over the density from the header's log g and radius: ~0 for a planet of that star; far from 0 when the event does not fit the star (eclipsing binary, blend); grazing planets read somewhat high |
 | `detection_status`                 | `accepted` (passed the MES gate) or `provisional` (sub-threshold, MES ≥ 6); scripts can also write `rejected` or `harmonic_duplicate` |
 | `mes_threshold_used` / `is_provisional_detection` | The MES bar the row was judged against, and `1.0` for provisional rows (`0.0` otherwise) |
 | `candidate_label`                  | Training label: `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, from a period match against reference KOIs (scripts only) |

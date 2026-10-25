@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 312 passed, 19 subtests
+uv run pytest                        # tests: 335 passed, 19 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
@@ -24,7 +24,7 @@ The only module an external consumer imports (the `apps/shaula` gRPC service in 
 - The `progress` callback may raise to cancel. `extract()` deliberately does not catch it. Never wrap a callback invocation in `try`/`except`.
 - `resolve()` returns an exact catalogue identifier (`KIC`/`EPIC`/`TIC`). The caller uses `catalog_id` as a cache key, so `resolve()` raises `TargetNotFound` for an unusable identifier or non-finite coordinates instead of returning a plausible-looking value.
 - `resolve()` takes either a `query` or both `ra_deg` and `dec_deg` (never both, never one coordinate); a blank query counts as none. A position resolves to the nearest star with light curves within `POSITION_MATCH_RADIUS_ARCSEC` (4 arcseconds) and sets `display_name` to the designation. `0.0` is a valid coordinate, so test with `is None`, never truthiness.
-- `ExtractionResult.star` is a `StellarParameters` (`teff_k`, `logg`, `radius_rsun`, `mass_msun`, `source`) built once per target in `api.py` by `utils/stellar_properties.stellar_parameters` from `lc.meta` (`TEFF`, `LOGG`, `RADIUS` in the KIC/EPIC/TIC file header; mass = 10^(logg - 4.438) x R^2; NaN when missing). Star values stay out of the per-candidate rows and the CSVs by design (Henrique, 2026-10-25): they would repeat on every row. Per-planet values derived from them (the orbit columns) do go on the rows.
+- `ExtractionResult.star` is a `StellarParameters` (`teff_k`, `logg`, `radius_rsun`, `mass_msun`, `density_gcc`, `source`) built once per target in `api.py` by `utils/stellar_properties.stellar_parameters` from `lc.meta` (`TEFF`, `LOGG`, `RADIUS` in the KIC/EPIC/TIC file header; mass = 10^(logg - 4.438) x R^2; `density_gcc` = `utils/stellar_density.catalogue_stellar_density` = 3 g / (4 pi G R) in g/cm^3; NaN when missing). Star values stay out of the per-candidate rows and the CSVs by design (Henrique, 2026-10-25): they would repeat on every row. Per-planet values derived from them (the orbit columns) do go on the rows.
 - `extract()` returns accepted detections plus up to two `provisional` sub-threshold rows; it never asks for false candidates or labels (those are CLI/script options).
 
 ## Pipeline workflow
@@ -76,6 +76,7 @@ One row per candidate. Depths are fractional flux deficits (positive = dimming);
 | `ingress_egress_asymmetry` | Difference of absolute linear slopes either side of the folded minimum. |
 | `planet_radius_rearth`, `planet_radius_rjup` | From stellar radius and depth (step 9), else NaN. |
 | `semi_major_axis_au`, `orbital_speed_kms`, `insolation_earth`, `equilibrium_temp_k` | `utils/stellar_properties.orbital_properties` on `period_days` and the header star (step 9): Kepler's third law with mass = 10^(logg - 4.438) x R^2, circular orbit; Teq uses `EQUILIBRIUM_BOND_ALBEDO` (0.3) and full redistribution. NaN without catalogue values, and always on the arrays/CSV path. |
+| `rho_star_transit`, `log_rho_ratio` | `utils/stellar_density`: transit density (g/cm^3) = 3 pi (a/R*)^3 / (G P^2) with a/R* = (1 + sqrt(depth)) / sin(pi T14 / P), i.e. circular orbit and b = 0 (an upper bound: grazing planets read too dense); `log_rho_ratio` = log10 of it over the catalogue density 3 g / (4 pi G R) from header `LOGG`/`RADIUS` (`catalogue_stellar_density`, exposed once as `ExtractionResult.star.density_gcc`, not a row column), ~0 for a planet of the star, positive for too-short (SS-like) and negative for too-long (NT-like) events. NaN, never inf, for missing inputs, depth outside (0, 1) or T14 >= P/2. Always NaN on the arrays/CSV path. Backfill old CSVs (these two plus the four orbit columns) with `python -m shaula.scripts.add_stellar_density <dir> --workers N`, which reads Teff, log g and radius from each star's cached FITS header. |
 | `mes_threshold_used`, `is_provisional_detection`, `detection_status` | Gate the row was judged against; `1.0` and `"provisional"` for recovered sub-threshold rows, `0.0` and `"accepted"` otherwise. Scripts can also emit `"rejected"` and `"harmonic_duplicate"`. |
 | `candidate_label`, `matched_target`, `matched_period_ratio`, `fp_source` | Only with `label_output_candidates` (CLI/scripts): `CONFIRMED`, `FALSE-POSITIVE` or `UNKNOWN`, by period match (`utils/label_candidates`) against `data/confirmed/` or a KOI reference table. With a reference table, a match to a `FALSE POSITIVE` KOI is `FALSE-POSITIVE` only when it carries the `nt` or `ss` flag (`fp_source` `koi:<flags>`); a centroid/ephemeris-only false positive or an open `CANDIDATE` is `UNKNOWN`. An unmatched row is `FALSE-POSITIVE` with `fp_source` `unmatched`; every row of an `--invert` run is `FALSE-POSITIVE` with `fp_source` `inverted`. |
 

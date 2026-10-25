@@ -14,6 +14,7 @@ from .sesmes import (
     secondary_eclipse,
 )
 from .utils.ephemeris import canonical_epoch
+from .utils.stellar_density import STELLAR_DENSITY_COLUMNS, stellar_density_features
 from .utils.stellar_properties import (
     ORBIT_COLUMNS,
     orbital_properties,
@@ -354,7 +355,7 @@ def _extract_single_candidate_from_arrays(
     # Note: For CSV data, we don't have stellar radius information
     feats["planet_radius_rearth"] = np.nan
     feats["planet_radius_rjup"] = np.nan
-    for column in ORBIT_COLUMNS:
+    for column in ORBIT_COLUMNS + STELLAR_DENSITY_COLUMNS:
         feats[column] = np.nan
 
     # Which bar this row was judged against. Rows recovered below the detection
@@ -1435,5 +1436,14 @@ def extract_features_from_lightcurve(
                 feats["planet_radius_rearth"] = stellar_radius * 109.1 * Rp_over_Rs
                 feats["planet_radius_rjup"] = stellar_radius * 9.731 * Rp_over_Rs
         feats.update(orbital_properties(feats.get("period_days"), star))
+        feats.update(
+            stellar_density_features(
+                feats.get("period_days"),
+                feats.get("duration_days"),
+                feats.get("depth_mean_per_transit"),
+                star["logg"],
+                stellar_radius,
+            )
+        )
 
     return feature_rows
