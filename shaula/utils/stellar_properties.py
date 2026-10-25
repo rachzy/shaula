@@ -20,6 +20,14 @@ SECONDS_PER_DAY = 86400.0
 # A common choice for planets of unknown albedo; Earth's Bond albedo is ~0.3.
 EQUILIBRIUM_BOND_ALBEDO = 0.3
 
+# Per-candidate columns that orbital_properties() fills.
+ORBIT_COLUMNS = (
+    "semi_major_axis_au",
+    "orbital_speed_kms",
+    "insolation_earth",
+    "equilibrium_temp_k",
+)
+
 
 def _positive_float(value) -> float:
     """``value`` as a float, or NaN when it is missing, non-finite or <= 0."""
