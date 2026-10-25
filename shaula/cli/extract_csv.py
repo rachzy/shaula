@@ -79,6 +79,9 @@ DESIRED_FEATURE_ORDER = [
     "orbital_speed_kms",
     "insolation_earth",
     "equilibrium_temp_k",
+    "rho_star_transit",
+    "rho_star_catalogue",
+    "log_rho_ratio",
 ]
 
 
