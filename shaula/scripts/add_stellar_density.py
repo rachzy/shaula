@@ -17,7 +17,7 @@ file downloaded (one quarter or sector, not the whole light curve) unless
 
 The star comes from the file name (``KIC<id>_...``, ``EPIC<id>_...`` or
 ``TIC<id>_...``), and a normal and an ``_inverted_`` CSV of the same star get
-the same catalogue values. Existing columns are left untouched; the three
+the same catalogue values. Existing columns are left untouched; the two
 columns are appended, or overwritten in place when a CSV already has them.
 Empty CSVs are skipped.
 
