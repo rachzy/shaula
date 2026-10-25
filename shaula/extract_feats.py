@@ -5,9 +5,14 @@ from collections import OrderedDict
 from scipy.stats import skew, kurtosis
 
 from .detrend_and_period import detrend_with_bls_mask, max_physical_duration
-from .folded_binned_metrics import folded_binned_metrics
+from .folded_binned_metrics import folded_binned_metrics, median_cadence_hours
 from .cdpp import calculate_cdpp
-from .sesmes import compute_SES_MES, fold_statistics, secondary_eclipse
+from .sesmes import (
+    compute_SES_MES,
+    eb_check_features,
+    fold_statistics,
+    secondary_eclipse,
+)
 from .utils.ephemeris import canonical_epoch
 from .utils import (
     scaling_and_metrics,
@@ -315,6 +320,11 @@ def _extract_single_candidate_from_arrays(
     feats["ingress_egress_asymmetry"] = compute_ingress_egress_asymmetry(
         time_arr, flux_features, period, t0, duration_days
     )
+    # Odd/even significance and an all-phase secondary search, folded from the
+    # same statistics as MES and secondary_depth.
+    feats.update(
+        eb_check_features(sesmes.get("statistics"), period, t0, duration_days)
+    )
     print(
         f"EB/Grazing features: odd_even_ratio={feats['odd_even_depth_ratio']:.3f}, "
         f"asymmetry={feats['ingress_egress_asymmetry']:.3f}, "
@@ -360,6 +370,57 @@ def _extract_single_candidate_from_arrays(
             print(f"{k}: {v}")
 
     return feats, bls_info, mask_transit
+
+
+def measure_eb_checks(time, flux, period, t0, duration_days, gap_mask=None):
+    """``EB_CHECK_COLUMNS`` for a candidate whose ephemeris is already known.
+
+    For filling the columns into feature CSVs written before they existed:
+    the light curve is detrended around exactly this ephemeris (no search, no
+    refit) and the SES/MES statistics are rebuilt the way
+    ``_extract_single_candidate_from_arrays`` builds them, so the values come
+    from the same functions a fresh run uses. ``gap_mask`` marks the other
+    accepted candidates' transits, as in the search. The detrend is rebuilt,
+    so the result can differ slightly from what the original run would have
+    written.
+    """
+    empty = eb_check_features(None, period, t0, duration_days)
+    if not all(
+        np.isfinite(value) and value > 0 for value in (period, duration_days)
+    ) or not np.isfinite(t0):
+        return empty
+    time = np.asarray(time, dtype=float)
+    flux = np.asarray(flux, dtype=float)
+    valid = np.isfinite(time) & np.isfinite(flux)
+    if np.sum(valid) < 3:
+        return empty
+    time_arr = time[valid]
+    flux_arr = flux[valid]
+    if gap_mask is None:
+        gap_arr = np.zeros(time_arr.shape, dtype=bool)
+    else:
+        gap_arr = np.asarray(gap_mask, dtype=bool)[valid]
+
+    flux_detr, _, mask_transit, _ = detrend_with_bls_mask(
+        time_arr,
+        flux_arr,
+        refine_duration=False,
+        candidate_hint={"period": period, "t0": t0, "duration": duration_days},
+        exclude_mask=gap_arr,
+        dealias=False,
+        fixed_ephemeris=True,
+    )
+    sesmes = compute_SES_MES(
+        time_arr,
+        flux_detr,
+        period,
+        t0,
+        duration_days,
+        cadence_hours=median_cadence_hours(time_arr[~gap_arr]),
+        transit_mask=mask_transit,
+        gap_mask=gap_arr,
+    )
+    return eb_check_features(sesmes.get("statistics"), period, t0, duration_days)
 
 
 def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):

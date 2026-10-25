@@ -4,6 +4,17 @@ from statsmodels.tsa.stattools import acf as sm_acf
 
 # 3 - Compute folded and binned metrics 
 
+def median_cadence_hours(time):
+    """Median step between cadences in hours, ignoring gaps of a day or more."""
+    diffs = np.diff(time)
+    diffs = diffs[np.isfinite(diffs)]
+    if diffs.size == 0:
+        return np.nan
+    diffs_small = diffs[diffs < 1.0]
+    dt_days = np.median(diffs_small) if len(diffs_small) > 0 else np.median(diffs)
+    return dt_days * 24.0 if dt_days > 0 else np.nan
+
+
 def folded_binned_metrics(time, flux, period, t0, lags_hours=(1,3,6,12,24), nbins=200):
     mask = np.isfinite(time) & np.isfinite(flux)
     time_u = time[mask]
@@ -11,12 +22,7 @@ def folded_binned_metrics(time, flux, period, t0, lags_hours=(1,3,6,12,24), nbin
     if len(time_u) < 10:
         return {"local_noise": np.nan, "depth_stability": np.nan, "acf_lags": {h: np.nan for h in lags_hours}, "cadence_hours": np.nan}
 
-    
-    diffs = np.diff(time_u)
-    diffs = diffs[np.isfinite(diffs)]
-    diffs_small = diffs[diffs < 1.0]  
-    dt_days = np.median(diffs_small) if len(diffs_small) > 0 else np.median(diffs)
-    cadence_hours = dt_days * 24.0 if dt_days > 0 else np.nan
+    cadence_hours = median_cadence_hours(time_u)
 
     phase = ((time_u - t0) / period) % 1.0
     phase = (phase + 0.5) % 1.0 - 0.5

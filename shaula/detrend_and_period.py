@@ -329,6 +329,7 @@ def detrend_with_bls_mask(
     candidate_hint=None,
     exclude_mask=None,
     dealias=True,
+    fixed_ephemeris=False,
 ):
     """Detrend a light curve and search it for one transit candidate.
 
@@ -342,7 +343,14 @@ def detrend_with_bls_mask(
     period. De-aliasing ranks candidates on BLS power, which favours the
     shorter member of a harmonic pair, so a caller that has already settled the
     period on a better statistic must switch it off or have its choice undone.
+
+    ``fixed_ephemeris=True`` takes ``candidate_hint`` exactly as given: no
+    duration clip, no period/duration refinement and no final epoch refit, so
+    the trend is fitted around that ephemeris and nothing else. It is for
+    re-measuring a candidate already written to a CSV.
     """
+    if fixed_ephemeris and candidate_hint is None:
+        raise ValueError("fixed_ephemeris needs a candidate_hint")
     bls_start = time.time()
     print("Starting BLS detrending and period search...")
 
@@ -751,7 +759,7 @@ def detrend_with_bls_mask(
     )
 
     best_cap = _duration_upper_bound(best_period, best_floor)
-    if np.isfinite(best_duration):
+    if np.isfinite(best_duration) and not fixed_ephemeris:
         if best_duration < best_floor:
             best_duration = best_floor
         if np.isfinite(best_cap) and best_duration > best_cap:
@@ -775,7 +783,12 @@ def detrend_with_bls_mask(
             best_duration = capped_duration
 
     # Optional two-pass refinement for more accurate duration
-    if refine_duration and np.isfinite(best_period) and np.isfinite(best_duration):
+    if (
+        refine_duration
+        and not fixed_ephemeris
+        and np.isfinite(best_period)
+        and np.isfinite(best_duration)
+    ):
         print("Starting period/duration refinement...")
         # Second pass: focused search around detected period with proper duration range
         per_lo = best_period * 0.98
@@ -1387,15 +1400,16 @@ def detrend_with_bls_mask(
     # and their transit_time is quantized by the BLS phase grid.  SES/MES and
     # every downstream transit window use this final, duration-aware epoch.
     t0_before_final_refit = float(t0)
-    t0 = refine_transit_epoch(
-        tTime[~search_exclude],
-        flux_detr[~search_exclude],
-        best_period,
-        best_duration,
-        t0,
-        oversample=max(50, 5 * int(oversample)),
-        reference_time=float(np.min(tTime)) if tTime.size else None,
-    )
+    if not fixed_ephemeris:
+        t0 = refine_transit_epoch(
+            tTime[~search_exclude],
+            flux_detr[~search_exclude],
+            best_period,
+            best_duration,
+            t0,
+            oversample=max(50, 5 * int(oversample)),
+            reference_time=float(np.min(tTime)) if tTime.size else None,
+        )
     phase_shift = epoch_phase_offset(t0, t0_before_final_refit, best_period)
     if np.isfinite(phase_shift):
         print(

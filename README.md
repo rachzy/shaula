@@ -188,6 +188,9 @@ Depths are fractional (0.001 = 1,000 ppm = a 0.1% dip); positive means dimming.
 | `secondary_depth_snr`              | Signed significance of that secondary, on the same scale as `MES`; high values suggest an eclipsing binary        |
 | `secondary_depth_snr_log` / `secondary_depth_snr_capped` | The same significance compressed as sign × log(1 + \|SNR\|), or clipped to ±100, for models that dislike large values |
 | `odd_even_depth_ratio`             | Mean odd-transit depth / mean even-transit depth; far from 1 suggests an eclipsing binary at twice the period     |
+| `even_odd_depth_diff_sigma`        | How many standard errors apart the odd and even transit depths are; large values point to an eclipsing binary found at half its period |
+| `secondary_max_snr_any_phase` / `secondary_phase` / `secondary_depth_ratio` | Strongest dip at any phase away from the transit, where it sits, and its depth over the transit's; catches eccentric binaries whose secondary is not at phase 0.5 |
+| `secondary_scan_trials`            | How many phases that search tried; noise alone gives a higher maximum when it tries more |
 | `ingress_egress_asymmetry`         | Difference between ingress and egress slopes of the folded transit; ~0 for a symmetric transit                   |
 | `planet_radius_rearth`             | Inferred planet radius (Earth radii); NaN when the star's radius is unknown |
 | `detection_status`                 | `accepted` (passed the MES gate) or `provisional` (sub-threshold, MES ≥ 6); scripts can also write `rejected` or `harmonic_duplicate` |
