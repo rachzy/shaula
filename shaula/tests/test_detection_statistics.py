@@ -72,6 +72,8 @@ EXPECTED_ARRAY_FEATURE_KEYS = [
     "orbital_speed_kms",
     "insolation_earth",
     "equilibrium_temp_k",
+    "rho_star_transit",
+    "log_rho_ratio",
     "mes_threshold_used",
     "is_provisional_detection",
     "detection_status",

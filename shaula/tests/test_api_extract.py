@@ -69,6 +69,8 @@ def test_returns_the_star_once_from_the_header(stubbed, monkeypatch):
     assert result.star.teff_k == 5627.0
     assert result.star.radius_rsun == 1.056
     assert result.star.mass_msun == pytest.approx(0.894, abs=1e-3)
+    # The archive's KIC density for Kepler-10 is 1.068 g/cm^3.
+    assert result.star.density_gcc == pytest.approx(1.07, abs=0.01)
     assert result.star.source == "KIC"
     assert "teff_k" not in result.features[0]
 
@@ -76,6 +78,7 @@ def test_returns_the_star_once_from_the_header(stubbed, monkeypatch):
 def test_a_star_without_catalogue_values_is_nan(stubbed):
     star = extract("Kepler-11", "TESS").star
     assert math.isnan(star.teff_k) and math.isnan(star.radius_rsun)
+    assert math.isnan(star.density_gcc)
     assert star.source == "TIC"
 
 
