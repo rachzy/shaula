@@ -200,6 +200,47 @@ def fold_statistics(statistics, period, epoch, duration_days=None):
     return out
 
 
+# Trial secondaries centred closer than this many T14 to the primary are not
+# scanned. The primary's wings leak into neighbouring boxes; with only the box
+# itself excluded, 8 of the 11 confirmed Kepler planets (of 56 checked) with an
+# off-phase SNR above 6 had it at phase 0.01-0.03 or 0.97-0.99. 3 T14 removed
+# those; 6 T14 leaves nothing to scan below P = 12 T14.
+SECONDARY_SCAN_EXCLUSION_DURATIONS = 3.0
+# Folds with fewer events than this report NaN: a single event says nothing
+# about alternation or periodicity.
+MIN_EB_CHECK_EVENTS = 2
+EB_CHECK_COLUMNS = (
+    "even_odd_depth_diff_sigma",
+    "secondary_max_snr_any_phase",
+    "secondary_phase",
+    "secondary_depth_ratio",
+    "secondary_scan_trials",
+)
+
+
+def _fold_depth(statistics, period, epoch):
+    """Inverse-variance box depth, its uncertainty and MES of one fold."""
+    out = {"depth": np.nan, "uncertainty": np.nan, "snr": np.nan, "n_events": 0}
+    if statistics is None or statistics["time"].size == 0:
+        return out
+    if not (np.isfinite(period) and period > 0 and np.isfinite(epoch)):
+        return out
+    tolerance_days = statistics["cadence_days"] / 2.0
+    mes, _, indices, event_ses = _fold_components(
+        statistics, float(period), float(epoch), tolerance_days
+    )
+    if indices.size == 0:
+        return out
+    denominator_sum = float(np.sum(statistics["D"][indices]))
+    if not (np.isfinite(denominator_sum) and denominator_sum > 0):
+        return out
+    out["depth"] = float(np.sum(statistics["N"][indices]) / denominator_sum)
+    out["uncertainty"] = float(1.0 / np.sqrt(denominator_sum))
+    out["snr"] = float(mes)
+    out["n_events"] = int(np.sum(np.isfinite(event_ses)))
+    return out
+
+
 def secondary_eclipse(statistics, period, epoch):
     """Box depth and MES at phase 0.5 of a candidate, from its own statistics.
 
@@ -211,24 +252,95 @@ def secondary_eclipse(statistics, period, epoch):
     reporting a positive floor. No phase scan is done, so the statistic is not
     biased upward by a maximum over trials.
     """
-    out = {"depth": np.nan, "snr": np.nan, "n_events": 0}
+    if not (np.isfinite(period) and period > 0 and np.isfinite(epoch)):
+        return {"depth": np.nan, "snr": np.nan, "n_events": 0}
+    fold = _fold_depth(statistics, period, float(epoch) + 0.5 * float(period))
+    return {key: fold[key] for key in ("depth", "snr", "n_events")}
+
+
+def odd_even_depth_significance(statistics, period, epoch):
+    """|odd - even| box depth in units of its combined uncertainty.
+
+    Folds the candidate's statistics at ``2 * period`` with epochs ``epoch``
+    and ``epoch + period``, so the alternate events are scored by the same
+    noise model as ``MES`` (Kepler DV's odd/even depth test). A binary found
+    at half its period alternates primary and secondary and stands out here
+    even when ``odd_even_depth_ratio`` is noisy. Absolute, because which half
+    is "odd" depends only on where ``epoch`` falls.
+    """
+    if not (np.isfinite(period) and period > 0 and np.isfinite(epoch)):
+        return np.nan
+    even = _fold_depth(statistics, 2.0 * period, epoch)
+    odd = _fold_depth(statistics, 2.0 * period, float(epoch) + float(period))
+    if min(even["n_events"], odd["n_events"]) < MIN_EB_CHECK_EVENTS:
+        return np.nan
+    combined = np.hypot(even["uncertainty"], odd["uncertainty"])
+    if not (np.isfinite(combined) and combined > 0):
+        return np.nan
+    value = abs(odd["depth"] - even["depth"]) / combined
+    return float(value) if np.isfinite(value) else np.nan
+
+
+def secondary_any_phase(statistics, period, epoch, duration_days=None):
+    """Most significant secondary dip at any phase, away from the primary.
+
+    Slides the primary's box across the orbit in steps of a quarter T14 (or
+    one cadence, if longer) and keeps the fold with the highest MES (Kepler
+    DV's weak-secondary search). Unlike ``secondary_eclipse`` this catches an
+    eccentric binary's secondary away from phase 0.5. It is a maximum over
+    ``trials`` folds, so pure noise reads around 3 rather than 0 and rises
+    slowly with P / T14; ``trials`` is returned so a model can account for it.
+    ``depth_ratio`` is the dip's signed depth over the primary's, and
+    ``phase`` is in [0, 1) from ``epoch``.
+    """
+    out = {"snr": np.nan, "phase": np.nan, "depth_ratio": np.nan, "trials": 0}
     if statistics is None or statistics["time"].size == 0:
         return out
-    if not (np.isfinite(period) and period > 0 and np.isfinite(epoch)):
+    if duration_days is None:
+        duration_days = statistics["duration_days"]
+    if not (
+        np.isfinite(period)
+        and period > 0
+        and np.isfinite(epoch)
+        and np.isfinite(duration_days)
+        and duration_days > 0
+    ):
         return out
-    tolerance_days = statistics["cadence_days"] / 2.0
-    mes, _, indices, event_ses = _fold_components(
-        statistics, float(period), float(epoch) + 0.5 * float(period), tolerance_days
-    )
-    if indices.size == 0:
+    period = float(period)
+    exclusion = SECONDARY_SCAN_EXCLUSION_DURATIONS * float(duration_days)
+    step = max(float(statistics["cadence_days"]), 0.25 * float(duration_days))
+    offsets = np.arange(exclusion, period - exclusion + 1e-9, step)
+    out["trials"] = int(offsets.size)
+    best = None
+    for offset in offsets:
+        fold = _fold_depth(statistics, period, float(epoch) + offset)
+        if fold["n_events"] < MIN_EB_CHECK_EVENTS or not np.isfinite(fold["snr"]):
+            continue
+        if best is None or fold["snr"] > best[1]["snr"]:
+            best = (offset, fold)
+    if best is None:
         return out
-    denominator_sum = float(np.sum(statistics["D"][indices]))
-    if not (np.isfinite(denominator_sum) and denominator_sum > 0):
-        return out
-    out["depth"] = float(np.sum(statistics["N"][indices]) / denominator_sum)
-    out["snr"] = float(mes)
-    out["n_events"] = int(np.sum(np.isfinite(event_ses)))
+    offset, fold = best
+    out["snr"] = fold["snr"]
+    out["phase"] = float(offset / period)
+    primary = _fold_depth(statistics, period, epoch)["depth"]
+    if np.isfinite(primary) and primary > 0:
+        out["depth_ratio"] = float(fold["depth"] / primary)
     return out
+
+
+def eb_check_features(statistics, period, epoch, duration_days=None):
+    """The ``EB_CHECK_COLUMNS`` of one candidate, NaN where not computable."""
+    scan = secondary_any_phase(statistics, period, epoch, duration_days)
+    return {
+        "even_odd_depth_diff_sigma": odd_even_depth_significance(
+            statistics, period, epoch
+        ),
+        "secondary_max_snr_any_phase": scan["snr"],
+        "secondary_phase": scan["phase"],
+        "secondary_depth_ratio": scan["depth_ratio"],
+        "secondary_scan_trials": scan["trials"],
+    }
 
 
 def compute_SES_MES(

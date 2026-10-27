@@ -6,13 +6,14 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 319 passed, 19 subtests
+uv run pytest                        # tests: 335 passed, 19 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
 - `uv run ruff check shaula` is configured but **exits non-zero: it currently reports 116 errors**. This is style debt in code that predates packaging (line length, nested `with`, import order, ambiguous Unicode), concentrated in `shaula/detrend_and_period.py`. New code must be clean. Never run `--fix` across the package.
 - Tests live in `shaula/tests/`. Older ones are `unittest.TestCase` classes run under pytest; the `api` tests are plain pytest functions.
 - One third-party `UserWarning` from lightkurve/oktopus fires on any import of the package. It is not a regression.
+- `python -m shaula.scripts.add_eb_checks <dir> --workers N` fills the EB check columns into older feature CSVs via `extract_feats.measure_eb_checks`: it detrends around each row's ephemeris with `detrend_with_bls_mask(..., fixed_ephemeris=True)` (no search, no refit) and gaps the CSV's other accepted rows. Inverted CSVs get the `data/koi` cut and flip first. Existing cells are kept byte-for-byte.
 - CLIs: `shaula-extract-lk` (download by target name, then extract) and `shaula-extract-csv` (extract from a saved light-curve CSV with `time`/`flux` columns). Validation scripts run as modules, e.g. `python -m shaula.scripts.get_literature_data Kepler-90` and `python -m shaula.scripts.compare_confirmed_and_extracted`.
 
 ## Public surface: `shaula/api.py`
@@ -70,6 +71,8 @@ One row per candidate. Depths are fractional flux deficits (positive = dimming);
 | `vshape_metric` | `utils/compute_vshape`: least-squares trapezoid fit to the unbinned points around each transit, on a grid of total durations (0.6–1.4 x T14) and ingress fractions, with the model averaged over the cadence. The value is the fitted ingress fraction T12 / (T14/2): 0 for a flat-bottomed box, 1 for a pure V (grazing transit or EB). Noisy at low MES. |
 | `secondary_depth`, `secondary_depth_snr`, `secondary_depth_snr_log`, `secondary_depth_snr_capped` | `sesmes.secondary_eclipse`: the candidate's own SES/MES statistics folded at `t0 + P/2` with no phase scan. Depth is the inverse-variance weighted box depth (sum N / sum D), SNR is that fold's MES, so it is directly comparable to `MES`. Both are **signed** and scatter around 0 when there is no secondary. `_log` is sign(SNR) x log1p(abs(SNR)); `_capped` clips SNR to ±100. A hot Jupiter's occultation (e.g. Kepler-2b) is a real secondary too. |
 | `odd_even_depth_ratio` | Mean odd-epoch depth over mean even-epoch depth; far from 1 suggests an EB at twice the period. |
+| `even_odd_depth_diff_sigma` | `sesmes.odd_even_depth_significance`: the SES/MES statistics folded at 2P with epochs `t0` and `t0 + P`; abs(odd - even depth) over their combined 1 / sqrt(sum D) uncertainty (Kepler DV's odd/even test). NaN with fewer than 2 events in either half. |
+| `secondary_max_snr_any_phase`, `secondary_phase`, `secondary_depth_ratio`, `secondary_scan_trials` | `sesmes.secondary_any_phase`: the primary's box slid across the orbit in steps of max(cadence, T14/4), skipping centres within `SECONDARY_SCAN_EXCLUSION_DURATIONS` (3) x T14 of the primary, whose wings otherwise leak in; the fold with the highest MES (Kepler DV's weak-secondary search). Phase is from `t0`; depth ratio is signed, over the primary's box depth. It is a maximum over `secondary_scan_trials` folds, so noise reads about 3, not 0. |
 | `ingress_egress_asymmetry` | Difference of absolute linear slopes either side of the folded minimum. |
 | `planet_radius_rearth`, `planet_radius_rjup` | From stellar radius and depth (step 9), else NaN. |
 | `semi_major_axis_au`, `orbital_speed_kms`, `insolation_earth`, `equilibrium_temp_k` | `utils/stellar_properties.orbital_properties` on `period_days` and the header star (step 9): Kepler's third law with mass = 10^(logg - 4.438) x R^2, circular orbit; Teq uses `EQUILIBRIUM_BOND_ALBEDO` (0.3) and full redistribution. NaN without catalogue values, and always on the arrays/CSV path. |
