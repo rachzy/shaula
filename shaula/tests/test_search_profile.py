@@ -20,10 +20,12 @@ from ..detrend_and_period import (
 from ..extract_feats import (
     _candidate_passes_mes,
     _harmonic_trials,
+    bin_for_features,
     extract_features_from_arrays,
 )
 from ..search_profile import (
     DEFAULT_PROFILE,
+    KEPLER_LONG_CADENCE_DAYS,
     TESS_PROFILE,
     SearchProfile,
     profile_for_mission,
@@ -60,7 +62,7 @@ def _captured_search(monkeypatch, time, **kwargs):
 
 
 def test_default_profile_is_the_kepler_rule():
-    assert SearchProfile(3, "span") == DEFAULT_PROFILE
+    assert SearchProfile(3, "span", None) == DEFAULT_PROFILE
     for mission in ("Kepler", "K2", "kepler", None, "unknown"):
         assert profile_for_mission(mission) is DEFAULT_PROFILE
 
@@ -209,3 +211,109 @@ def test_two_transit_planet_in_one_sector_needs_the_tess_profile():
 
     assert not found(kepler_rows)
     assert found(tess_rows)
+
+
+def _two_minute_series(days=6.0):
+    return np.arange(0.0, days, 2.0 / 1440.0)
+
+
+def test_tess_features_are_measured_at_kepler_long_cadence():
+    assert DEFAULT_PROFILE.feature_cadence_days is None
+    assert TESS_PROFILE.feature_cadence_days == pytest.approx(29.4244 / 1440.0)
+    assert TESS_PROFILE.feature_cadence_days == KEPLER_LONG_CADENCE_DAYS
+    with pytest.raises(ValueError, match="feature_cadence_days"):
+        SearchProfile(feature_cadence_days=0.0)
+
+
+def test_binning_averages_to_an_even_grid():
+    time = _two_minute_series()
+    flux = 1.0 + 1e-3 * np.sin(time)
+    gap = np.zeros(time.size, dtype=bool)
+    binned_time, binned_flux, binned_gap = bin_for_features(
+        time, flux, gap, KEPLER_LONG_CADENCE_DAYS
+    )
+    assert np.diff(binned_time) == pytest.approx(KEPLER_LONG_CADENCE_DAYS)
+    assert binned_time.size == pytest.approx(time.size / 14.7, rel=0.02)
+    assert not binned_gap.any()
+    assert binned_flux == pytest.approx(1.0 + 1e-3 * np.sin(binned_time), abs=2e-5)
+
+
+def test_binning_cuts_white_noise_by_the_root_of_the_bin_size():
+    rng = np.random.default_rng(3)
+    time = _two_minute_series(days=27.0)
+    flux = 1.0 + rng.normal(0.0, 1e-3, time.size)
+    _, binned_flux, _ = bin_for_features(
+        time, flux, np.zeros(time.size, dtype=bool), KEPLER_LONG_CADENCE_DAYS
+    )
+    assert np.std(binned_flux) == pytest.approx(1e-3 / np.sqrt(14.7), rel=0.1)
+
+
+def test_a_series_already_at_long_cadence_is_not_rebinned():
+    for minutes in (29.4244, 30.0):
+        time = np.arange(0.0, 10.0, minutes / 1440.0)
+        gap = np.zeros(time.size, dtype=bool)
+        assert bin_for_features(time, np.ones(time.size), gap, KEPLER_LONG_CADENCE_DAYS) is None
+
+
+def test_ten_minute_ffi_data_is_rebinned():
+    time = np.arange(0.0, 10.0, 10.0 / 1440.0)
+    gap = np.zeros(time.size, dtype=bool)
+    binned = bin_for_features(time, np.ones(time.size), gap, KEPLER_LONG_CADENCE_DAYS)
+    assert binned is not None
+    assert binned[0].size == pytest.approx(time.size / 2.94, rel=0.02)
+
+
+def test_gapped_cadences_stay_out_of_a_bin_and_gap_it_when_none_are_left():
+    time = _two_minute_series(days=1.0)
+    flux = np.ones(time.size)
+    gap = np.zeros(time.size, dtype=bool)
+    # A dip already claimed by an accepted candidate, 3 h wide.
+    claimed = (time > 0.4) & (time < 0.525)
+    flux[claimed] = 0.99
+    gap[claimed] = True
+    _, binned_flux, binned_gap = bin_for_features(
+        time, flux, gap, KEPLER_LONG_CADENCE_DAYS
+    )
+    assert binned_gap.sum() >= 5
+    assert binned_flux[binned_gap] == pytest.approx(0.99)
+    # Bins straddling the edge of the dip average their unclaimed cadences only.
+    assert binned_flux[~binned_gap] == pytest.approx(1.0)
+
+
+def test_thin_bins_at_the_edge_of_a_data_gap_are_dropped():
+    time = _two_minute_series(days=1.0)
+    # Leave 4 minutes of data stranded after a half-day hole.
+    time = np.concatenate([time[time < 0.4], [0.9003, 0.9017]])
+    flux = np.ones(time.size)
+    binned_time, _, _ = bin_for_features(
+        time, flux, np.zeros(time.size, dtype=bool), KEPLER_LONG_CADENCE_DAYS
+    )
+    assert binned_time.max() < 0.45
+
+
+def test_tess_rows_report_the_feature_cadence_and_kepler_rows_the_native_one():
+    rng = np.random.default_rng(11)
+    time = np.arange(0.0, 12.0, 2.0 / 1440.0)
+    flux = 1.0 + rng.normal(0.0, 1e-3, time.size)
+    period, epoch, duration = 2.5, 1.0, 0.12
+    in_transit = np.abs((time - epoch + 0.5 * period) % period - 0.5 * period) < (
+        0.5 * duration
+    )
+    flux[in_transit] -= 0.004
+    with contextlib.redirect_stdout(io.StringIO()):
+        native, info, _ = extract_feats._extract_single_candidate_from_arrays(
+            time, flux
+        )
+        binned, binned_info, _ = extract_feats._extract_single_candidate_from_arrays(
+            time, flux, search_profile=TESS_PROFILE
+        )
+    assert native["cadence_hours"] == pytest.approx(2.0 / 60.0, rel=1e-3)
+    assert binned["cadence_hours"] == pytest.approx(29.4244 / 60.0, rel=1e-3)
+    assert binned["period_days"] == pytest.approx(period, rel=2e-3)
+    assert binned["npts_transit_median"] < native["npts_transit_median"] / 5
+    assert binned["depth_mean_per_transit"] == pytest.approx(0.004, rel=0.25)
+    assert binned["max_mes"] > 7.1
+    # The caller's deep-event sweep and masks still get the native series.
+    assert binned_info["flux_detrended"].shape == time.shape
+    assert binned_info["mask_transit"].shape == time.shape
+    assert info["flux_detrended"].shape == time.shape
