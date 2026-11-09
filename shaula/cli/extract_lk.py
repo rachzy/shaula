@@ -12,6 +12,7 @@ import argparse
 from typing import Optional, Union
 
 from ..extract_feats import extract_features_from_lightcurve
+from ..search_profile import profile_for_mission
 from ..download_and_clean import download_and_clean_lightcurve
 from ..save import save_features
 from ..extract_feats import extract_all_features_from_csv
@@ -42,7 +43,9 @@ def run_lightkurve_extraction(
     )
 
     # Extract features using the saved CSV data
-    feats = extract_features_from_lightcurve(lc, verbose=verbose)
+    feats = extract_features_from_lightcurve(
+        lc, verbose=verbose, search_profile=profile_for_mission(mission)
+    )
     return feats
 
 

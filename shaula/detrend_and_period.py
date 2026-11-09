@@ -45,6 +45,42 @@ BLS_PEAKS_PER_BAND = 1
 # durations buy an ~8x denser period grid at the same cost (12 Kepler hosts:
 # 34 -> 36 of 44 planets, extra rows 42 -> 25). None restores the linear grid.
 GLOBAL_BLS_DURATIONS = 24
+# Series longer than this are binned for the global BLS whenever the cadence
+# is finer than a third of the shortest searched duration. Kepler long cadence
+# never is, so this only touches fast-cadence data: stitched TESS 2-min light
+# curves bin ~2.4x, and the saved points buy a period grid that much denser.
+STAGE1_BIN_MIN_POINTS = 50_000
+# Gaps longer than this many days do not count as observed time (TESS orbit
+# and sector gaps, Kepler quarter breaks). Matches the pre-BLS segment split.
+OBSERVED_GAP_DAYS = 0.5
+
+
+def observed_baseline_days(time):
+    """Days actually covered by data: the span minus every large gap."""
+    time = np.sort(np.asarray(time, dtype=float)[np.isfinite(time)])
+    if time.size < 2:
+        return 0.0
+    steps = np.diff(time)
+    cadence = float(np.median(steps))
+    gap = max(5.0 * cadence, OBSERVED_GAP_DAYS)
+    return float(np.sum(steps[steps <= gap]))
+
+
+def search_baseline_days(time, period_baseline="span"):
+    """The baseline the period range is sized from: full span or observed time."""
+    if period_baseline == "observed":
+        return observed_baseline_days(time)
+    time = np.asarray(time, dtype=float)
+    return float(np.nanmax(time) - np.nanmin(time))
+
+
+def _bin_series(time, flux, bin_width):
+    """Mean-bin a series to ``bin_width`` days, dropping empty bins."""
+    edges = np.arange(time.min(), time.max() + bin_width, bin_width)
+    f_b, _, _ = binned_statistic(time, flux, statistic="mean", bins=edges)
+    t_b, _, _ = binned_statistic(time, time, statistic="mean", bins=edges)
+    good = np.isfinite(f_b) & np.isfinite(t_b)
+    return t_b[good], f_b[good]
 
 
 def _flatten_binned_median(time, flux, window):
@@ -62,8 +98,14 @@ def _flatten_binned_median(time, flux, window):
     return flat
 
 
-def _fine_window_candidates(time, flux, period_grid, durations, oversample):
-    """Ranked BLS peaks of the fine-window pass, or [] when it does not apply."""
+def _fine_window_candidates(
+    time, flux, period_grid, durations, oversample, bin_width=None
+):
+    """Ranked BLS peaks of the fine-window pass, or [] when it does not apply.
+
+    ``bin_width`` bins the flattened series like the stage-1 search, so the
+    two passes cost the same per period.
+    """
     window = BLS_FINE_VARIABILITY_WINDOW_DAYS
     if window is None or time.size < 10:
         return []
@@ -77,6 +119,8 @@ def _fine_window_candidates(time, flux, period_grid, durations, oversample):
         f"Fine-window BLS pass: window={window:.2f} d, "
         f"durations <= {fine_durations[-1]:.3f} d"
     )
+    if bin_width is not None:
+        time, flat = _bin_series(time, flat, bin_width)
     periodogram = BoxLeastSquares(time, flat).power(
         period_grid, fine_durations, oversample=oversample
     )
@@ -330,8 +374,15 @@ def detrend_with_bls_mask(
     exclude_mask=None,
     dealias=True,
     fixed_ephemeris=False,
+    min_transit_events=3,
+    period_baseline="span",
 ):
     """Detrend a light curve and search it for one transit candidate.
+
+    ``min_transit_events`` and ``period_baseline`` bound the period range:
+    the longest period searched is the baseline over the event count, with the
+    baseline either the first-to-last span or, for ``"observed"``, the time
+    covered by data (see ``search_profile.SearchProfile``).
 
     ``exclude_mask`` marks cadences belonging to already-accepted candidates.
     They are withheld from the period search and from the trend fit, but stay
@@ -564,7 +615,11 @@ def detrend_with_bls_mask(
         # Kepler-90g at 210.6 d and h at 331.6 d, the deepest signals in that
         # system), and their unmodeled transits then get woven into spurious
         # periodicities by later iterations.
-        max_period = span_days_full / 3.0
+        # ``period_baseline="observed"`` leaves data gaps out of the baseline:
+        # sectors years apart do not make long periods searchable.
+        max_period = search_baseline_days(tTime, period_baseline) / float(
+            min_transit_events
+        )
 
     print(f"Period search range: {min_period:.3f} to {max_period:.3f} days")
 
@@ -631,17 +686,11 @@ def detrend_with_bls_mask(
     # duration: box power is preserved, per-period cost drops, and the saved
     # budget buys a denser period grid.
     bin_stage1 = max(dt_days, min_dur_floor / 3.0)
-    if bin_stage1 > 1.5 * dt_days and time_bls.size > 200000:
-        edges1 = np.arange(time_bls.min(), time_bls.max() + bin_stage1, bin_stage1)
-        f_b, _, _ = binned_statistic(
-            time_bls, flux_bls, statistic="mean", bins=edges1
-        )
-        t_b, _, _ = binned_statistic(
-            time_bls, time_bls, statistic="mean", bins=edges1
-        )
-        good_b = np.isfinite(f_b) & np.isfinite(t_b)
-        time_stage1 = t_b[good_b]
-        flux_stage1 = f_b[good_b]
+    stage1_binned = (
+        bin_stage1 > 1.5 * dt_days and time_bls.size > STAGE1_BIN_MIN_POINTS
+    )
+    if stage1_binned:
+        time_stage1, flux_stage1 = _bin_series(time_bls, flux_bls, bin_stage1)
         print(
             f"Stage-1 binning: {time_bls.size:,} -> {time_stage1.size:,} points "
             f"(bin {bin_stage1:.4f} d)"
@@ -697,7 +746,12 @@ def detrend_with_bls_mask(
         print("BLS periodogram computed successfully")
         search_candidates = rank_independent_bls_candidates(periodogram)
         fine_candidates = _fine_window_candidates(
-            time_bls, flux_bls_unflattened, period_grid, global_durations, oversample
+            time_bls,
+            flux_bls_unflattened,
+            period_grid,
+            global_durations,
+            oversample,
+            bin_width=bin_stage1 if stage1_binned else None,
         )
         if fine_candidates:
             search_candidates = _interleave_candidates(
@@ -886,13 +940,17 @@ def detrend_with_bls_mask(
                         for _k in range(2, 21):
                             cand_periods.append(float(best_period) / float(_k))
                         # Upward multiples based on baseline; a candidate m*P must
-                        # still leave >= 3 transits in the data (Kepler SOC rule).
-                        span_days = float(tTime.max() - tTime.min())
+                        # still leave >= min_transit_events transits in the data
+                        # (3 is the Kepler SOC rule).
+                        span_days = search_baseline_days(tTime, period_baseline)
                         if best_period > 0 and np.isfinite(span_days):
                             max_m = int(
                                 min(
                                     DEALIAS_MAX_MULTIPLE,
-                                    np.floor(span_days / (3.0 * best_period)),
+                                    np.floor(
+                                        span_days
+                                        / (float(min_transit_events) * best_period)
+                                    ),
                                 )
                             )
                             for m_mult in range(2, max_m + 1):

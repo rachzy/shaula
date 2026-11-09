@@ -32,6 +32,7 @@ import pandas as pd
 from ..download_and_clean import download_and_clean_lightcurve
 from ..extract_feats import extract_features_from_lightcurve
 from ..save import save_features
+from ..search_profile import profile_for_mission
 from ..utils.compare_extracted_confirmed import (
     compare_extracted_confirmed,
     find_confirmed_csv,
@@ -279,6 +280,7 @@ def main(argv: list[str] | None = None) -> int:
         include_false_candidates=args.include_false_candidates,
         label_output_candidates=args.label_output_candidates and not args.invert,
         confirmed_rows=confirmed_path,
+        search_profile=profile_for_mission(args.mission),
     )
     if args.invert and args.label_output_candidates:
         feats = label_all_false_positive(feats, FP_SOURCE_INVERTED)

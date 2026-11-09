@@ -14,6 +14,7 @@ from astropy.coordinates import SkyCoord
 from . import __version__, download_and_clean
 from .download_and_clean import download_and_clean_lightcurve
 from .extract_feats import extract_features_from_lightcurve
+from .search_profile import profile_for_mission
 from .utils.stellar_density import catalogue_stellar_density
 from .utils.stellar_properties import stellar_parameters
 from .utils.target_names import host_star_name
@@ -139,6 +140,7 @@ def extract(
         use_tls=use_tls,
         mask_eclipses=mask_eclipses,
         progress=progress,
+        search_profile=profile_for_mission(mission),
     )
 
     features = [dict(row) for row in rows]
