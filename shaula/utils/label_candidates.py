@@ -40,7 +40,14 @@ REFERENCE_DISPOSITION_LABELS = {
 # transit-like and stellar eclipse. A KOI rejected only for a centroid offset
 # or an ephemeris match looks like a planet in its own light curve, so pairing
 # with one says nothing the features can learn from.
-LIGHT_CURVE_FP_FLAGS = frozenset({"nt", "ss"})
+# ``fa`` is a TOI false alarm (TFOPWG ``FA``): the signal is not
+# astrophysical, the TESS counterpart of ``nt``. A plain TOI ``FP`` (``fp``)
+# does not say whether the eclipse is on the target or on a neighbour blended
+# into the 21 arcsecond pixel, so it stays out of this set.
+LIGHT_CURVE_FP_FLAGS = frozenset({"nt", "ss", "fa"})
+
+# fp_source prefix for a reference table with no ``catalog`` column.
+DEFAULT_REFERENCE_CATALOG = "koi"
 
 # fp_source values for rows that no reference KOI explains.
 FP_SOURCE_UNMATCHED = "unmatched"
@@ -84,6 +91,9 @@ def label_candidate_rows(
     ``UNKNOWN``, since nobody knows yet what it is. So is one pairing with a
     false positive that carries neither the ``nt`` nor the ``ss`` flag: those
     were rejected on pixel-level or other stars' data the features never see.
+    A TOI reference table (``catalog`` column ``toi``) works the same way with
+    its own flags: a false alarm (``fa``) is ``FALSE-POSITIVE`` with
+    ``fp_source`` ``toi:fa``, a plain false positive (``fp``) is ``UNKNOWN``.
     ``fp_source`` is ``unmatched`` for a false positive that pairs with nothing.
 
     A pairing at a small integer ratio of the catalog period counts as
@@ -138,7 +148,9 @@ def _reference_label(reference) -> tuple[str, str]:
     flags = flags.strip() if isinstance(flags, str) else ""
     if not LIGHT_CURVE_FP_FLAGS.intersection(flags.split("+")):
         return CANDIDATE_LABEL_UNKNOWN, ""
-    return label, f"koi:{flags}"
+    catalog = reference.get("catalog")
+    catalog = catalog.strip().lower() if isinstance(catalog, str) else ""
+    return label, f"{catalog or DEFAULT_REFERENCE_CATALOG}:{flags}"
 
 
 def label_all_false_positive(rows, fp_source: str = FP_SOURCE_INVERTED) -> list[dict]:
