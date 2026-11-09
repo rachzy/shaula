@@ -6,14 +6,18 @@ import re
 
 
 _LETTERED_PLANET_RE = re.compile(r"^(?P<star>.*\d)[b-z]$", re.IGNORECASE)
-_NUMBERED_CANDIDATE_RE = re.compile(r"^(?P<star>(?:EPIC|KIC|TIC)\s*\d+)\.\d+$", re.IGNORECASE)
+# TOI and KOI numbers name the star and take a ``.01`` suffix per candidate.
+_NUMBERED_CANDIDATE_RE = re.compile(
+    r"^(?P<star>(?:EPIC|KIC|TIC|TOI|KOI)[-\s]*\d+)\.\d+$", re.IGNORECASE
+)
 
 
 def host_star_name(target: str) -> str:
     """Return the host-star portion of a planet or candidate identifier.
 
     Examples include ``Kepler-186f`` -> ``Kepler-186`` and
-    ``EPIC201111557.01`` -> ``EPIC201111557``. Names that already identify a
+    ``EPIC201111557.01`` -> ``EPIC201111557`` and ``TOI-700.01`` ->
+    ``TOI-700``. Names that already identify a
     star, such as ``Kepler-186`` or ``HAT-P-7``, are returned unchanged.
     """
     name = str(target).strip()

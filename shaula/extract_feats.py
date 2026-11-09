@@ -4,7 +4,12 @@ import numpy as np
 from collections import OrderedDict
 from scipy.stats import skew, kurtosis
 
-from .detrend_and_period import detrend_with_bls_mask, max_physical_duration
+from .detrend_and_period import (
+    detrend_with_bls_mask,
+    max_physical_duration,
+    search_baseline_days,
+)
+from .search_profile import DEFAULT_PROFILE
 from .folded_binned_metrics import folded_binned_metrics, median_cadence_hours
 from .cdpp import calculate_cdpp
 from .sesmes import (
@@ -101,10 +106,56 @@ MAX_RECOVERED_CANDIDATES = 2
 # of them ever masked a cadence. Strings rather than the numeric convention used
 # by the two columns below, because nothing coerces them: the comparison tool
 # only touches columns the confirmed CSV also carries.
+# A series already within this factor of the feature cadence is left alone
+# (30-minute full-frame-image data under the 29.4-minute Kepler cadence).
+FEATURE_BIN_TOLERANCE = 0.75
+# Bins holding fewer than this fraction of their expected cadences are dropped:
+# a bin at the edge of a data gap averages too few points to share the noise
+# level of the rest.
+FEATURE_BIN_MIN_FILL = 0.5
+
 DETECTION_STATUS_ACCEPTED = "accepted"
 DETECTION_STATUS_PROVISIONAL = "provisional"
 DETECTION_STATUS_REJECTED = "rejected"
 DETECTION_STATUS_HARMONIC_DUPLICATE = "harmonic_duplicate"
+
+
+def bin_for_features(time, flux, gap_mask, cadence_days):
+    """Mean-bin a detrended series to ``cadence_days`` for feature measurement.
+
+    Returns ``(time, flux, gap_mask)`` or ``None`` when the series is already
+    that coarse. A bin averages its ungapped cadences only, and is itself
+    gapped when it has none, so cadences claimed by accepted candidates stay
+    out of the features exactly as they do unbinned.
+    """
+    time = np.asarray(time, dtype=float)
+    flux = np.asarray(flux, dtype=float)
+    gap_mask = np.asarray(gap_mask, dtype=bool)
+    steps = np.diff(time)
+    steps = steps[np.isfinite(steps) & (steps > 0)]
+    if not steps.size:
+        return None
+    native = float(np.median(steps))
+    if native >= FEATURE_BIN_TOLERANCE * cadence_days:
+        return None
+
+    index = np.floor((time - time[0]) / cadence_days).astype(np.int64)
+    bins, inverse = np.unique(index, return_inverse=True)
+    finite = np.isfinite(flux)
+    live = finite & ~gap_mask
+    n_finite = np.bincount(inverse, weights=finite)
+    n_live = np.bincount(inverse, weights=live)
+    sum_finite = np.bincount(inverse, weights=np.where(finite, flux, 0.0))
+    sum_live = np.bincount(inverse, weights=np.where(live, flux, 0.0))
+    # Bin centres, not mean times: an uneven count of cadences per bin would
+    # otherwise jitter the spacing the autocorrelation lags are counted in.
+    binned_time = time[0] + (bins + 0.5) * cadence_days
+    binned_gap = n_live == 0
+    with np.errstate(invalid="ignore", divide="ignore"):
+        binned_flux = np.where(binned_gap, sum_finite / n_finite, sum_live / n_live)
+
+    keep = n_finite >= FEATURE_BIN_MIN_FILL * cadence_days / native
+    return binned_time[keep], binned_flux[keep], binned_gap[keep]
 
 
 def _extract_single_candidate_from_arrays(
@@ -117,6 +168,7 @@ def _extract_single_candidate_from_arrays(
     candidate_hint=None,
     gap_mask=None,
     dealias=True,
+    search_profile=None,
 ):
     """Search and measure one candidate on the supplied light curve.
 
@@ -127,6 +179,8 @@ def _extract_single_candidate_from_arrays(
     """
     start_time = time.time()
     print("Starting feature extraction from arrays...")
+    if search_profile is None:
+        search_profile = DEFAULT_PROFILE
 
     feats = OrderedDict()
 
@@ -155,6 +209,8 @@ def _extract_single_candidate_from_arrays(
         candidate_hint=candidate_hint,
         exclude_mask=gap_arr,
         dealias=dealias,
+        min_transit_events=search_profile.min_transit_events,
+        period_baseline=search_profile.period_baseline,
     )
     # Fold- and median-based features filter non-finite samples, so blanking
     # the gapped cadences gives them the same view they had when this function
@@ -166,6 +222,27 @@ def _extract_single_candidate_from_arrays(
     period = float(bls_info.get("best_period", np.nan))
     t0 = float(bls_info.get("t0", np.nan))
     duration_days = float(bls_info.get("best_duration", np.nan))
+
+    # The search and the trend above used every cadence. From here on the
+    # features and the detection statistics see the series at the profile's
+    # feature cadence, when it has one and the data is finer.
+    search_time, search_flux = time_arr, flux_detr_full
+    rebinned = None
+    if search_profile.feature_cadence_days is not None:
+        rebinned = bin_for_features(
+            time_arr, flux_detr_full, gap_arr, search_profile.feature_cadence_days
+        )
+    if rebinned is not None:
+        time_arr, flux_detr_full, gap_arr = rebinned
+        print(
+            f"Feature cadence: {search_time.size:,} -> {time_arr.size:,} points "
+            f"({search_profile.feature_cadence_days * 1440.0:.1f} min bins)"
+        )
+        mask_transit = _periodic_mask(time_arr, period, t0, duration_days)
+        flux_features = flux_detr_full.copy()
+        flux_features[gap_arr] = np.nan
+        kept = ~gap_arr
+
     audited = _mes_optimal_duration(
         time_arr, flux_detr_full, period, t0, duration_days, gap_arr
     )
@@ -177,7 +254,7 @@ def _extract_single_candidate_from_arrays(
         duration_days = audited
         bls_info["best_duration"] = audited
         mask_transit = _periodic_mask(time_arr, period, t0, audited)
-        bls_info["mask_transit"] = mask_transit
+        bls_info["mask_transit"] = _periodic_mask(search_time, period, t0, audited)
 
     print(
         f"BLS results: P={period:.4f} days, T14={duration_days:.4f} days, t0={t0:.2f}"
@@ -185,7 +262,7 @@ def _extract_single_candidate_from_arrays(
 
     # Kept for the caller's deep-event sweep: it needs a trend-free view of the
     # same cadences to judge which leftover dips are real events.
-    bls_info["flux_detrended"] = flux_detr_full
+    bls_info["flux_detrended"] = search_flux
 
     feats["period_days"] = period
     feats["t0"] = t0
@@ -784,7 +861,14 @@ def _score_harmonic(statistics, period, epoch, duration_days, reference_time):
     return float(folded["max_mes"]), epoch, int(folded["max_mes_n_events"])
 
 
-def _harmonic_trials(statistics, period, epoch, duration_days, span_days):
+def _harmonic_trials(
+    statistics,
+    period,
+    epoch,
+    duration_days,
+    span_days,
+    min_events=MIN_OBSERVED_TRANSIT_EVENTS,
+):
     """Yield ``(max_mes, period, epoch, n_events)`` for each viable harmonic.
 
     For an integer multiple the incumbent's transits split into that many
@@ -797,9 +881,9 @@ def _harmonic_trials(statistics, period, epoch, duration_days, span_days):
         trial_period = float(period) * float(factor)
         if trial_period < MIN_SEARCH_PERIOD_DAYS:
             continue
-        if trial_period > span_days / 3.0:
+        if trial_period > span_days / float(min_events):
             continue
-        if np.floor(span_days / trial_period) < MIN_OBSERVED_TRANSIT_EVENTS:
+        if np.floor(span_days / trial_period) < min_events:
             continue
         if factor >= 1.0 and float(factor).is_integer():
             sub_phases = [
@@ -815,7 +899,7 @@ def _harmonic_trials(statistics, period, epoch, duration_days, span_days):
             score, trial_epoch, n_events = _score_harmonic(
                 statistics, trial_period, sub_phase, duration_days, reference_time
             )
-            if not np.isfinite(score) or n_events < MIN_OBSERVED_TRANSIT_EVENTS:
+            if not np.isfinite(score) or n_events < min_events:
                 continue
             if best is None or score > best[0]:
                 best = (score, trial_period, trial_epoch, n_events)
@@ -835,6 +919,7 @@ def _reconcile_accepted_harmonic(
     refine_duration=True,
     use_tls=False,
     mask_eclipses=False,
+    search_profile=None,
 ):
     """Adopt the harmonic of an accepted candidate with the best MES.
 
@@ -869,9 +954,14 @@ def _reconcile_accepted_harmonic(
     if not np.isfinite(incumbent):
         return accepted, accepted_info, "kept"
 
-    span_days = float(np.nanmax(time_values) - np.nanmin(time_values))
+    if search_profile is None:
+        search_profile = DEFAULT_PROFILE
+    min_events = search_profile.min_transit_events
+    span_days = search_baseline_days(time_values, search_profile.period_baseline)
     trials = list(
-        _harmonic_trials(statistics, period, epoch, duration_days, span_days)
+        _harmonic_trials(
+            statistics, period, epoch, duration_days, span_days, min_events
+        )
     )
     if not trials:
         return accepted, accepted_info, "kept"
@@ -908,6 +998,7 @@ def _reconcile_accepted_harmonic(
         },
         gap_mask=gap_mask,
         dealias=False,
+        search_profile=search_profile,
     )
     measured_period = float(measured_features.get("period_days", np.nan))
     drifted = (
@@ -915,7 +1006,9 @@ def _reconcile_accepted_harmonic(
         or abs(measured_period - trial_period) / trial_period
         >= PERIOD_DEDUP_TOLERANCE
     )
-    if drifted or not _candidate_passes_mes(measured_features, measured_info):
+    if drifted or not _candidate_passes_mes(
+        measured_features, measured_info, min_events=min_events
+    ):
         print(
             "Harmonic re-measure did not confirm the longer period; "
             "keeping the original candidate"
@@ -990,6 +1083,7 @@ def _recover_subthreshold_candidates(
     accepted_rows,
     threshold=RECOVERY_MES_THRESHOLD,
     limit=MAX_RECOVERED_CANDIDATES,
+    min_events=MIN_OBSERVED_TRANSIT_EVENTS,
 ):
     """Report measured peaks that missed the detection gate.
 
@@ -1006,7 +1100,9 @@ def _recover_subthreshold_candidates(
 
     eligible = []
     for features, info in latest:
-        if not _candidate_passes_mes(features, info, threshold=threshold):
+        if not _candidate_passes_mes(
+            features, info, threshold=threshold, min_events=min_events
+        ):
             continue
         if _period_already_accepted(features, accepted_rows):
             continue
@@ -1070,8 +1166,13 @@ def extract_features_from_arrays(
     confirmed_rows=None,
     *,
     progress=None,
+    search_profile=None,
 ):
     """Iteratively extract MES-qualified transit candidates from one light curve.
+
+    ``search_profile`` (a ``search_profile.SearchProfile``) sets how many
+    observed transits a detection needs and which baseline bounds the period
+    range. The default is the Kepler rule: three transits, first-to-last span.
 
     Each iteration computes one global BLS periodogram, ranks independent local
     maxima, and measures them in descending power order until one reaches the
@@ -1093,6 +1194,9 @@ def extract_features_from_arrays(
     by pairing its period against ``confirmed_rows`` (a DataFrame or a path to
     a confirmed CSV). Without a catalog every row is labelled ``UNKNOWN``.
     """
+    if search_profile is None:
+        search_profile = DEFAULT_PROFILE
+    min_events = search_profile.min_transit_events
     time_values = np.asarray(tTime)
     flux_values = np.asarray(flux)
     finite = np.isfinite(time_values) & np.isfinite(flux_values)
@@ -1138,6 +1242,7 @@ def extract_features_from_arrays(
             use_tls=use_tls,
             mask_eclipses=mask_eclipses,
             gap_mask=gapped,
+            search_profile=search_profile,
         )
         ranked_peaks = list(bls_info.get("search_candidates", []))
         # Try the queue in order of quick MES rather than BLS power. BLS power
@@ -1182,6 +1287,7 @@ def extract_features_from_arrays(
                     quick_features,
                     quick_info,
                     threshold=PROVISIONAL_MES_THRESHOLD,
+                    min_events=min_events,
                 ):
                     rejected_ephemerides.append(quick_features)
                     print(
@@ -1207,6 +1313,7 @@ def extract_features_from_arrays(
                     mask_eclipses=mask_eclipses,
                     candidate_hint=hint,
                     gap_mask=gapped,
+                    search_profile=search_profile,
                 )
                 # The de-aliaser adopts an integer multiple on a 0.98 x BLS-power
                 # tie, so a queued planet can come back at 10P with too few events
@@ -1217,7 +1324,9 @@ def extract_features_from_arrays(
                 moved = abs(
                     float(measured_features.get("period_days", np.nan)) / hint_period - 1.0
                 ) > DEALIAS_RETRY_TOLERANCE
-                if moved and not _candidate_passes_mes(measured_features, measured_info):
+                if moved and not _candidate_passes_mes(
+                    measured_features, measured_info, min_events=min_events
+                ):
                     retry_features, retry_info, _ = _extract_single_candidate_from_arrays(
                         time_values,
                         flux_values,
@@ -1227,16 +1336,21 @@ def extract_features_from_arrays(
                         mask_eclipses=mask_eclipses,
                         candidate_hint=hint,
                         gap_mask=gapped,
+                        search_profile=search_profile,
                         dealias=False,
                     )
-                    if _candidate_passes_mes(retry_features, retry_info):
+                    if _candidate_passes_mes(
+                        retry_features, retry_info, min_events=min_events
+                    ):
                         measured_features, measured_info = retry_features, retry_info
             if _period_already_accepted(measured_features, accepted_rows) or any(
                 _same_ephemeris(measured_features, previous)
                 for previous in rejected_ephemerides
             ):
                 continue
-            if _candidate_passes_mes(measured_features, measured_info):
+            if _candidate_passes_mes(
+                measured_features, measured_info, min_events=min_events
+            ):
                 accepted = measured_features
                 accepted_info = measured_info
                 break
@@ -1255,7 +1369,7 @@ def extract_features_from_arrays(
                 f"max_mes={measured_features['max_mes']:.2f}, "
                 f"events={observed_events} "
                 f"(requires MES >= {MES_DETECTION_THRESHOLD:.1f} and "
-                f">= {MIN_OBSERVED_TRANSIT_EVENTS} events)"
+                f">= {min_events} events)"
             )
 
         if accepted is None:
@@ -1269,6 +1383,7 @@ def extract_features_from_arrays(
                     accepted_rows,
                     threshold=RECOVERY_MES_THRESHOLD,
                     limit=MAX_RECOVERED_CANDIDATES,
+                    min_events=min_events,
                 )
             )
             break
@@ -1287,6 +1402,7 @@ def extract_features_from_arrays(
             refine_duration=refine_duration,
             use_tls=use_tls,
             mask_eclipses=mask_eclipses,
+            search_profile=search_profile,
         )
         if verdict == "duplicate":
             rejected_ephemerides.append(dict(accepted))
@@ -1321,7 +1437,11 @@ def extract_features_from_arrays(
         if sweep_flux is not None and np.shape(sweep_flux) == time_values.shape:
             active[
                 _unexplained_deep_event_mask(
-                    time_values, sweep_flux, active, accepted_rows
+                    time_values,
+                    sweep_flux,
+                    active,
+                    accepted_rows,
+                    min_events=min_events,
                 )
             ] = False
 
@@ -1406,6 +1526,7 @@ def extract_features_from_lightcurve(
     confirmed_rows=None,
     *,
     progress=None,
+    search_profile=None,
 ):
     """Extract candidate feature rows from a LightCurve object."""
     time = lc.time.value
@@ -1423,6 +1544,7 @@ def extract_features_from_lightcurve(
         label_output_candidates=label_output_candidates,
         confirmed_rows=confirmed_rows,
         progress=progress,
+        search_profile=search_profile,
     )
 
     # Planet radius and orbit from the star's catalogue values, when present.

@@ -14,6 +14,7 @@ from astropy.coordinates import SkyCoord
 from . import __version__, download_and_clean
 from .download_and_clean import download_and_clean_lightcurve
 from .extract_feats import extract_features_from_lightcurve
+from .search_profile import profile_for_mission
 from .utils.stellar_density import catalogue_stellar_density
 from .utils.stellar_properties import stellar_parameters
 from .utils.target_names import host_star_name
@@ -104,7 +105,13 @@ def extract(
     may raise to cancel the run.
 
     Pass ``ResolvedTarget.designation`` as ``target`` so the star extracted is
-    exactly the star resolved. ``use_tls=True`` raises ``RuntimeError`` when
+    exactly the star resolved.
+
+    ``download_all=False`` reads one quarter or sector. For TESS that is 27
+    days, which limits the search to periods of about 13 days, so TESS callers
+    should pass ``download_all=True`` to stitch every sector.
+
+    ``use_tls=True`` raises ``RuntimeError`` when
     the optional ``tls`` extra is not installed, and a ``target`` longer than
     ``MAX_QUERY_LENGTH`` raises ``ValueError``.
 
@@ -139,6 +146,7 @@ def extract(
         use_tls=use_tls,
         mask_eclipses=mask_eclipses,
         progress=progress,
+        search_profile=profile_for_mission(mission),
     )
 
     features = [dict(row) for row in rows]
