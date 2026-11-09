@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 350 passed, 19 subtests
+uv run pytest                        # tests: 350 passed, 25 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
@@ -31,7 +31,7 @@ The only module an external consumer imports (the `apps/shaula` gRPC service in 
 
 What `extract(target, mission)` does, end to end. Module paths are under `shaula/`.
 
-1. **Validate and normalise the target** (`api.py`). Reject queries over `MAX_QUERY_LENGTH`, canonicalise the mission (`Kepler`, `K2`, `TESS`), and strip a planet or candidate suffix with `utils/target_names.host_star_name` (`Kepler-186f` searches `Kepler-186`, `EPIC201111557.01` searches `EPIC201111557`).
+1. **Validate and normalise the target** (`api.py`). Reject queries over `MAX_QUERY_LENGTH`, canonicalise the mission (`Kepler`, `K2`, `TESS`), and strip a planet or candidate suffix with `utils/target_names.host_star_name` (`Kepler-186f` searches `Kepler-186`, `EPIC201111557.01` searches `EPIC201111557`, `TOI-700.01` searches `TOI-700`).
 2. **Search MAST** (`download_and_clean.search_default_product`). One product class per mission: Kepler and K2 use the official pipeline's long cadence (~29.4 min), TESS uses SPOC short cadence. Filtering happens before download so stitching never mixes authors or exposure times. The unmemoised `lk.search_lightcurve.__wrapped__` is called on purpose (see Gotchas).
 3. **Download and clean** (`download_and_clean_lightcurve`). Download one quarter/sector, or all of them and `stitch()` with `download_all=True`; then `remove_nans().normalize().remove_outliers(sigma_upper=5, sigma_lower=inf)`. Only upward outliers are clipped, because transits are downward.
 4. **Iterative multi-planet search** (`extract_feats.extract_features_from_arrays`). Up to `MAX_TRANSIT_CANDIDATES` (12) iterations. Each one searches the cadences still active, measures the strongest independent BLS peaks until one passes the MES gate, settles harmonics, then masks that candidate's transits (`TRANSIT_MASK_WIDTH` 1.5 x T14) plus any unexplained deep single events before the next iteration. This mirrors Kepler TPS "gapping" of detected transits, not a joint multi-planet fit. The event count and the period ceiling come from a `search_profile.SearchProfile` chosen by mission (`profile_for_mission`): Kepler and K2 need 3 observed transits and size the range from the first-to-last span; TESS needs 2 and uses the observed time (the span minus gaps over 0.5 d), because sectors of one star can be years apart. The arrays/CSV path uses the Kepler rule unless a profile is passed. Stops when nothing passes, fewer than 50 cadences remain, or 50% of cadences are masked.
@@ -103,6 +103,7 @@ One row per candidate. Depths are fractional flux deficits (positive = dimming);
 - `SHAULA_LIGHTCURVE_CACHE` sets the download cache. `shaula/paths.py` only resolves the directory (explicit argument, then the variable, then `None` for lightkurve's own default); `download_and_clean_lightcurve` passes it to lightkurve per call as `download_dir`. It never assigns `lightkurve.conf.cache_dir`: lightkurve ignores a `LIGHTKURVE_CACHE_DIR` environment variable, and a process-wide setting is wrong for a threaded service (concurrent calls overwrite each other, and the setting sticks to later calls).
 - `lk.search_lightcurve` is memoised without limit and would cache a transient empty result forever, so `search_default_product` calls `__wrapped__`.
 - Pass `ResolvedTarget.designation` (for example `"KIC 8120608"`) to `extract()` so the star extracted is exactly the star resolved. `resolve()` and `extract()` share one filtered, unmemoised search (`search_default_product`).
+- `download_all` defaults to `False` (one quarter or sector) for every mission, and the Antares proto's bool defaults to false too. One TESS sector is 27 days, so the search stops near 13 days; TESS callers should pass `download_all=True`. `extract_and_compare` already defaults to stitching.
 - `use_tls=True` raises `RuntimeError` before any download when the optional `tls` extra (`transitleastsquares`) is not installed.
 - A query longer than 200 characters (`MAX_QUERY_LENGTH`) raises `ValueError` in both `resolve()` and `extract()`; a mission is matched case-insensitively (`canonical_mission`).
 - Feature values in `ExtractionResult.features` are `float`, `str` or `int`. A float **may be `NaN`** (for example `planet_radius_rearth` when the light curve carries no stellar radius). Callers that serialise to JSON or protobuf must map non-finite floats themselves; Shaula keeps `NaN` deliberately because downstream pandas code relies on it.
