@@ -76,7 +76,11 @@ def parse_args():
     p.add_argument(
         "--download-all",
         action="store_true",
-        help="Download all available light curve files instead of just the first one",
+        help=(
+            "Download and stitch every quarter/sector instead of just the first "
+            "one. Recommended for TESS: one sector is 27 days, which limits the "
+            "search to periods of about 13 days"
+        ),
     )
     p.add_argument("--out-features", help="Path to output (csv or json)")
     p.add_argument("--quiet", action="store_true", help="Reduce verbosity")

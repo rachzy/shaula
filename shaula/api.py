@@ -105,7 +105,13 @@ def extract(
     may raise to cancel the run.
 
     Pass ``ResolvedTarget.designation`` as ``target`` so the star extracted is
-    exactly the star resolved. ``use_tls=True`` raises ``RuntimeError`` when
+    exactly the star resolved.
+
+    ``download_all=False`` reads one quarter or sector. For TESS that is 27
+    days, which limits the search to periods of about 13 days, so TESS callers
+    should pass ``download_all=True`` to stitch every sector.
+
+    ``use_tls=True`` raises ``RuntimeError`` when
     the optional ``tls`` extra is not installed, and a ``target`` longer than
     ``MAX_QUERY_LENGTH`` raises ``ValueError``.
 

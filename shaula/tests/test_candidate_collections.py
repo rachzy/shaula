@@ -22,6 +22,12 @@ class CandidateCollectionTests(unittest.TestCase):
             "Kepler-186f": "Kepler-186",
             "HAT-P-7b": "HAT-P-7",
             "EPIC201111557.01": "EPIC201111557",
+            "TOI-700.01": "TOI-700",
+            "TOI 270.03": "TOI 270",
+            "toi-700d": "toi-700",
+            "KOI-351.02": "KOI-351",
+            "TIC 150428135.01": "TIC 150428135",
+            "TOI-700": "TOI-700",
             "Kepler-186": "Kepler-186",
             "HAT-P-7": "HAT-P-7",
         }
