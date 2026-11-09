@@ -244,12 +244,12 @@ def test_helper_passes_default_author_and_exptime_to_the_unmemoised_function(mon
 
     fake = _FakeSearchFn()
     monkeypatch.setattr(lk, "search_lightcurve", fake)
-    author, exptime = default_product_selection("TESS")
+    author, exptime = default_product_selection("K2")
 
-    found = dac.search_default_product("TOI-178", "TESS")
+    found = dac.search_default_product("K2-18", "K2")
 
     assert fake.memoised_calls == []
-    assert fake.calls == [("TOI-178", {"mission": "TESS", "author": author, "exptime": exptime})]
+    assert fake.calls == [("K2-18", {"mission": "K2", "author": author, "exptime": exptime})]
     assert found.result == ["result"]
     assert (found.author, found.exptime) == (author, exptime)
 
