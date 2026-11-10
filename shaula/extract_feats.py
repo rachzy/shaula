@@ -16,6 +16,7 @@ from .sesmes import (
     compute_SES_MES,
     eb_check_features,
     fold_statistics,
+    mes_without_strongest_event,
     secondary_eclipse,
 )
 from .utils.ephemeris import canonical_epoch
@@ -60,6 +61,14 @@ MIN_SEARCH_PERIOD_DAYS = 0.5
 # transit is shorter than T14. See experiments/mes_accuracy/LOG.md.
 DURATION_AUDIT_FACTORS = (0.5, 2.0, 2.83, 4.0)
 DURATION_AUDIT_MARGIN = 1.1
+# A shorter trial is refused when the outer half of the refit box still dips
+# by this fraction of the core depth. A V-shaped eclipse fills its whole T14
+# (wings at ~1/3 of the core), yet its highest-MES box is about half as long:
+# TOI-1939.01 (TIC 325172035) was refit at 4.0 h, the catalogue value, and the
+# audit cut it to 2.0 h for 23% more MES, which also left the ingress and
+# egress unmasked for the next iteration. A box that really is twice too wide
+# has empty wings (ratio ~0).
+DURATION_AUDIT_WING_DEPTH_RATIO = 0.2
 
 # Deep, unexplained single events are the raw material of spurious candidates:
 # BLS happily threads a box train through a handful of them and reports a high
@@ -113,6 +122,12 @@ FEATURE_BIN_TOLERANCE = 0.75
 # a bin at the edge of a data gap averages too few points to share the noise
 # level of the rest.
 FEATURE_BIN_MIN_FILL = 0.5
+# A transit shorter than this many feature bins keeps its detection statistics
+# (duration audit, SES/MES, the gate, the secondary and odd/even folds) at the
+# native cadence. One or two bins cannot hold a box and its flanks: TOI-736.02
+# (0.56 h on 29.4-minute bins) read MES NaN with no events and was never
+# accepted, and TIC 325172035 raised in the EB checks for the same reason.
+SHORT_TRANSIT_FEATURE_BINS = 3.0
 
 DETECTION_STATUS_ACCEPTED = "accepted"
 DETECTION_STATUS_PROVISIONAL = "provisional"
@@ -226,7 +241,7 @@ def _extract_single_candidate_from_arrays(
     # The search and the trend above used every cadence. From here on the
     # features and the detection statistics see the series at the profile's
     # feature cadence, when it has one and the data is finer.
-    search_time, search_flux = time_arr, flux_detr_full
+    search_time, search_flux, search_gap = time_arr, flux_detr_full, gap_arr
     rebinned = None
     if search_profile.feature_cadence_days is not None:
         rebinned = bin_for_features(
@@ -243,8 +258,30 @@ def _extract_single_candidate_from_arrays(
         flux_features[gap_arr] = np.nan
         kept = ~gap_arr
 
+    # The series the detection statistics are built on: the feature series,
+    # unless the transit is too short for the feature bins to resolve.
+    stat_time, stat_flux, stat_gap = time_arr, flux_detr_full, gap_arr
+    native_statistics = (
+        rebinned is not None
+        and np.isfinite(duration_days)
+        and duration_days
+        < SHORT_TRANSIT_FEATURE_BINS * search_profile.feature_cadence_days
+    )
+    if native_statistics:
+        stat_time, stat_flux, stat_gap = search_time, search_flux, search_gap
+        print(
+            f"Short transit (T14 {duration_days * 24.0:.2f} h): detection "
+            "statistics at the native cadence"
+        )
+
     audited = _mes_optimal_duration(
-        time_arr, flux_detr_full, period, t0, duration_days, gap_arr
+        stat_time,
+        stat_flux,
+        period,
+        t0,
+        duration_days,
+        stat_gap,
+        keep_filled_duration=search_profile.keep_filled_duration,
     )
     if audited != duration_days:
         print(
@@ -323,18 +360,33 @@ def _extract_single_candidate_from_arrays(
     duration_hours = feats["duration_hours"]
     cdpp_interp = interp_cdpp(cdpp, duration_hours)
     print("Computing SES/MES...")
+    if native_statistics:
+        stat_cadence_hours = median_cadence_hours(stat_time[~stat_gap])
+        stat_mask = _periodic_mask(stat_time, period, t0, duration_days)
+    else:
+        stat_cadence_hours = feats["cadence_hours"]
+        stat_mask = mask_transit
     sesmes = compute_SES_MES(
-        time_arr,
-        flux_detr_full,
+        stat_time,
+        stat_flux,
         period,
         t0,
         duration_days,
-        cadence_hours=feats["cadence_hours"],
-        transit_mask=mask_transit,
-        gap_mask=gap_arr,
+        cadence_hours=stat_cadence_hours,
+        transit_mask=stat_mask,
+        gap_mask=stat_gap,
     )
     SES_arr = sesmes.get("SES", np.array([]))
     bls_info["n_mes_events"] = int(np.sum(np.isfinite(SES_arr)))
+    best_offset = sesmes.get("best_phase_offset", np.nan)
+    bls_info["mes_without_strongest_event"] = mes_without_strongest_event(
+        sesmes.get("statistics"),
+        period,
+        t0 + (best_offset if np.isfinite(best_offset) else 0.0),
+    )
+    bls_info["min_mes_without_strongest_event"] = (
+        search_profile.min_mes_without_strongest_event
+    )
     # Carries no period or epoch of its own, so the caller can re-fold it at
     # trial harmonics without rebuilding the noise model.
     bls_info["sesmes_statistics"] = sesmes.get("statistics")
@@ -508,7 +560,9 @@ def measure_eb_checks(time, flux, period, t0, duration_days, gap_mask=None):
     return eb_check_features(sesmes.get("statistics"), period, t0, duration_days)
 
 
-def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
+def _mes_optimal_duration(
+    time, flux, period, t0, duration_days, gap_mask, *, keep_filled_duration=False
+):
     """Return the trial T14 with the highest MES, keeping ties to the input.
 
     The profile and trapezoid refits in ``detrend_with_bls_mask`` fold the
@@ -517,7 +571,9 @@ def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
     from the calibrated noise model is the statistic the gate already trusts,
     and maximising it over duration is what Kepler TPS does. A trial must beat
     the incumbent by ``DURATION_AUDIT_MARGIN`` to replace it, so noise alone
-    does not move a well-fit T14.
+    does not move a well-fit T14. With ``keep_filled_duration`` (the TESS
+    profile) a shorter trial is not tried when the wings of the box are in
+    transit; see ``DURATION_AUDIT_WING_DEPTH_RATIO``.
     """
     if not (
         np.isfinite(period)
@@ -551,9 +607,14 @@ def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
 
     incumbent = score(duration_days)
     best, best_mes = duration_days, incumbent
+    wings_in_transit = keep_filled_duration and _wings_in_transit(
+        time, flux, period, t0, duration_days, gap_mask
+    )
     for factor in DURATION_AUDIT_FACTORS:
         trial = duration_days * factor
         if trial < floor or trial > ceiling:
+            continue
+        if factor < 1.0 and wings_in_transit:
             continue
         trial_mes = score(trial)
         if np.isfinite(trial_mes) and trial_mes > best_mes:
@@ -561,6 +622,37 @@ def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
     if not np.isfinite(incumbent) or best_mes >= DURATION_AUDIT_MARGIN * incumbent:
         return best
     return duration_days
+
+
+def _wings_in_transit(time, flux, period, t0, duration_days, gap_mask):
+    """True when the outer half of the T14 box is itself measurably in transit.
+
+    Compares the median depth of the wings (T14/4 to T14/2 from the centre)
+    with the core's, both against the flanks just outside the box. Undecidable
+    cases (too few points, no positive core depth) return False, which leaves
+    the MES comparison in charge.
+    """
+    time = np.asarray(time, dtype=float)
+    flux = np.asarray(flux, dtype=float)
+    usable = np.isfinite(time) & np.isfinite(flux)
+    if gap_mask is not None:
+        usable &= ~np.asarray(gap_mask, dtype=bool)
+    offset = np.abs(np.mod(time - t0 + 0.5 * period, period) - 0.5 * period)
+    core = flux[usable & (offset <= 0.25 * duration_days)]
+    wings = flux[
+        usable & (offset > 0.25 * duration_days) & (offset <= 0.5 * duration_days)
+    ]
+    flanks = flux[
+        usable & (offset > 0.75 * duration_days) & (offset <= 1.75 * duration_days)
+    ]
+    if min(core.size, wings.size, flanks.size) < 3:
+        return False
+    baseline = float(np.median(flanks))
+    core_depth = baseline - float(np.median(core))
+    wing_depth = baseline - float(np.median(wings))
+    if not (np.isfinite(core_depth) and core_depth > 0 and np.isfinite(wing_depth)):
+        return False
+    return wing_depth >= DURATION_AUDIT_WING_DEPTH_RATIO * core_depth
 
 
 def _periodic_mask(time, period, t0, duration_days, width_factor=1.0):
@@ -843,10 +935,23 @@ def _candidate_passes_mes(
     min_events=MIN_OBSERVED_TRANSIT_EVENTS,
 ):
     max_mes = float(features.get("max_mes", np.nan))
+    # A transit dims the star. On TIC 29830212 (a 3.7% eclipsing binary) four
+    # rows with a per-transit depth down to -7158 ppm were accepted at MES
+    # 16-24 from the residuals of the eclipses. A depth that could not be
+    # measured (NaN) is not held against the candidate.
+    depth = float(features.get("depth_mean_per_transit", np.nan))
+    if np.isfinite(depth) and depth <= 0:
+        return False
     if diagnostics is None:
         observed_events = min_events
     else:
         observed_events = int(diagnostics.get("n_mes_events", 0))
+        # Only where the search profile asks for it (TESS). A value that
+        # could not be measured does not fail the candidate.
+        floor = diagnostics.get("min_mes_without_strongest_event")
+        remaining = diagnostics.get("mes_without_strongest_event", np.nan)
+        if floor is not None and np.isfinite(remaining) and remaining < floor:
+            return False
     return (
         np.isfinite(max_mes)
         and max_mes >= float(threshold)
@@ -1367,7 +1472,9 @@ def extract_features_from_arrays(
             print(
                 f"Rejected BLS candidate P={measured_features['period_days']:.6f} d: "
                 f"max_mes={measured_features['max_mes']:.2f}, "
-                f"events={observed_events} "
+                f"events={observed_events}, "
+                f"without strongest event="
+                f"{float(measured_info.get('mes_without_strongest_event', np.nan)):.2f} "
                 f"(requires MES >= {MES_DETECTION_THRESHOLD:.1f} and "
                 f">= {min_events} events)"
             )

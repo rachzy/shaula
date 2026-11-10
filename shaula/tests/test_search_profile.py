@@ -317,3 +317,111 @@ def test_tess_rows_report_the_feature_cadence_and_kepler_rows_the_native_one():
     assert binned_info["flux_detrended"].shape == time.shape
     assert binned_info["mask_transit"].shape == time.shape
     assert info["flux_detrended"].shape == time.shape
+
+
+def _short_transit_series(duration_hours, period=0.948, depth=0.004):
+    rng = np.random.default_rng(1)
+    time = np.arange(0.0, 27.0, 2.0 / 1440.0)
+    flux = 1.0 + rng.normal(0.0, 1e-3, time.size)
+    phase = (time - 1.0 + 0.5 * period) % period - 0.5 * period
+    flux[np.abs(phase) < duration_hours / 48.0] -= depth
+    return time, flux
+
+
+def test_transit_shorter_than_the_feature_bins_keeps_native_statistics():
+    # TOI-736.02: 0.56 h transits on 29.4-minute bins read MES NaN, no events.
+    time, flux = _short_transit_series(0.6)
+    with contextlib.redirect_stdout(io.StringIO()):
+        feats, info, _ = extract_feats._extract_single_candidate_from_arrays(
+            time, flux, search_profile=TESS_PROFILE
+        )
+    assert feats["duration_days"] < (
+        extract_feats.SHORT_TRANSIT_FEATURE_BINS * KEPLER_LONG_CADENCE_DAYS
+    )
+    assert feats["period_days"] == pytest.approx(0.948, rel=2e-3)
+    assert feats["max_mes"] > 7.1
+    assert info["n_mes_events"] >= 20
+    assert np.isfinite(feats["even_odd_depth_diff_sigma"])
+    assert extract_feats._candidate_passes_mes(feats, info, min_events=2)
+    # The cadence-dependent features still come from the binned series.
+    assert feats["cadence_hours"] == pytest.approx(29.4244 / 60.0, rel=1e-3)
+    assert info["sesmes_statistics"]["time"].size == time.size
+
+
+def test_long_transit_statistics_stay_on_the_feature_series():
+    time, flux = _short_transit_series(3.0, period=4.1)
+    with contextlib.redirect_stdout(io.StringIO()):
+        feats, info, _ = extract_feats._extract_single_candidate_from_arrays(
+            time, flux, search_profile=TESS_PROFILE
+        )
+    assert feats["max_mes"] > 7.1
+    assert info["sesmes_statistics"]["time"].size < time.size / 5
+
+
+def test_gate_rejects_a_brightening():
+    passing = {"max_mes": 20.0, "depth_mean_per_transit": 1e-3}
+    assert extract_feats._candidate_passes_mes(passing)
+    assert not extract_feats._candidate_passes_mes(
+        {"max_mes": 20.0, "depth_mean_per_transit": -7e-3}
+    )
+    assert not extract_feats._candidate_passes_mes(
+        {"max_mes": 20.0, "depth_mean_per_transit": 0.0}
+    )
+    # An unmeasurable depth is not evidence against the candidate.
+    assert extract_feats._candidate_passes_mes(
+        {"max_mes": 20.0, "depth_mean_per_transit": float("nan")}
+    )
+    assert extract_feats._candidate_passes_mes({"max_mes": 20.0})
+
+
+def test_ingress_egress_asymmetry_is_nan_when_no_point_falls_in_transit():
+    from shaula.utils.compute_ingress_egress_asymmetry import (
+        compute_ingress_egress_asymmetry,
+    )
+
+    # Period commensurate with the cadence, epoch between samples: no cadence
+    # ever lands within 1.5 x T14 of mid-transit.
+    time = np.arange(0.0, 20.0, 0.02)
+    flux = np.ones(time.size)
+    value = compute_ingress_egress_asymmetry(time, flux, 2.0, 0.01, 0.001)
+    assert np.isnan(value)
+
+
+def _two_event_series(second_depth):
+    rng = np.random.default_rng(5)
+    time = np.arange(0.0, 27.0, 30.0 / 1440.0)
+    flux = 1.0 + rng.normal(0.0, 3e-4, time.size)
+    for centre, depth in ((6.0, 0.004), (18.0, second_depth)):
+        flux[np.abs(time - centre) < 0.1] -= depth
+    return time, flux
+
+
+def test_mes_without_strongest_event_separates_one_dip_from_a_train():
+    from shaula.sesmes import compute_SES_MES, mes_without_strongest_event
+
+    kept = {}
+    for name, second_depth in (("train", 0.004), ("single", 0.0)):
+        time, flux = _two_event_series(second_depth)
+        result = compute_SES_MES(time, flux, 12.0, 6.0, 0.2)
+        epoch = 6.0 + result["best_phase_offset"]
+        kept[name] = mes_without_strongest_event(result["statistics"], 12.0, epoch)
+        assert result["max_mes"] > 7.1
+    assert kept["train"] > 7.1
+    assert kept["single"] < 4.0
+    assert np.isnan(mes_without_strongest_event(None, 12.0, 6.0))
+
+
+def test_gate_applies_the_leave_one_out_floor_only_when_the_profile_sets_it():
+    features = {"max_mes": 12.0, "depth_mean_per_transit": 1e-3}
+    info = {"n_mes_events": 2, "mes_without_strongest_event": 1.5}
+    assert extract_feats._candidate_passes_mes(features, info, min_events=2)
+    info["min_mes_without_strongest_event"] = None
+    assert extract_feats._candidate_passes_mes(features, info, min_events=2)
+    info["min_mes_without_strongest_event"] = 4.0
+    assert not extract_feats._candidate_passes_mes(features, info, min_events=2)
+    info["mes_without_strongest_event"] = 5.0
+    assert extract_feats._candidate_passes_mes(features, info, min_events=2)
+    info["mes_without_strongest_event"] = float("nan")
+    assert extract_feats._candidate_passes_mes(features, info, min_events=2)
+    assert DEFAULT_PROFILE.min_mes_without_strongest_event is None
+    assert TESS_PROFILE.min_mes_without_strongest_event == 4.0

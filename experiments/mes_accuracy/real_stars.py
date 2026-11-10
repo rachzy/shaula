@@ -14,7 +14,7 @@ deletes the FITS files. Nothing downloaded goes into the repository.
 ``measure`` runs ``_extract_single_candidate_from_arrays`` on the catalogue
 ephemeris of each confirmed planet (the hint path: no global search), with
 the other planets' transits gapped as the iterative search would gap them.
-``--mode main`` reproduces main's noise model (series-median baseline, no
+``--mode wing`` forces the duration audit's wing check on; ``--mode main`` reproduces main's noise model (series-median baseline, no
 duration audit); ``branch`` uses the current defaults. One CSV row per
 planet goes to ``results/real_<mode>.csv``.
 """
@@ -96,11 +96,17 @@ def set_mode(mode):
         patched = functools.partial(cdpp.duration_matched_statistics, flank_durations=None)
         cdpp.duration_matched_statistics = patched
         sesmes.duration_matched_statistics = patched
-        extract_feats._mes_optimal_duration = lambda t, f, p, t0, d, g: d
+        extract_feats._mes_optimal_duration = lambda t, f, p, t0, d, g, **_: d
     elif mode == "flank":
-        extract_feats._mes_optimal_duration = lambda t, f, p, t0, d, g: d
+        extract_feats._mes_optimal_duration = lambda t, f, p, t0, d, g, **_: d
     elif mode == "gross":
         extract_feats.DURATION_AUDIT_FACTORS = (0.5, 2.0, 2.83, 4.0)
+    elif mode == "wing":
+        # The TESS profile's wing check, forced on for Kepler.
+        audit = extract_feats._mes_optimal_duration
+        extract_feats._mes_optimal_duration = lambda *args, **kwargs: audit(
+            *args, **{**kwargs, "keep_filled_duration": True}
+        )
     elif mode != "branch":
         raise ValueError(mode)
 
