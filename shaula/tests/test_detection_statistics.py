@@ -506,6 +506,47 @@ class DurationAuditTests(unittest.TestCase):
         audited = _mes_optimal_duration(time, flux, 10.0, 2.037, DURATION_DAYS, None)
         self.assertEqual(audited, DURATION_DAYS)
 
+    def test_a_v_shaped_eclipse_keeps_its_full_duration(self):
+        # TOI-1939.01: red noise makes the half-length box score >10% higher
+        # on a V, but the wings are in transit, so T14 must not be halved.
+        rng = np.random.default_rng(33)
+        time = np.arange(0.0, 300.0, CADENCE_DAYS)
+        red = np.convolve(rng.normal(0.0, 6e-4, time.size), np.ones(12) / 12, "same")
+        flux = 1.0 + rng.normal(0.0, 1e-4, time.size) + red
+        offset = np.abs(np.mod(time - 2.037 + 5.0, 10.0) - 5.0)
+        half = 0.5 * DURATION_DAYS
+        flux -= 3e-3 * np.clip(1.0 - offset / half, 0.0, None)
+        halved = _mes_optimal_duration(
+            time,
+            flux,
+            10.0,
+            2.037,
+            2.0 * DURATION_DAYS,
+            None,
+            keep_filled_duration=True,
+        )
+        self.assertEqual(halved, DURATION_DAYS)
+        audited = _mes_optimal_duration(
+            time, flux, 10.0, 2.037, DURATION_DAYS, None, keep_filled_duration=True
+        )
+        self.assertEqual(audited, DURATION_DAYS)
+        # Off by default, so the Kepler profile behaves as before.
+        default = _mes_optimal_duration(time, flux, 10.0, 2.037, DURATION_DAYS, None)
+        self.assertLess(default, DURATION_DAYS)
+
+    def test_a_box_twice_too_wide_is_still_halved(self):
+        time, flux = self._series()
+        audited = _mes_optimal_duration(
+            time,
+            flux,
+            10.0,
+            2.037,
+            2.0 * DURATION_DAYS,
+            None,
+            keep_filled_duration=True,
+        )
+        self.assertEqual(audited, DURATION_DAYS)
+
     def test_widening_stops_at_the_physical_cap(self):
         # A 1.2 d box at 60 d is longer than any host allows (cap ~0.74 d);
         # the x2 trial would fit it best, but must not be adopted.

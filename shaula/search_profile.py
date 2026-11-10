@@ -29,13 +29,16 @@ class SearchProfile:
     and the detrending still run at the native cadence. ``None`` measures at
     the native cadence. ``min_mes_without_strongest_event`` is the MES a
     candidate must keep with its highest-SES event left out; ``None`` skips
-    the test.
+    the test. ``keep_filled_duration`` stops the MES duration audit from
+    halving a refit T14 whose outer half is still in transit (V-shaped
+    eclipses); it is off by default so Kepler output is unchanged.
     """
 
     min_transit_events: int = 3
     period_baseline: str = PERIOD_BASELINE_SPAN
     feature_cadence_days: float | None = None
     min_mes_without_strongest_event: float | None = None
+    keep_filled_duration: bool = False
 
     def __post_init__(self) -> None:
         if int(self.min_transit_events) < 2:
@@ -72,6 +75,7 @@ TESS_PROFILE = SearchProfile(
     # The matched TOIs kept 4.8 or more (6.3 for the lowest accepted one, the
     # two-transit TOI-4737.01). Two equal events at MES 7.1 keep 5.0.
     min_mes_without_strongest_event=4.0,
+    keep_filled_duration=True,
 )
 
 _MISSION_PROFILES = {"tess": TESS_PROFILE}
