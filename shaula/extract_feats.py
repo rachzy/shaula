@@ -16,6 +16,7 @@ from .sesmes import (
     compute_SES_MES,
     eb_check_features,
     fold_statistics,
+    mes_without_strongest_event,
     secondary_eclipse,
 )
 from .utils.ephemeris import canonical_epoch
@@ -363,6 +364,15 @@ def _extract_single_candidate_from_arrays(
     )
     SES_arr = sesmes.get("SES", np.array([]))
     bls_info["n_mes_events"] = int(np.sum(np.isfinite(SES_arr)))
+    best_offset = sesmes.get("best_phase_offset", np.nan)
+    bls_info["mes_without_strongest_event"] = mes_without_strongest_event(
+        sesmes.get("statistics"),
+        period,
+        t0 + (best_offset if np.isfinite(best_offset) else 0.0),
+    )
+    bls_info["min_mes_without_strongest_event"] = (
+        search_profile.min_mes_without_strongest_event
+    )
     # Carries no period or epoch of its own, so the caller can re-fold it at
     # trial harmonics without rebuilding the noise model.
     bls_info["sesmes_statistics"] = sesmes.get("statistics")
@@ -882,6 +892,12 @@ def _candidate_passes_mes(
         observed_events = min_events
     else:
         observed_events = int(diagnostics.get("n_mes_events", 0))
+        # Only where the search profile asks for it (TESS). A value that
+        # could not be measured does not fail the candidate.
+        floor = diagnostics.get("min_mes_without_strongest_event")
+        remaining = diagnostics.get("mes_without_strongest_event", np.nan)
+        if floor is not None and np.isfinite(remaining) and remaining < floor:
+            return False
     return (
         np.isfinite(max_mes)
         and max_mes >= float(threshold)
@@ -1402,7 +1418,9 @@ def extract_features_from_arrays(
             print(
                 f"Rejected BLS candidate P={measured_features['period_days']:.6f} d: "
                 f"max_mes={measured_features['max_mes']:.2f}, "
-                f"events={observed_events} "
+                f"events={observed_events}, "
+                f"without strongest event="
+                f"{float(measured_info.get('mes_without_strongest_event', np.nan)):.2f} "
                 f"(requires MES >= {MES_DETECTION_THRESHOLD:.1f} and "
                 f">= {min_events} events)"
             )
