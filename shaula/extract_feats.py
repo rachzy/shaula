@@ -60,6 +60,14 @@ MIN_SEARCH_PERIOD_DAYS = 0.5
 # transit is shorter than T14. See experiments/mes_accuracy/LOG.md.
 DURATION_AUDIT_FACTORS = (0.5, 2.0, 2.83, 4.0)
 DURATION_AUDIT_MARGIN = 1.1
+# A shorter trial is refused when the outer half of the refit box still dips
+# by this fraction of the core depth. A V-shaped eclipse fills its whole T14
+# (wings at ~1/3 of the core), yet its highest-MES box is about half as long:
+# TOI-1939.01 (TIC 325172035) was refit at 4.0 h, the catalogue value, and the
+# audit cut it to 2.0 h for 23% more MES, which also left the ingress and
+# egress unmasked for the next iteration. A box that really is twice too wide
+# has empty wings (ratio ~0).
+DURATION_AUDIT_WING_DEPTH_RATIO = 0.2
 
 # Deep, unexplained single events are the raw material of spurious candidates:
 # BLS happily threads a box train through a handful of them and reports a high
@@ -579,9 +587,14 @@ def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
 
     incumbent = score(duration_days)
     best, best_mes = duration_days, incumbent
+    wings_in_transit = _wings_in_transit(
+        time, flux, period, t0, duration_days, gap_mask
+    )
     for factor in DURATION_AUDIT_FACTORS:
         trial = duration_days * factor
         if trial < floor or trial > ceiling:
+            continue
+        if factor < 1.0 and wings_in_transit:
             continue
         trial_mes = score(trial)
         if np.isfinite(trial_mes) and trial_mes > best_mes:
@@ -589,6 +602,37 @@ def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
     if not np.isfinite(incumbent) or best_mes >= DURATION_AUDIT_MARGIN * incumbent:
         return best
     return duration_days
+
+
+def _wings_in_transit(time, flux, period, t0, duration_days, gap_mask):
+    """True when the outer half of the T14 box is itself measurably in transit.
+
+    Compares the median depth of the wings (T14/4 to T14/2 from the centre)
+    with the core's, both against the flanks just outside the box. Undecidable
+    cases (too few points, no positive core depth) return False, which leaves
+    the MES comparison in charge.
+    """
+    time = np.asarray(time, dtype=float)
+    flux = np.asarray(flux, dtype=float)
+    usable = np.isfinite(time) & np.isfinite(flux)
+    if gap_mask is not None:
+        usable &= ~np.asarray(gap_mask, dtype=bool)
+    offset = np.abs(np.mod(time - t0 + 0.5 * period, period) - 0.5 * period)
+    core = flux[usable & (offset <= 0.25 * duration_days)]
+    wings = flux[
+        usable & (offset > 0.25 * duration_days) & (offset <= 0.5 * duration_days)
+    ]
+    flanks = flux[
+        usable & (offset > 0.75 * duration_days) & (offset <= 1.75 * duration_days)
+    ]
+    if min(core.size, wings.size, flanks.size) < 3:
+        return False
+    baseline = float(np.median(flanks))
+    core_depth = baseline - float(np.median(core))
+    wing_depth = baseline - float(np.median(wings))
+    if not (np.isfinite(core_depth) and core_depth > 0 and np.isfinite(wing_depth)):
+        return False
+    return wing_depth >= DURATION_AUDIT_WING_DEPTH_RATIO * core_depth
 
 
 def _periodic_mask(time, period, t0, duration_days, width_factor=1.0):
