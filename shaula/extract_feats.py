@@ -113,6 +113,12 @@ FEATURE_BIN_TOLERANCE = 0.75
 # a bin at the edge of a data gap averages too few points to share the noise
 # level of the rest.
 FEATURE_BIN_MIN_FILL = 0.5
+# A transit shorter than this many feature bins keeps its detection statistics
+# (duration audit, SES/MES, the gate, the secondary and odd/even folds) at the
+# native cadence. One or two bins cannot hold a box and its flanks: TOI-736.02
+# (0.56 h on 29.4-minute bins) read MES NaN with no events and was never
+# accepted, and TIC 325172035 raised in the EB checks for the same reason.
+SHORT_TRANSIT_FEATURE_BINS = 3.0
 
 DETECTION_STATUS_ACCEPTED = "accepted"
 DETECTION_STATUS_PROVISIONAL = "provisional"
@@ -226,7 +232,7 @@ def _extract_single_candidate_from_arrays(
     # The search and the trend above used every cadence. From here on the
     # features and the detection statistics see the series at the profile's
     # feature cadence, when it has one and the data is finer.
-    search_time, search_flux = time_arr, flux_detr_full
+    search_time, search_flux, search_gap = time_arr, flux_detr_full, gap_arr
     rebinned = None
     if search_profile.feature_cadence_days is not None:
         rebinned = bin_for_features(
@@ -243,8 +249,24 @@ def _extract_single_candidate_from_arrays(
         flux_features[gap_arr] = np.nan
         kept = ~gap_arr
 
+    # The series the detection statistics are built on: the feature series,
+    # unless the transit is too short for the feature bins to resolve.
+    stat_time, stat_flux, stat_gap = time_arr, flux_detr_full, gap_arr
+    native_statistics = (
+        rebinned is not None
+        and np.isfinite(duration_days)
+        and duration_days
+        < SHORT_TRANSIT_FEATURE_BINS * search_profile.feature_cadence_days
+    )
+    if native_statistics:
+        stat_time, stat_flux, stat_gap = search_time, search_flux, search_gap
+        print(
+            f"Short transit (T14 {duration_days * 24.0:.2f} h): detection "
+            "statistics at the native cadence"
+        )
+
     audited = _mes_optimal_duration(
-        time_arr, flux_detr_full, period, t0, duration_days, gap_arr
+        stat_time, stat_flux, period, t0, duration_days, stat_gap
     )
     if audited != duration_days:
         print(
@@ -323,15 +345,21 @@ def _extract_single_candidate_from_arrays(
     duration_hours = feats["duration_hours"]
     cdpp_interp = interp_cdpp(cdpp, duration_hours)
     print("Computing SES/MES...")
+    if native_statistics:
+        stat_cadence_hours = median_cadence_hours(stat_time[~stat_gap])
+        stat_mask = _periodic_mask(stat_time, period, t0, duration_days)
+    else:
+        stat_cadence_hours = feats["cadence_hours"]
+        stat_mask = mask_transit
     sesmes = compute_SES_MES(
-        time_arr,
-        flux_detr_full,
+        stat_time,
+        stat_flux,
         period,
         t0,
         duration_days,
-        cadence_hours=feats["cadence_hours"],
-        transit_mask=mask_transit,
-        gap_mask=gap_arr,
+        cadence_hours=stat_cadence_hours,
+        transit_mask=stat_mask,
+        gap_mask=stat_gap,
     )
     SES_arr = sesmes.get("SES", np.array([]))
     bls_info["n_mes_events"] = int(np.sum(np.isfinite(SES_arr)))
@@ -843,6 +871,13 @@ def _candidate_passes_mes(
     min_events=MIN_OBSERVED_TRANSIT_EVENTS,
 ):
     max_mes = float(features.get("max_mes", np.nan))
+    # A transit dims the star. On TIC 29830212 (a 3.7% eclipsing binary) four
+    # rows with a per-transit depth down to -7158 ppm were accepted at MES
+    # 16-24 from the residuals of the eclipses. A depth that could not be
+    # measured (NaN) is not held against the candidate.
+    depth = float(features.get("depth_mean_per_transit", np.nan))
+    if np.isfinite(depth) and depth <= 0:
+        return False
     if diagnostics is None:
         observed_events = min_events
     else:
