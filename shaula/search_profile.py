@@ -27,12 +27,15 @@ class SearchProfile:
     ``feature_cadence_days`` bins the detrended series to that cadence before
     the features and the detection statistics are measured; the period search
     and the detrending still run at the native cadence. ``None`` measures at
-    the native cadence.
+    the native cadence. ``keep_filled_duration`` stops the MES duration audit
+    from halving a refit T14 whose outer half is still in transit (V-shaped
+    eclipses); it is off by default so Kepler output is unchanged.
     """
 
     min_transit_events: int = 3
     period_baseline: str = PERIOD_BASELINE_SPAN
     feature_cadence_days: float | None = None
+    keep_filled_duration: bool = False
 
     def __post_init__(self) -> None:
         if int(self.min_transit_events) < 2:
@@ -62,6 +65,7 @@ TESS_PROFILE = SearchProfile(
     min_transit_events=2,
     period_baseline=PERIOD_BASELINE_OBSERVED,
     feature_cadence_days=KEPLER_LONG_CADENCE_DAYS,
+    keep_filled_duration=True,
 )
 
 _MISSION_PROFILES = {"tess": TESS_PROFILE}

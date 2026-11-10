@@ -517,16 +517,33 @@ class DurationAuditTests(unittest.TestCase):
         half = 0.5 * DURATION_DAYS
         flux -= 3e-3 * np.clip(1.0 - offset / half, 0.0, None)
         halved = _mes_optimal_duration(
-            time, flux, 10.0, 2.037, 2.0 * DURATION_DAYS, None
+            time,
+            flux,
+            10.0,
+            2.037,
+            2.0 * DURATION_DAYS,
+            None,
+            keep_filled_duration=True,
         )
         self.assertEqual(halved, DURATION_DAYS)
-        audited = _mes_optimal_duration(time, flux, 10.0, 2.037, DURATION_DAYS, None)
+        audited = _mes_optimal_duration(
+            time, flux, 10.0, 2.037, DURATION_DAYS, None, keep_filled_duration=True
+        )
         self.assertEqual(audited, DURATION_DAYS)
+        # Off by default, so the Kepler profile behaves as before.
+        default = _mes_optimal_duration(time, flux, 10.0, 2.037, DURATION_DAYS, None)
+        self.assertLess(default, DURATION_DAYS)
 
     def test_a_box_twice_too_wide_is_still_halved(self):
         time, flux = self._series()
         audited = _mes_optimal_duration(
-            time, flux, 10.0, 2.037, 2.0 * DURATION_DAYS, None
+            time,
+            flux,
+            10.0,
+            2.037,
+            2.0 * DURATION_DAYS,
+            None,
+            keep_filled_duration=True,
         )
         self.assertEqual(audited, DURATION_DAYS)
 

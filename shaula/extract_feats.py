@@ -274,7 +274,13 @@ def _extract_single_candidate_from_arrays(
         )
 
     audited = _mes_optimal_duration(
-        stat_time, stat_flux, period, t0, duration_days, stat_gap
+        stat_time,
+        stat_flux,
+        period,
+        t0,
+        duration_days,
+        stat_gap,
+        keep_filled_duration=search_profile.keep_filled_duration,
     )
     if audited != duration_days:
         print(
@@ -544,7 +550,9 @@ def measure_eb_checks(time, flux, period, t0, duration_days, gap_mask=None):
     return eb_check_features(sesmes.get("statistics"), period, t0, duration_days)
 
 
-def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
+def _mes_optimal_duration(
+    time, flux, period, t0, duration_days, gap_mask, *, keep_filled_duration=False
+):
     """Return the trial T14 with the highest MES, keeping ties to the input.
 
     The profile and trapezoid refits in ``detrend_with_bls_mask`` fold the
@@ -553,7 +561,9 @@ def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
     from the calibrated noise model is the statistic the gate already trusts,
     and maximising it over duration is what Kepler TPS does. A trial must beat
     the incumbent by ``DURATION_AUDIT_MARGIN`` to replace it, so noise alone
-    does not move a well-fit T14.
+    does not move a well-fit T14. With ``keep_filled_duration`` (the TESS
+    profile) a shorter trial is not tried when the wings of the box are in
+    transit; see ``DURATION_AUDIT_WING_DEPTH_RATIO``.
     """
     if not (
         np.isfinite(period)
@@ -587,7 +597,7 @@ def _mes_optimal_duration(time, flux, period, t0, duration_days, gap_mask):
 
     incumbent = score(duration_days)
     best, best_mes = duration_days, incumbent
-    wings_in_transit = _wings_in_transit(
+    wings_in_transit = keep_filled_duration and _wings_in_transit(
         time, flux, period, t0, duration_days, gap_mask
     )
     for factor in DURATION_AUDIT_FACTORS:
