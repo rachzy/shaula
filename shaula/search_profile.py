@@ -27,14 +27,17 @@ class SearchProfile:
     ``feature_cadence_days`` bins the detrended series to that cadence before
     the features and the detection statistics are measured; the period search
     and the detrending still run at the native cadence. ``None`` measures at
-    the native cadence. ``keep_filled_duration`` stops the MES duration audit
-    from halving a refit T14 whose outer half is still in transit (V-shaped
+    the native cadence. ``min_mes_without_strongest_event`` is the MES a
+    candidate must keep with its highest-SES event left out; ``None`` skips
+    the test. ``keep_filled_duration`` stops the MES duration audit from
+    halving a refit T14 whose outer half is still in transit (V-shaped
     eclipses); it is off by default so Kepler output is unchanged.
     """
 
     min_transit_events: int = 3
     period_baseline: str = PERIOD_BASELINE_SPAN
     feature_cadence_days: float | None = None
+    min_mes_without_strongest_event: float | None = None
     keep_filled_duration: bool = False
 
     def __post_init__(self) -> None:
@@ -57,6 +60,7 @@ DEFAULT_PROFILE = SearchProfile()
 # Two transits, as in the TESS SPOC search; the baseline is the observed time
 # because sectors of one star can be years apart (TOI-270: ~190 d of data over
 # a 2,660 d span, which the span rule searched out to 887 d).
+# Kepler keeps the default (no leave-one-out test): it is unvalidated there.
 # Features are measured at Kepler's long cadence so a TESS row means what a
 # Kepler row means: the autocorrelation lags, points per transit, flux moments
 # and outlier fractions all depend on the cadence, and 2-minute data would
@@ -65,6 +69,12 @@ TESS_PROFILE = SearchProfile(
     min_transit_events=2,
     period_baseline=PERIOD_BASELINE_OBSERVED,
     feature_cadence_days=KEPLER_LONG_CADENCE_DAYS,
+    # With two transits allowed, one deep systematic plus a noise dip passes
+    # the 7.1 gate: 62 of 85 rows on the 20-star TOI test set matched nothing,
+    # and about 25 of them kept less than MES 4 without their strongest event.
+    # The matched TOIs kept 4.8 or more (6.3 for the lowest accepted one, the
+    # two-transit TOI-4737.01). Two equal events at MES 7.1 keep 5.0.
+    min_mes_without_strongest_event=4.0,
     keep_filled_duration=True,
 )
 

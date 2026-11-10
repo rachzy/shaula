@@ -200,6 +200,36 @@ def fold_statistics(statistics, period, epoch, duration_days=None):
     return out
 
 
+def mes_without_strongest_event(statistics, period, epoch):
+    """MES of the fold at ``epoch`` with its highest-SES event left out.
+
+    A periodic signal keeps most of its MES when any one transit is dropped
+    (a factor sqrt((n - 1) / n) for equal events). A box train threaded
+    through one deep systematic and a few noise dips does not: nearly all of
+    its MES is that one event. ``epoch`` should include the phase offset
+    ``max_mes`` was found at. NaN with fewer than two events.
+    """
+    if statistics is None or statistics["time"].size == 0:
+        return np.nan
+    if not (np.isfinite(period) and period > 0 and np.isfinite(epoch)):
+        return np.nan
+    _, _, indices, event_ses = _fold_components(
+        statistics, float(period), float(epoch), statistics["cadence_days"] / 2.0
+    )
+    finite = np.isfinite(event_ses)
+    if np.sum(finite) < 2:
+        return np.nan
+    numerator = statistics["N"][indices][finite]
+    denominator = statistics["D"][indices][finite]
+    strongest = int(np.argmax(event_ses[finite]))
+    rest = np.ones(numerator.size, dtype=bool)
+    rest[strongest] = False
+    denominator_sum = float(np.sum(denominator[rest]))
+    if not (np.isfinite(denominator_sum) and denominator_sum > 0):
+        return np.nan
+    return float(np.sum(numerator[rest]) / np.sqrt(denominator_sum))
+
+
 # Trial secondaries centred closer than this many T14 to the primary are not
 # scanned. The primary's wings leak into neighbouring boxes; with only the box
 # itself excluded, 8 of the 11 confirmed Kepler planets (of 56 checked) with an

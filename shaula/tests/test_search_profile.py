@@ -385,3 +385,43 @@ def test_ingress_egress_asymmetry_is_nan_when_no_point_falls_in_transit():
     flux = np.ones(time.size)
     value = compute_ingress_egress_asymmetry(time, flux, 2.0, 0.01, 0.001)
     assert np.isnan(value)
+
+
+def _two_event_series(second_depth):
+    rng = np.random.default_rng(5)
+    time = np.arange(0.0, 27.0, 30.0 / 1440.0)
+    flux = 1.0 + rng.normal(0.0, 3e-4, time.size)
+    for centre, depth in ((6.0, 0.004), (18.0, second_depth)):
+        flux[np.abs(time - centre) < 0.1] -= depth
+    return time, flux
+
+
+def test_mes_without_strongest_event_separates_one_dip_from_a_train():
+    from shaula.sesmes import compute_SES_MES, mes_without_strongest_event
+
+    kept = {}
+    for name, second_depth in (("train", 0.004), ("single", 0.0)):
+        time, flux = _two_event_series(second_depth)
+        result = compute_SES_MES(time, flux, 12.0, 6.0, 0.2)
+        epoch = 6.0 + result["best_phase_offset"]
+        kept[name] = mes_without_strongest_event(result["statistics"], 12.0, epoch)
+        assert result["max_mes"] > 7.1
+    assert kept["train"] > 7.1
+    assert kept["single"] < 4.0
+    assert np.isnan(mes_without_strongest_event(None, 12.0, 6.0))
+
+
+def test_gate_applies_the_leave_one_out_floor_only_when_the_profile_sets_it():
+    features = {"max_mes": 12.0, "depth_mean_per_transit": 1e-3}
+    info = {"n_mes_events": 2, "mes_without_strongest_event": 1.5}
+    assert extract_feats._candidate_passes_mes(features, info, min_events=2)
+    info["min_mes_without_strongest_event"] = None
+    assert extract_feats._candidate_passes_mes(features, info, min_events=2)
+    info["min_mes_without_strongest_event"] = 4.0
+    assert not extract_feats._candidate_passes_mes(features, info, min_events=2)
+    info["mes_without_strongest_event"] = 5.0
+    assert extract_feats._candidate_passes_mes(features, info, min_events=2)
+    info["mes_without_strongest_event"] = float("nan")
+    assert extract_feats._candidate_passes_mes(features, info, min_events=2)
+    assert DEFAULT_PROFILE.min_mes_without_strongest_event is None
+    assert TESS_PROFILE.min_mes_without_strongest_event == 4.0
