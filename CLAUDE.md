@@ -6,7 +6,7 @@
 
 ```bash
 uv sync                              # install
-uv run pytest                        # tests: 393 passed, 25 subtests
+uv run pytest                        # tests: 407 passed, 25 subtests
 uv run ruff check <paths>            # lint only the files you touch
 ```
 
@@ -14,6 +14,7 @@ uv run ruff check <paths>            # lint only the files you touch
 - Tests live in `shaula/tests/`. Older ones are `unittest.TestCase` classes run under pytest; the `api` tests are plain pytest functions.
 - One third-party `UserWarning` from lightkurve/oktopus fires on any import of the package. It is not a regression.
 - `python -m shaula.scripts.add_eb_checks <dir> --workers N` fills the EB check columns into older feature CSVs via `extract_feats.measure_eb_checks`: it detrends around each row's ephemeris with `detrend_with_bls_mask(..., fixed_ephemeris=True)` (no search, no refit) and gaps the CSV's other accepted rows. Inverted CSVs get the `data/koi` cut and flip first. Existing cells are kept byte-for-byte.
+- `python -m shaula.scripts.relabel_unmatched <dir> --targets <list.csv>...` takes a second look at rows labelled `FALSE-POSITIVE` only because nothing matched (`fp_source` `unmatched`). A row at a simple harmonic (integers up to 3, 1%) of a reference signal of its star, or within 10% of an otherwise unmatched one at a similar depth, follows that reference: `CONFIRMED` if no other row recovered the planet, the catalogue's false-alarm label, else `UNKNOWN`. A planet-viable row (accepted, `max_mes` >= 10, not carried by one event, plausible duration, above 1.3 x the star's best inverted-pass MES, not EB-like) becomes `UNKNOWN`. It writes copies to `<dir>-relabelled` with `candidate_label_original` and `relabel_reason`, plus `relabel_changes.csv`; the source CSVs are never changed.
 - CLIs: `shaula-extract-lk` (download by target name, then extract) and `shaula-extract-csv` (extract from a saved light-curve CSV with `time`/`flux` columns). Validation scripts run as modules, e.g. `python -m shaula.scripts.get_literature_data Kepler-90` and `python -m shaula.scripts.compare_confirmed_and_extracted`.
 
 ## Public surface: `shaula/api.py`
