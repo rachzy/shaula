@@ -32,6 +32,9 @@ class SearchProfile:
     the test. ``keep_filled_duration`` stops the MES duration audit from
     halving a refit T14 whose outer half is still in transit (V-shaped
     eclipses); it is off by default so Kepler output is unchanged.
+    ``prefer_shared_events_to_more_transits`` reorders the queued peaks so a
+    peak with at most three transits is tried after any passing peak that
+    claims one of the same transits with more of them.
     """
 
     min_transit_events: int = 3
@@ -39,6 +42,7 @@ class SearchProfile:
     feature_cadence_days: float | None = None
     min_mes_without_strongest_event: float | None = None
     keep_filled_duration: bool = False
+    prefer_shared_events_to_more_transits: bool = False
 
     def __post_init__(self) -> None:
         if int(self.min_transit_events) < 2:
@@ -76,6 +80,11 @@ TESS_PROFILE = SearchProfile(
     # two-transit TOI-4737.01). Two equal events at MES 7.1 keep 5.0.
     min_mes_without_strongest_event=4.0,
     keep_filled_duration=True,
+    # Two planets in two sectors years apart: a period that pairs one transit
+    # of each can out-score either planet. On TOI-1806, 13.22 d (3 events,
+    # quick MES 10.4) was tried before 8.196 d (6 events, 10.1), and its mask
+    # took the transits both real planets needed.
+    prefer_shared_events_to_more_transits=True,
 )
 
 _MISSION_PROFILES = {"tess": TESS_PROFILE}
