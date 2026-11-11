@@ -340,6 +340,13 @@ def duration_matched_statistics(
     counts = right - left
     expected_points = max(1.0, duration_days / cadence_days)
     minimum_points = max(2, int(np.ceil(min_coverage * expected_points)))
+    # A box centred on a cadence of a regular grid holds an odd number of
+    # points, 2 floor(T14 / 2 cadence) + 1. For T14 of 3.75 to 4 cadences the
+    # coverage rule asks for 4 and every box held 3, so SES/MES were all NaN
+    # (TOI-5349.01 and TOI-1468.01, T14 ~1.9 h on 29.4 min feature bins). Never
+    # ask for more than a full box can hold; boxes valid before stay valid.
+    centred_points = 2 * int(np.floor(half_duration / cadence_days + 1e-9)) + 1
+    minimum_points = max(2, min(minimum_points, centred_points))
 
     prefix_deficit = np.concatenate(([0.0], np.cumsum(deficit)))
     prefix_excluded = np.concatenate(
