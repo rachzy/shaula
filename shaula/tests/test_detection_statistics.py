@@ -506,6 +506,47 @@ class DurationAuditTests(unittest.TestCase):
         audited = _mes_optimal_duration(time, flux, 10.0, 2.037, DURATION_DAYS, None)
         self.assertEqual(audited, DURATION_DAYS)
 
+    def test_a_v_shaped_eclipse_keeps_its_full_duration(self):
+        # TOI-1939.01: red noise makes the half-length box score >10% higher
+        # on a V, but the wings are in transit, so T14 must not be halved.
+        rng = np.random.default_rng(33)
+        time = np.arange(0.0, 300.0, CADENCE_DAYS)
+        red = np.convolve(rng.normal(0.0, 6e-4, time.size), np.ones(12) / 12, "same")
+        flux = 1.0 + rng.normal(0.0, 1e-4, time.size) + red
+        offset = np.abs(np.mod(time - 2.037 + 5.0, 10.0) - 5.0)
+        half = 0.5 * DURATION_DAYS
+        flux -= 3e-3 * np.clip(1.0 - offset / half, 0.0, None)
+        halved = _mes_optimal_duration(
+            time,
+            flux,
+            10.0,
+            2.037,
+            2.0 * DURATION_DAYS,
+            None,
+            keep_filled_duration=True,
+        )
+        self.assertEqual(halved, DURATION_DAYS)
+        audited = _mes_optimal_duration(
+            time, flux, 10.0, 2.037, DURATION_DAYS, None, keep_filled_duration=True
+        )
+        self.assertEqual(audited, DURATION_DAYS)
+        # Off by default, so the Kepler profile behaves as before.
+        default = _mes_optimal_duration(time, flux, 10.0, 2.037, DURATION_DAYS, None)
+        self.assertLess(default, DURATION_DAYS)
+
+    def test_a_box_twice_too_wide_is_still_halved(self):
+        time, flux = self._series()
+        audited = _mes_optimal_duration(
+            time,
+            flux,
+            10.0,
+            2.037,
+            2.0 * DURATION_DAYS,
+            None,
+            keep_filled_duration=True,
+        )
+        self.assertEqual(audited, DURATION_DAYS)
+
     def test_widening_stops_at_the_physical_cap(self):
         # A 1.2 d box at 60 d is longer than any host allows (cap ~0.74 d);
         # the x2 trial would fit it best, but must not be adopted.
@@ -667,6 +708,72 @@ class SparseCadenceSearchTests(unittest.TestCase):
         flux[((time - 120.1) / 0.55 % 1.0) < 0.3] -= 3e-3
         with contextlib.redirect_stdout(io.StringIO()):
             detrend_with_bls_mask(time, flux)
+
+
+# Kepler long cadence, which is also the TESS profile's feature cadence.
+LONG_CADENCE_DAYS = 29.4244 / 1440.0
+
+
+def _regular_noise_series(seed=7, span_days=60.0, sigma=3e-4):
+    rng = np.random.default_rng(seed)
+    time = np.arange(0.0, span_days, LONG_CADENCE_DAYS)
+    return time, 1.0 + rng.normal(0.0, sigma, time.size)
+
+
+def test_every_resolved_duration_has_valid_boxes():
+    # A box centred on a cadence of a regular series holds an odd number of
+    # points, so a duration of 3.75 to 4 cadences can never reach the four
+    # that 80% coverage of its nominal length asks for. Every box used to be
+    # rejected there and MES came back NaN (TOI-5349.01, T14 = 1.92 h).
+    time, flux = _regular_noise_series()
+    empty = []
+    for cadences in np.arange(2.0, 12.0001, 0.05):
+        statistics = duration_matched_statistics(
+            time,
+            flux,
+            duration_hours=cadences * LONG_CADENCE_DAYS * 24.0,
+            cadence_hours=LONG_CADENCE_DAYS * 24.0,
+        )
+        if not np.any(statistics["valid"]):
+            empty.append(round(float(cadences), 2))
+    assert empty == []
+
+
+def test_transit_of_nearly_four_cadences_has_finite_mes():
+    time, flux = _regular_noise_series(seed=11)
+    period, epoch = 3.318, 1.0
+    duration_days = 3.9 * LONG_CADENCE_DAYS
+    flux = flux - 0.01 * _transit_mask(time, period, epoch, duration_days)
+    with contextlib.redirect_stdout(io.StringIO()):
+        result = compute_SES_MES(
+            time,
+            flux,
+            period,
+            epoch,
+            duration_days,
+            cadence_hours=LONG_CADENCE_DAYS * 24.0,
+            transit_mask=_transit_mask(time, period, epoch, duration_days),
+        )
+    assert np.isfinite(result["MES"])
+    assert result["max_mes"] > 7.1
+
+
+def test_coverage_floor_still_rejects_boxes_missing_points():
+    # The cap only lowers the floor to what a full box holds; a box that has
+    # lost a cadence to a gap is still short and stays invalid.
+    time, flux = _regular_noise_series()
+    keep = np.ones(time.size, dtype=bool)
+    keep[500] = False
+    statistics = duration_matched_statistics(
+        time[keep],
+        flux[keep],
+        duration_hours=3.9 * LONG_CADENCE_DAYS * 24.0,
+        cadence_hours=LONG_CADENCE_DAYS * 24.0,
+    )
+    neighbours = np.abs(statistics["time"] - time[500]) < 1.5 * LONG_CADENCE_DAYS
+    assert np.sum(neighbours) == 2
+    assert not np.any(statistics["valid"][neighbours])
+    assert np.any(statistics["valid"])
 
 
 if __name__ == "__main__":

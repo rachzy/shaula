@@ -1,0 +1,39 @@
+file,period_days,max_mes,detection_status,rule,reason,old_label,old_fp_source,new_label,new_fp_source,matched_target,matched_period_ratio
+TIC100504381_20261110.csv,5.420776193731423,9.199652121549219,accepted,catalogue-related,direct of TOI at 5.46278 d,FALSE-POSITIVE,unmatched,FALSE-POSITIVE,toi:fa,TOI-2231.01,direct
+TIC100504381_20261110.csv,5.779378701835373,8.483621592757093,accepted,catalogue-related,within 10% of matched row at 5.44877 d; similar depth,FALSE-POSITIVE,unmatched,FALSE-POSITIVE,toi:fa,TOI-2231.01,near
+TIC112395568_20261111.csv,0.8122267512989293,11.552449459732099,accepted,planet-viable,passes every test,FALSE-POSITIVE,unmatched,UNKNOWN,,,
+TIC143350972_20261111.csv,1.0891533123306503,8.966098183774475,accepted,catalogue-related,direct of TOI at 1.08170 d,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-440.01,direct
+TIC159244568_20261111.csv,14.327757906765337,7.1999248108173886,accepted,catalogue-related,within 10% of matched row at 15.43075 d; similar depth,FALSE-POSITIVE,unmatched,FALSE-POSITIVE,toi:fa,TOI-2078.01,near
+TIC159244568_20261111.csv,14.791329788859693,8.94718043940992,accepted,catalogue-related,within 10% of matched row at 15.43075 d; similar depth,FALSE-POSITIVE,unmatched,FALSE-POSITIVE,toi:fa,TOI-2078.01,near
+TIC159244568_20261111.csv,46.567525839294255,6.211169970266382,provisional,catalogue-related,3P of matched row at 15.43075 d,FALSE-POSITIVE,unmatched,FALSE-POSITIVE,toi:fa,TOI-2078.01,3P
+TIC199289712_20261111.csv,1.0194225825205077,8.497915252123628,accepted,catalogue-related,within 10% of matched row at 1.00925 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-7086.01,near
+TIC2016376984_20261111.csv,54.893294171979385,14.756232966675078,accepted,planet-viable,passes every test,FALSE-POSITIVE,unmatched,UNKNOWN,,,
+TIC20182165_20261110.csv,2.1088665221550595,10.609505413794189,accepted,planet-viable,passes every test,FALSE-POSITIVE,unmatched,UNKNOWN,,,
+TIC20182165_20261110.csv,5.2835281441091055,6.886853138242135,provisional,catalogue-related,within 10% of matched row at 4.91608 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-1830.01,near
+TIC20182165_20261110.csv,7.396795318656312,8.856670988355594,accepted,catalogue-related,3P/2 of matched row at 4.91608 d,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-1830.01,3P/2
+TIC239977528_20261111.csv,28.465470878814557,11.340045780175263,accepted,catalogue-related,within 10% of TOI at 30.15849 d; similar depth; TOI already claimed by another row,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-5110.01,near
+TIC253030300_20261111.csv,2.172886655554214,11.75447444103191,accepted,catalogue-related,within 10% of matched row at 2.13679 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-3795.01,near
+TIC253030300_20261111.csv,2.1895916669944984,7.458708938413277,accepted,catalogue-related,within 10% of matched row at 2.13679 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-3795.01,near
+TIC253030300_20261111.csv,2.2059427871838566,10.888868072194153,accepted,catalogue-related,within 10% of matched row at 2.13679 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-3795.01,near
+TIC267489265_20261111.csv,0.5502471089720322,9.02367825228802,accepted,catalogue-related,within 10% of matched row at 0.51355 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-1132.01,near
+TIC267489265_20261111.csv,1.504276257026853,8.399376727877256,accepted,catalogue-related,within 10% of TOI at 1.55030 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-1132.01,near
+TIC276360911_20261110.csv,0.503579365093813,10.835564615588211,accepted,catalogue-related,2P/3 of matched row at 0.75533 d,FALSE-POSITIVE,unmatched,FALSE-POSITIVE,toi:fa,TOI-1382.01,2P/3
+TIC277128619_20261111.csv,75.73604954759917,12.169995697105096,accepted,planet-viable,passes every test,FALSE-POSITIVE,unmatched,UNKNOWN,,,
+TIC277871306_20261111.csv,1.9489179739740206,7.650634665008172,accepted,catalogue-related,P/2 of matched row at 3.92260 d,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-2664.01,P/2
+TIC291732201_20261111.csv,19.81194537136986,13.109428670796564,accepted,planet-viable,passes every test,FALSE-POSITIVE,unmatched,UNKNOWN,,,
+TIC294500964_20261110.csv,5.533157379745012,6.875600162561107,provisional,catalogue-related,within 10% of matched row at 5.43047 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-2550.01,near
+TIC311183180_20261111.csv,17.449680582513672,51.6713240307974,accepted,catalogue-related,direct of matched row at 17.55597 d,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-550.01,direct
+TIC317060587_20261110.csv,27.045176727271254,12.522671414985927,accepted,catalogue-related,3P/2 of matched row at 18.18451 d; TOI already claimed by another row,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-1052.01,3P/2
+TIC348755723_20261111.csv,16.6253242554025,12.935730932591754,accepted,planet-viable,passes every test,FALSE-POSITIVE,unmatched,UNKNOWN,,,
+TIC370745311_20261110.csv,0.6489899667109472,14.475985169817369,accepted,catalogue-related,within 10% of matched row at 0.62629 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-1047.01,near
+TIC374180079_20261111.csv,20.03315823192005,17.69089681137626,accepted,catalogue-related,within 10% of TOI at 19.48348 d; similar depth; TOI already claimed by another row,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-5520.02,near
+TIC38686737_20261111.csv,1.109316184854836,7.166237114516595,accepted,catalogue-related,within 10% of matched row at 1.13059 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-432.01,near
+TIC39077574_20261111.csv,6.678440601908572,6.4807934537184835,provisional,catalogue-related,within 10% of TOI at 7.14040 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-3825.01,near
+TIC450327768_20261110.csv,5.7667809782279775,13.169400936059455,accepted,catalogue-related,within 10% of TOI at 5.34326 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-1788.01,near
+TIC459850897_20261110.csv,0.7254694073562756,12.14733772063942,accepted,catalogue-related,within 10% of matched row at 0.79802 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-3503.01,near
+TIC459850897_20261110.csv,0.8705621321880814,13.21715854965532,accepted,catalogue-related,within 10% of matched row at 0.79802 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-3503.01,near
+TIC459850897_20261110.csv,1.0881979171121945,10.611086630172188,accepted,catalogue-related,within 10% of TOI at 1.18827 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-3503.01,near
+TIC62530991_20261110.csv,4.132309045411446,9.736483584736018,accepted,catalogue-related,within 10% of matched row at 4.02665 d; similar depth,FALSE-POSITIVE,unmatched,UNKNOWN,,TOI-2585.01,near
+TIC73723286_20261110.csv,49.73926736829676,13.620825479477363,accepted,planet-viable,passes every test,FALSE-POSITIVE,unmatched,UNKNOWN,,,
+TIC87597187_20261111.csv,2.034030334884959,9.040007710191118,accepted,catalogue-related,direct of TOI at 2.04494 d,FALSE-POSITIVE,unmatched,FALSE-POSITIVE,toi:fa,TOI-3740.01,direct
+TIC93125144_20261111.csv,9.08799054898657,11.095154868668768,accepted,catalogue-related,3P/2 of matched row at 6.05934 d,FALSE-POSITIVE,unmatched,FALSE-POSITIVE,toi:fa,TOI-523.01,3P/2

@@ -1,0 +1,2 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags,catalog
+TOI-1637.01,4.076682089033624,2458793.115209,0.18295855367642425,4.391005288234182,0.01046278047283965,,,,,,1.5579718212849776,1.6430200338363647,,,FALSE POSITIVE,fp,toi

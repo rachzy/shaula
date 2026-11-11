@@ -36,6 +36,10 @@ def compute_ingress_egress_asymmetry(time, flux_detr, period, t0, dur_days, nbin
     # Find minimum
     transit_profile = med_profile[transit_mask]
     transit_centers = bin_centers[transit_mask]
+    # A transit narrower than the cadence can leave every phase bin inside the
+    # window empty (TIC 325172035: T14 0.39 h on 29.4-minute bins).
+    if not np.any(np.isfinite(transit_profile)):
+        return np.nan
     min_idx = np.nanargmin(transit_profile)
     min_phase = transit_centers[min_idx]
 

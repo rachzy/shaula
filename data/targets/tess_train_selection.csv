@@ -1,0 +1,425 @@
+tic_id,group,object_name,disposition,period_days,radius_rearth,depth_ppm,duration_hours,toi_snr,tmag,teff,sptype,n_sectors,reason,comment,stratum,lc_author,lc_sectors,lc_exptime_s,est_min,fold
+TIC73649615,A,TOI-756.01,CP,1.23926,3.18,2917,1.09,18.6,12.56,3614.0,M,4,"short period (<3 d), 3.2 Re",,A-short,SPOC,5,120,40.0,5
+TIC73717937,A,TOI-819.01,KP,16.25468,9.68,4950,4.74,25.0,11.75,5846.0,G,3,"moderate SNR (25) planet, 9.7 Re at 16.3 d",,A-moderate,SPOC,7,120,56.0,2
+TIC159781361,A,TOI-2019.01,CP,15.34682,4.0,665,6.42,14.0,9.61,5588.0,G,6,"small planet (4.00 Re) at 15.3 d, modest SNR",,A-small,SPOC,5,120,40.0,5
+TIC16288184,A,TOI-1049.01,KP,2.18053,16.7,16400,2.94,63.0,11.07,6599.0,F,3,"short period (<3 d), 16.7 Re",,A-short,SPOC,3,120,24.0,2
+TIC204650483,A,TOI-4551.01,CP,9.9563,8.32,1024,10.47,9.0,9.03,4956.0,K,2,"hot Jupiter (8.3 Re, 10.0 d), EB look-alike",,A-hot,SPOC,3,120,24.0,2
+TIC376353509,A,TOI-1648.01,CP,7.33157,2.77,893,1.29,15.0,9.58,4871.6,K,6,"small planet (2.77 Re) at 7.3 d, modest SNR",,A-small,SPOC,4,120,32.0,5
+TIC256722647,A,TOI-4329.01,CP,2.92248,21.03,5722,5.56,112.9,11.88,5520.0,G,11,"short period (<3 d), 21.0 Re",,A-short,SPOC,8,120,64.0,3
+TIC176899385,A,TOI-1373.01,KP,3.853,15.4,8913,3.23,236.0,10.0,6893.4,F,4,"hot Jupiter (15.4 Re, 3.9 d), EB look-alike",,A-hot,SPOC,2,120,16.0,2
+TIC435339558,A,TOI-6962.01,KP,21.99036,4.6,1122,3.87,7.2,11.22,5294.0,G,5,long period (22 d),,A-long,SPOC,5,120,40.0,3
+TIC271749758,A,TOI-6970.01,KP,11.71445,11.53,12764,3.51,9.0,13.94,5165.0,K,1,"moderate SNR (9) planet, 11.5 Re at 11.7 d",,A-moderate,SPOC,4,120,32.0,5
+TIC122375047,A,TOI-6088.01,KP,9.28667,2.7,714,3.26,7.3,11.4,5511.0,G,4,"small planet (2.70 Re) at 9.3 d, modest SNR",,A-small,SPOC,6,120,48.0,5
+TIC404340025,A,TOI-834.01,KP,2.67555,16.34,14341,3.23,321.5,10.7,6783.0,F,4,"short period (<3 d), 16.3 Re",,A-short,SPOC,6,120,48.0,2
+TIC347329162,A,TOI-1809.01,KP,4.61705,12.47,12210,3.56,109.0,11.54,5797.0,G,2,"hot Jupiter (12.5 Re, 4.6 d), EB look-alike",,A-hot,SPOC,2,120,16.0,1
+TIC434226736,A,TOI-5095.01,KP,3.48455,4.21,13706,0.92,20.9,13.03,3204.0,M,3,"moderate SNR (21) planet, 4.2 Re at 3.5 d",,A-moderate,SPOC,3,120,24.0,3
+TIC281196902,A,TOI-3755.01,CP,5.54558,10.34,8040,3.12,20.1,12.08,5354.0,G,3,"hot Jupiter (10.3 Re, 5.5 d), EB look-alike",,A-hot,SPOC,3,120,24.0,1
+TIC48451130,A,TOI-4571.01,KP,30.35998,11.21,19348,6.08,32.6,13.76,4815.0,K,4,long period (30 d),,A-long,SPOC,8,120,64.0,2
+TIC176314383,A,TOI-2719.01,CP,3.37594,6.04,1270,3.54,10.0,12.07,5701.0,G,2,"moderate SNR (10) planet, 6.0 Re at 3.4 d",,A-moderate,SPOC,1,120,8.0,2
+TIC106402532,A,TOI-733.01,CP,4.88479,1.95,478,2.51,17.0,8.84,5969.0,G,3,"small planet (1.95 Re) at 4.9 d, modest SNR",,A-small,SPOC,6,120,48.0,2
+TIC453064665,A,TOI-6043.01,KP,2.64521,12.78,10457,3.06,33.0,11.89,5596.0,G,1,"short period (<3 d), 12.8 Re",,A-short,SPOC,3,120,24.0,4
+TIC375942197,A,TOI-5815.01,KP,3.89938,15.26,6492,5.19,26.1,11.54,6152.0,F,1,"hot Jupiter (15.3 Re, 3.9 d), EB look-alike",,A-hot,SPOC,2,120,16.0,4
+TIC239977528,A,TOI-5110.01,CP,30.15849,11.21,2293,3.85,23.0,10.26,6083.0,F,6,long period (30 d),,A-long,SPOC,4,120,32.0,3
+TIC368287008,A,TOI-2015.01,CP,3.34914,5.38,7210,1.21,10.0,12.84,3223.0,M,2,"moderate SNR (10) planet, 5.4 Re at 3.3 d",,A-moderate,SPOC,3,120,24.0,3
+TIC257774438,A,TOI-4648.01,KP,15.38866,2.54,407,4.33,8.8,8.97,6101.0,F,3,"small planet (2.54 Re) at 15.4 d, modest SNR",,A-small,SPOC,3,120,24.0,4
+TIC138820713,A,TOI-5730.01,CP,1.92712,1.43,899,1.45,9.6,11.16,3572.0,M,2,"short period (<3 d), 1.4 Re",,A-short,SPOC,2,120,16.0,2
+TIC157266693,A,TOI-1929.01,KP,3.85376,14.71,18650,3.39,73.0,13.16,5697.0,G,3,"hot Jupiter (14.7 Re, 3.9 d), EB look-alike",,A-hot,SPOC,6,120,48.0,4
+TIC91987762,A,TOI-1898.01,CP,45.52215,9.71,3029,4.38,95.8,7.41,6303.91,F,5,long period (46 d),,A-long,SPOC,5,120,40.0,5
+TIC174328045,A,TOI-6651.01,CP,5.05697,5.09,795,3.4,18.0,9.61,5818.9,G,3,"moderate SNR (18) planet, 5.1 Re at 5.1 d",,A-moderate,SPOC,1,120,8.0,2
+TIC62483237,A,TOI-139.01,CP,11.07086,2.33,1150,2.19,12.7,9.36,4356.0,K,3,"small planet (2.33 Re) at 11.1 d, modest SNR",,A-small,SPOC,5,120,40.0,2
+TIC446549906,A,TOI-2107.01,CP,2.45457,14.18,19250,2.39,64.0,11.38,5565.0,G,2,"short period (<3 d), 14.2 Re",,A-short,SPOC,5,120,40.0,5
+TIC90850770,A,TOI-2207.01,CP,8.00049,10.97,4607,4.67,35.6,10.97,6146.0,F,2,"hot Jupiter (11.0 Re, 8.0 d), EB look-alike",,A-hot,SPOC,3,120,24.0,4
+TIC302773669,A,TOI-1573.01,KP,21.21646,13.14,6499,3.04,277.0,7.64,5925.0,G,7,long period (21 d),,A-long,SPOC,8,120,64.0,3
+TIC176279915,A,TOI-5289.01,CP,3.44113,4.9,2660,2.67,11.0,11.89,5244.0,G,2,"moderate SNR (11) planet, 4.9 Re at 3.4 d",,A-moderate,SPOC,2,120,16.0,5
+TIC39699648,A,TOI-1778.01,CP,6.52739,2.9,415,3.12,13.1,8.46,6023.0,F,2,"small planet (2.90 Re) at 6.5 d, modest SNR",,A-small,SPOC,2,120,16.0,3
+TIC428699140,A,TOI-3082.01,CP,1.9268,3.43,2260,1.4,19.0,11.77,4249.0,K,2,"short period (<3 d), 3.4 Re",,A-short,SPOC,2,120,16.0,4
+TIC376939759,A,TOI-4532.01,KP,5.81765,11.65,9178,2.58,13.0,13.01,5633.4,G,3,"hot Jupiter (11.6 Re, 5.8 d), EB look-alike",,A-hot,SPOC,3,120,24.0,5
+TIC447061717,A,TOI-1231.01,CP,24.2455,3.88,6261,3.37,60.6,10.26,3535.0,M,5,long period (24 d),,A-long,SPOC,7,120,56.0,1
+TIC330690135,A,TOI-5170.01,KP,14.7565,5.74,2238,4.94,12.9,11.56,5790.7,G,4,"moderate SNR (13) planet, 5.7 Re at 14.8 d",,A-moderate,SPOC,4,120,32.0,4
+TIC413248763,A,TOI-562.01,CP,3.9306,1.27,1048,1.2,29.0,8.74,3505.0,M,3,"small planet (1.27 Re) at 3.9 d, modest SNR",,A-small,SPOC,5,120,40.0,4
+TIC362249359,A,TOI-833.01,CP,1.04189,1.39,465,1.27,16.2,10.15,3965.0,K,7,"short period (<3 d), 1.4 Re",,A-short,SPOC,8,120,64.0,1
+TIC468987719,A,TOI-491.01,KP,3.33268,14.48,17008,3.12,197.0,12.77,5645.0,G,7,"hot Jupiter (14.5 Re, 3.3 d), EB look-alike",,A-hot,SPOC,8,120,64.0,1
+TIC164280385,A,TOI-6174.01,CP,3.52573,7.44,4435,3.46,10.0,13.25,5638.1,G,2,"moderate SNR (10) planet, 7.4 Re at 3.5 d",,A-moderate,SPOC,1,120,8.0,5
+TIC286916251,A,TOI-1794.01,CP,8.76555,3.33,573,4.03,17.5,9.7,5707.0,G,6,"small planet (3.33 Re) at 8.8 d, modest SNR",,A-small,SPOC,6,120,48.0,4
+TIC283419843,A,TOI-5818.01,KP,2.60527,17.85,11140,4.25,19.8,12.54,5916.0,G,1,"short period (<3 d), 17.9 Re",,A-short,SPOC,2,120,16.0,3
+TIC26054627,A,TOI-5349.01,CP,3.31767,9.43,25010,1.8,25.0,13.81,3640.0,M,3,"hot Jupiter (9.4 Re, 3.3 d), EB look-alike",,A-hot,SPOC,2,120,16.0,5
+TIC163539739,A,TOI-1278.01,CP,14.47511,8.7,9619,1.62,23.1,11.78,3841.0,M,3,"moderate SNR (23) planet, 8.7 Re at 14.5 d",,A-moderate,SPOC,6,120,48.0,1
+TIC52005579,A,TOI-6251.01,CP,12.76147,0.97,1215,1.05,9.5,10.18,3376.0,M,4,"small planet (0.97 Re) at 12.8 d, modest SNR",,A-small,SPOC,5,120,40.0,3
+TIC444013020,A,TOI-2547.01,KP,2.31142,13.19,14975,2.75,340.5,11.3,5785.79,G,6,"short period (<3 d), 13.2 Re",,A-short,SPOC,7,120,56.0,4
+TIC411608801,A,TOI-1494.01,CP,5.0268,13.05,6473,2.74,116.5,10.3,6434.0,F,4,"hot Jupiter (13.0 Re, 5.0 d), EB look-alike",,A-hot,SPOC,3,120,24.0,3
+TIC120255950,A,TOI-4584.01,KP,31.57868,4.87,2119,2.13,19.1,10.61,5696.0,G,4,long period (32 d),,A-long,SPOC,7,120,56.0,4
+TIC282485660,A,TOI-5005.01,CP,6.30847,6.0,3690,2.87,22.0,11.13,5840.0,G,2,"moderate SNR (22) planet, 6.0 Re at 6.3 d",,A-moderate,SPOC,2,120,16.0,4
+TIC435339847,A,TOI-4544.01,KP,8.20009,2.8,1080,2.46,10.7,11.29,4865.6,K,6,"small planet (2.80 Re) at 8.2 d, modest SNR",,A-small,SPOC,6,120,48.0,3
+TIC37168957,A,TOI-545.01,KP,1.90009,15.05,25717,2.31,28.3,14.25,5440.0,G,2,"short period (<3 d), 15.0 Re",,A-short,SPOC,3,120,24.0,1
+TIC248111245,A,TOI-770.01,KP,4.63705,15.3,7766,4.82,33.6,12.33,6438.0,F,3,"hot Jupiter (15.3 Re, 4.6 d), EB look-alike",,A-hot,SPOC,5,120,40.0,2
+TIC360156606,A,TOI-1227.01,CP,27.36138,6.45,20691,4.06,13.6,13.8,3050.0,M,5,long period (27 d),,A-long,SPOC,7,120,56.0,5
+TIC47244580,A,TOI-6450.01,CP,3.60927,6.68,6975,2.38,30.0,12.9,4823.0,K,3,"moderate SNR (30) planet, 6.7 Re at 3.6 d",,A-moderate,SPOC,1,120,8.0,4
+TIC317060587,A,TOI-1052.01,CP,9.1398,3.06,358,3.09,10.6,9.02,5958.2,G,2,"small planet (3.06 Re) at 9.1 d, modest SNR",,A-small,SPOC,8,120,64.0,1
+TIC373693175,A,TOI-1810.01,KP,1.32735,15.47,18850,2.08,248.0,11.63,5555.05,G,2,"short period (<3 d), 15.5 Re",,A-short,SPOC,3,120,24.0,3
+TIC268823307,A,TOI-2182.01,KP,3.54845,15.22,7022,4.51,30.4,12.77,6295.0,F,5,"hot Jupiter (15.2 Re, 3.5 d), EB look-alike",,A-hot,SPOC,7,120,56.0,5
+TIC277128619,A,TOI-4994.01,CP,21.49215,9.1,5960,4.2,34.0,11.95,5520.0,G,4,long period (21 d),,A-long,SPOC,7,120,56.0,1
+TIC263179590,A,TOI-2498.01,CP,3.73824,4.77,1316,2.98,13.5,10.84,5938.0,G,2,"moderate SNR (13) planet, 4.8 Re at 3.7 d",,A-moderate,SPOC,3,120,24.0,1
+TIC149845414,A,TOI-2545.01,CP,7.99404,2.56,405,4.27,11.5,8.91,5846.29,G,2,"small planet (2.56 Re) at 8.0 d, modest SNR",,A-small,SPOC,4,120,32.0,2
+TIC119585136,A,TOI-5634.01,CP,2.20548,9.67,28280,1.63,10.0,14.98,3770.0,M,1,"short period (<3 d), 9.7 Re",,A-short,QLP,1,600,2.0,1
+TIC61538902,A,TOI-752.01,KP,5.74813,13.14,12259,2.66,137.2,11.37,5900.0,G,4,"hot Jupiter (13.1 Re, 5.7 d), EB look-alike",,A-hot,SPOC,8,120,64.0,3
+TIC124029677,A,TOI-5153.01,CP,20.91084,11.35,5936,4.48,34.0,11.21,6408.0,F,2,long period (21 d),,A-long,SPOC,3,120,24.0,5
+TIC58542531,A,TOI-1683.01,CP,3.05752,2.49,1118,1.38,26.2,9.79,4402.0,K,5,"small planet (2.49 Re) at 3.1 d, modest SNR",,A-small,SPOC,5,120,40.0,1
+TIC7020254,A,TOI-4316.01,KP,20.27303,10.44,17182,3.65,201.0,12.75,5742.0,G,5,long period (20 d),,A-long,SPOC,6,120,48.0,4
+TIC24358417,A,TOI-2338.01,CP,22.65396,12.28,11530,3.47,55.0,11.7,5523.0,G,3,long period (23 d),,A-long,SPOC,3,120,24.0,4
+TIC343019899,A,TOI-1386.01,CP,25.83864,4.31,1806,5.21,25.0,10.06,5769.0,G,8,long period (26 d),,A-long,SPOC,6,120,48.0,2
+TIC306996324,A,TOI-776.02,CP,8.24661,1.77,1071,2.41,18.5,9.74,3806.0,M,3,"small planet (1.77 Re) at 8.2 d, modest SNR (multi-planet host)",,A-multi,SPOC,6,120,48.0,2
+TIC306996324,A,TOI-776.01,CP,15.66533,2.1,1318,2.99,17.2,9.74,3806.0,M,3,"small planet (2.10 Re) at 15.7 d, modest SNR (multi-planet host)",,A-multi,SPOC,6,120,48.0,2
+TIC127530399,A,TOI-822.02,CP,1.01153,2.33,641,1.62,8.9,11.11,4775.0,K,2,"short period (<3 d), 2.3 Re (multi-planet host)",,A-multi,SPOC,4,120,32.0,4
+TIC127530399,A,TOI-822.01,KP,7.13351,10.48,18038,3.14,160.5,11.11,4775.0,K,3,"hot Jupiter (10.5 Re, 7.1 d), EB look-alike (multi-planet host)",,A-multi,SPOC,4,120,32.0,4
+TIC273690178,A,TOI-7396.02,KP,7.64173,4.6,2304,3.24,9.8,12.99,5359.0,G,6,"moderate SNR (10) planet, 4.6 Re at 7.6 d (multi-planet host)",,A-multi,SPOC,6,120,48.0,5
+TIC273690178,A,TOI-7396.01,KP,14.85899,6.4,4164,2.89,9.7,12.99,5359.0,G,4,"moderate SNR (10) planet, 6.4 Re at 14.9 d (multi-planet host)",,A-multi,SPOC,6,120,48.0,5
+TIC407966340,A,TOI-554.02,CP,3.04404,1.33,83,1.35,11.5,6.44,6337.87,F,6,"small planet (1.33 Re) at 3.0 d, modest SNR (multi-planet host)",,A-multi,SPOC,6,120,48.0,4
+TIC407966340,A,TOI-554.01,CP,7.04916,2.85,301,3.5,29.3,6.44,6337.87,F,6,"small planet (2.85 Re) at 7.0 d, modest SNR (multi-planet host)",,A-multi,SPOC,6,120,48.0,4
+TIC352682207,A,TOI-4010.03,CP,1.34831,3.19,1206,1.76,11.9,11.52,4888.0,K,4,"short period (<3 d), 3.2 Re (multi-planet host)",,A-multi,SPOC,4,120,32.0,2
+TIC352682207,A,TOI-4010.01,CP,5.41462,6.61,4983,2.94,25.6,11.52,4888.0,K,4,"moderate SNR (26) planet, 6.6 Re at 5.4 d (multi-planet host)",,A-multi,SPOC,4,120,32.0,2
+TIC352682207,A,TOI-4010.02,CP,14.70917,6.55,5048,3.63,18.9,11.52,4888.0,K,4,"moderate SNR (19) planet, 6.5 Re at 14.7 d (multi-planet host)",,A-multi,SPOC,4,120,32.0,2
+TIC75878355,A,TOI-2134.01,CP,9.22921,3.22,1606,2.82,111.0,7.79,4406.0,K,8,"high-SNR planet, 3.2 Re at 9.2 d (multi-planet host)",,A-multi,SPOC,8,120,64.0,5
+TIC75878355,A,TOI-2134.02,CP,95.85316,5.96,5975,5.02,54.0,7.79,4406.0,K,8,long period (96 d) (multi-planet host),,A-multi,SPOC,8,120,64.0,5
+TIC27491137,A,TOI-2076.01,CP,10.35636,2.41,924,3.48,12.5,8.37,5149.6,K,3,"small planet (2.41 Re) at 10.4 d, modest SNR (multi-planet host)",,A-multi,SPOC,4,120,32.0,3
+TIC27491137,A,TOI-2076.03,CP,21.0153,3.78,2072,4.32,47.0,8.37,5149.6,K,3,"small planet (3.78 Re) at 21.0 d, modest SNR (multi-planet host)",,A-multi,SPOC,4,120,32.0,3
+TIC27491137,A,TOI-2076.02,CP,35.12575,3.17,2066,2.84,32.0,8.37,5149.6,K,3,"small planet (3.17 Re) at 35.1 d, modest SNR (multi-planet host)",,A-multi,SPOC,4,120,32.0,3
+TIC350293646,A,TOI-2548.02,CP,1.4469,4.99,549,0.78,9.0,10.05,5238.0,G,2,"short period (<3 d), 5.0 Re (multi-planet host)",,A-multi,SPOC,3,120,24.0,4
+TIC350293646,A,TOI-2548.01,KP,8.5235,12.08,18942,2.44,190.0,10.05,5238.0,G,2,"hot Jupiter (12.1 Re, 8.5 d), EB look-alike (multi-planet host)",,A-multi,SPOC,3,120,24.0,4
+TIC118798035,A,TOI-7510.01,CP,11.53173,11.66,3881,4.81,20.5,11.29,5586.0,G,4,"moderate SNR (20) planet, 11.7 Re at 11.5 d (multi-planet host)",,A-multi,SPOC,2,120,16.0,2
+TIC118798035,A,TOI-7510.02,CP,22.571,9.25,5726,5.2,28.6,11.29,5586.0,G,4,long period (23 d) (multi-planet host),,A-multi,SPOC,2,120,16.0,2
+TIC118798035,A,TOI-7510.03,CP,48.86217,6.32,4221,4.97,21.7,11.29,5586.0,G,4,long period (49 d) (multi-planet host),,A-multi,SPOC,2,120,16.0,2
+TIC243185500,A,TOI-1468.02,CP,1.88053,1.45,1214,1.19,15.6,10.89,3382.0,M,3,"short period (<3 d), 1.5 Re (multi-planet host)",,A-multi,SPOC,5,120,40.0,2
+TIC243185500,A,TOI-1468.01,CP,15.53244,2.01,2937,1.76,19.7,10.89,3382.0,M,3,"small planet (2.01 Re) at 15.5 d, modest SNR (multi-planet host)",,A-multi,SPOC,5,120,40.0,2
+TIC453211454,A,TOI-509.01,CP,9.05882,2.68,875,3.34,32.0,7.93,5560.26,G,5,"small planet (2.68 Re) at 9.1 d, modest SNR (multi-planet host)",,A-multi,SPOC,5,120,40.0,1
+TIC453211454,A,TOI-509.02,CP,21.40031,3.0,961,5.38,24.1,7.93,5560.26,G,5,"small planet (3.00 Re) at 21.4 d, modest SNR (multi-planet host)",,A-multi,SPOC,5,120,40.0,1
+TIC374180079,A,TOI-5520.01,KP,14.69808,3.18,1898,3.74,17.8,10.63,4362.0,K,5,"small planet (3.18 Re) at 14.7 d, modest SNR (multi-planet host)",,A-multi,SPOC,6,120,48.0,3
+TIC374180079,A,TOI-5520.02,KP,19.48348,3.55,1510,4.67,14.8,10.63,4362.0,K,5,"small planet (3.55 Re) at 19.5 d, modest SNR (multi-planet host)",,A-multi,SPOC,6,120,48.0,3
+TIC153951307,A,TOI-1238.02,CP,0.76458,1.24,395,1.07,12.5,11.26,3853.0,M,8,"ultra-short period (<3 d), 1.2 Re (multi-planet host)",,A-multi,SPOC,8,120,64.0,4
+TIC153951307,A,TOI-1238.01,CP,3.29477,2.52,1324,1.75,24.9,11.26,3853.0,M,8,"small planet (2.52 Re) at 3.3 d, modest SNR (multi-planet host)",,A-multi,SPOC,8,120,64.0,4
+TIC257605131,A,TOI-451.02,CP,1.85866,1.93,498,2.05,10.0,10.27,5481.0,G,3,"short period (<3 d), 1.9 Re (multi-planet host)",,A-multi,SPOC,5,120,40.0,5
+TIC257605131,A,TOI-451.03,CP,9.19108,2.73,941,3.06,9.8,10.27,5481.0,G,3,"small planet (2.73 Re) at 9.2 d, modest SNR (multi-planet host)",,A-multi,SPOC,5,120,40.0,5
+TIC257605131,A,TOI-451.01,CP,16.36487,3.92,2075,4.05,14.5,10.27,5481.0,G,3,"small planet (3.92 Re) at 16.4 d, modest SNR (multi-planet host)",,A-multi,SPOC,5,120,40.0,5
+TIC142748283,A,TOI-2096.01,CP,3.11907,1.62,2965,1.16,9.0,13.48,3285.0,M,8,"small planet (1.62 Re) at 3.1 d, modest SNR (multi-planet host)",,A-multi,SPOC,8,120,64.0,3
+TIC142748283,A,TOI-2096.02,CP,6.38782,2.04,5857,1.46,15.5,13.48,3285.0,M,8,"small planet (2.04 Re) at 6.4 d, modest SNR (multi-planet host)",,A-multi,SPOC,8,120,64.0,3
+TIC164767175,A,TOI-266.01,CP,10.75112,2.08,586,2.86,14.6,9.46,5784.0,G,3,"small planet (2.08 Re) at 10.8 d, modest SNR (multi-planet host)",,A-multi,SPOC,4,120,32.0,1
+TIC164767175,A,TOI-266.02,CP,19.6051,1.98,591,4.16,10.9,9.46,5784.0,G,3,"small planet (1.98 Re) at 19.6 d, modest SNR (multi-planet host)",,A-multi,SPOC,4,120,32.0,1
+TIC355867695,A,TOI-1260.01,CP,3.12746,2.58,1332,1.98,17.0,10.81,4225.0,K,5,"small planet (2.58 Re) at 3.1 d, modest SNR (multi-planet host)",,A-multi,SPOC,7,120,56.0,1
+TIC355867695,A,TOI-1260.02,CP,7.49316,2.77,1651,1.93,15.9,10.81,4225.0,K,5,"small planet (2.77 Re) at 7.5 d, modest SNR (multi-planet host)",,A-multi,SPOC,7,120,56.0,1
+TIC355867695,A,TOI-1260.03,CP,49.82517,3.83,2059,3.87,10.8,10.81,4225.0,K,5,"small planet (3.83 Re) at 49.8 d, modest SNR (multi-planet host)",,A-multi,SPOC,7,120,56.0,1
+TIC42883782,A,TOI-5788.02,CP,6.33461,1.53,330,3.34,9.0,9.61,5664.0,G,4,"small planet (1.53 Re) at 6.3 d, modest SNR (multi-planet host)",,A-multi,SPOC,3,120,24.0,5
+TIC42883782,A,TOI-5788.01,CP,16.21343,1.99,530,3.55,11.0,9.61,5664.0,G,4,"small planet (1.99 Re) at 16.2 d, modest SNR (multi-planet host)",,A-multi,SPOC,3,120,24.0,5
+TIC404518509,C,TOI-4320.01,CP,25.12902,1.93,465,4.27,14.0,8.6,5871.0,G,4,planet sharing its light curve with a TOI false positive,,C,SPOC,7,120,56.0,2
+TIC404518509,C,TOI-4320.02,FA,46.40937,2.19,436,4.82,7.1,8.6,5871.0,G,4,FA on a planet host,two transits; actual period likely shorter than 742.55 days; possible multi; determined to be part of 25 days transitting planet identified with other alerted T,C,SPOC,7,120,56.0,2
+TIC143022742,B,TOI-4323.01,FA,14.67627,2.85,3500,3.23,9.2,12.53,3414.0,M,2,"[B0] false alarm (not astrophysical), 2.9 Re at 14.7 d",potential L1 planet; low SNR; fit appears to be underestimating depth; centroid offset but not centered on anything; TFOP retired as FA,B0,SPOC,2,120,16.0,1
+TIC219401954,B,TOI-765.01,FA,0.86148,2.51,287,1.29,8.3,9.65,5724.7,G,1,"[B0] false alarm (not astrophysical), 2.5 Re at 0.9 d",Low SNR; possible secondary; not recovered in QLP or later SPOC sectors despite additional observations,B0,SPOC,14,120,112.0,3
+TIC13499636,B,TOI-1275.01,FA,11.32468,4.29,1938,5.97,7.2,10.6,5518.0,G,1,"[B0] false alarm (not astrophysical), 4.3 Re at 11.3 d",Possible single transit (first event).,B0,SPOC,3,120,24.0,4
+TIC344926234,B,TOI-634.01,FA,0.49359,1.73,247,1.55,7.4,9.13,5872.0,G,1,"[B0] false alarm (not astrophysical), 1.7 Re at 0.5 d",Diff Image Quality flagged as unreliable,B0,SPOC,5,120,40.0,1
+TIC102283403,B,TOI-896.01,FA,3.52985,3.21,560,1.91,9.0,9.09,6627.0,F,1,"[B0] false alarm (not astrophysical), 3.2 Re at 3.5 d",marginal signal; unable to be recovered in later sectors; retired as TFOP FA,B0,SPOC,1,120,8.0,1
+TIC298073824,B,TOI-1447.01,FA,1.22731,3.61,66,4.81,10.1,8.1,6906.0,F,9,"[B0] false alarm (not astrophysical), 3.6 Re at 1.2 d",Possibly stellar variability; possible phase modulations (~10s of ppm); retired as TFOP FA,B0,SPOC,11,120,88.0,1
+TIC367607434,B,TOI-1542.01,FA,8.2916,6.72,470,3.36,9.0,8.4,5119.0,K,2,"[B0] false alarm (not astrophysical), 6.7 Re at 8.3 d",momentum dump according to astronet,B0,SPOC,3,120,24.0,5
+TIC87597187,B,TOI-3740.01,FA,2.04494,21.32,29540,2.73,82.0,12.88,6247.6,F,1,"[B0] false alarm (not astrophysical), 21.3 Re at 2.0 d",found in faint-star QLP search,B0,SPOC,2,120,16.0,2
+TIC262457587,B,TOI-6656.01,FA,0.82195,,11452,2.15,128.4,10.32,3866.3,M,6,"[B0] false alarm (not astrophysical), unknown radius at 0.8 d",nearby M dwarf in visual binary; bright neighbor to NW; not found by observers; retired as TFOP FA,B0,TESS-SPOC,1,200,2.0,3
+TIC100504381,B,TOI-2231.01,FA,5.46278,19.58,2982,1.27,45.0,8.56,,?,2,"[B0] false alarm (not astrophysical), 19.6 Re at 5.5 d",no stellar parameters; TFOP FA; the phantom in a split with 1989628303 and 1989628301,B0,SPOC,4,120,32.0,4
+TIC68035558,B,TOI-3917.01,FA,8.32898,,6010,2.98,20.0,11.48,,?,1,"[B0] false alarm (not astrophysical), unknown radius at 8.3 d",found in faint-star QLP search; demoted as artifact in TICv8.2,B0,QLP,3,200/600/1800,6.0,2
+TIC2016376984,B,TOI-3920.01,FA,2.31794,15.74,13140,1.68,41.0,12.75,5770.0,G,3,"[B0] false alarm (not astrophysical), 15.7 Re at 2.3 d",V-shaped; found in faint-star QLP search,B0,QLP,8,200/1800,16.0,3
+TIC43064903,B,TOI-1276.01,FA,6.26117,1.35,4005,2.04,11.1,12.54,3145.0,M,2,"[B0] false alarm (not astrophysical), 1.3 Re at 6.3 d",TFOP FA; retired as NEB,B0,SPOC,7,120,56.0,4
+TIC310981412,B,TOI-1790.01,FA,9.62517,2.03,540,3.73,9.0,10.27,6149.0,F,3,"[B0] false alarm (not astrophysical), 2.0 Re at 9.6 d",2.3 sigma odd-even,B0,SPOC,7,120,56.0,4
+TIC19451711,B,TOI-522.01,FA,0.39697,2.11,111,1.5,9.4,7.36,7381.0,A+,3,"[B0] false alarm (not astrophysical), 2.1 Re at 0.4 d",V-shaped and short period; GAIA Rp=1.6 Rsun; sinusoidal light curve; likely SV; retired as TFOP FA,B0,SPOC,5,120,40.0,2
+TIC259962054,B,TOI-203.01,FA,51.94509,0.71,2534,8.09,8.0,12.24,3203.0,M,7,"[B0] false alarm (not astrophysical), 0.7 Re at 51.9 d",M dwarf; first transit is on/near momentum dump; the transit duration is a bit long for the reported period;,B0,SPOC,13,120,104.0,2
+TIC286132427,B,TOI-635.01,FA,0.49338,1.5,194,1.5,8.0,8.11,5914.0,G,1,"[B0] false alarm (not astrophysical), 1.5 Re at 0.5 d",could be on TIC 286132422; TIC 78154863 in same TESS pixel; Likely false alarm since TIC 344926234.01 (TOI 634.01) and TIC 286132427.01 (TOI 635.01) and TIC 781,B0,SPOC,4,120,32.0,5
+TIC452972453,B,TOI-3987.01,FA,3.23582,,3260,3.63,11.0,12.75,,?,3,"[B0] false alarm (not astrophysical), unknown radius at 3.2 d",found in faint-star QLP search,B0,QLP,7,200/1800,14.0,4
+TIC376981340,B,TOI-4528.01,FA,4.02497,10.86,20421,2.54,30.3,12.81,4492.0,K,1,"[B0] false alarm (not astrophysical), 10.9 Re at 4.0 d",match to TOI 4545,B0,SPOC,3,120,24.0,1
+TIC47384844,B,TOI-1022.01,FA,3.09574,3.43,380,4.47,9.0,8.73,6084.0,F,1,"[B0] false alarm (not astrophysical), 3.4 Re at 3.1 d",low SNR; could be instrument noise,B0,SPOC,3,120,24.0,2
+TIC387527558,B,TOI-1646.01,FA,3.62391,6.93,26980,2.66,13.2,13.04,3514.0,M,1,"[B0] false alarm (not astrophysical), 6.9 Re at 3.6 d",TFOP FA,B0,SPOC,4,120,32.0,1
+TIC245947683,B,TOI-950.01,FA,1.14288,7.08,2270,1.7,9.0,10.21,6706.0,F,1,"[B0] false alarm (not astrophysical), 7.1 Re at 1.1 d",may be on 245947692,B0,SPOC,4,120,32.0,2
+TIC459903429,B,TOI-1671.01,FA,8.13664,11.75,840,2.08,9.0,8.71,4913.0,K,2,"[B0] false alarm (not astrophysical), 11.8 Re at 8.1 d",might be 2x period,B0,SPOC,7,120,56.0,5
+TIC141985686,B,TOI-5702.01,FA,3.12913,4.11,680,1.99,9.0,9.84,6236.0,F,2,"[B0] false alarm (not astrophysical), 4.1 Re at 3.1 d",low SNR; ambiguous difference image but no nearby ephemeris matches,B0,SPOC,1,120,8.0,2
+TIC8677530,B,TOI-3827.01,FA,2.91463,9.96,9960,2.98,48.0,12.03,5484.8,G,1,"[B0] false alarm (not astrophysical), 10.0 Re at 2.9 d",found in faint-star QLP search,B0,SPOC,1,120,8.0,3
+TIC416539317,B,TOI-3794.01,FA,2.20196,3.98,960,4.33,8.0,12.41,6269.0,F,2,"[B0] false alarm (not astrophysical), 4.0 Re at 2.2 d",low SNR; found in faint-star QLP search,B0,SPOC,3,120,24.0,3
+TIC276360911,B,TOI-1382.01,FA,0.44482,10.89,1610,1.06,11.0,9.62,7184.0,F,2,"[B0] false alarm (not astrophysical), 10.9 Re at 0.4 d",,B0,SPOC,3,120,24.0,4
+TIC321068176,B,TOI-2409.01,FA,12.96969,6.17,4086,1.11,13.1,11.27,5017.0,K,1,"[B0] false alarm (not astrophysical), 6.2 Re at 13.0 d",,B0,SPOC,7,120,56.0,1
+TIC125405602,B,TOI-821.01,FA,13.8233,2.81,2557,1.37,7.2,11.18,3669.0,M,2,"[B0] false alarm (not astrophysical), 2.8 Re at 13.8 d",low SNR (7.3); not recovered in later sectors; retired as TFOP FA,B0,SPOC,2,120,16.0,4
+TIC20303110,B,TOI-3983.01,FA,3.89615,8.4,8620,1.74,64.0,11.21,5477.2,G,2,"[B0] false alarm (not astrophysical), 8.4 Re at 3.9 d",V-shaped; found in faint-star QLP search,B0,QLP,6,200/600/1800,12.0,5
+TIC129991079,B,TOI-1602.01,FA,6.15952,3.91,1230,3.83,9.0,10.44,6175.9,F,1,"[B0] false alarm (not astrophysical), 3.9 Re at 6.2 d",2 stars in pixel; correlation with stellar variability,B0,SPOC,1,120,8.0,4
+TIC93125144,B,TOI-523.01,FA,9.91102,7.71,6044,2.98,15.3,9.68,4692.0,K,1,"[B0] false alarm (not astrophysical), 7.7 Re at 9.9 d",Transits could be the result of detrending residuals from stellar variability,B0,SPOC,4,120,32.0,3
+TIC390048041,B,TOI-4006.01,FA,3.04917,,6641,4.03,13.9,12.71,4579.5,K,4,"[B0] false alarm (not astrophysical), unknown radius at 3.0 d",found in faint-star QLP search; TOI4006.01:Same signal as TOI-4075.01 but this star is reported as a phantom so has been retired as an FA.,B0,SPOC,3,120,24.0,5
+TIC365690646,B,TOI-524.01,FA,12.98317,5.93,1181,1.53,7.6,10.09,6962.64,F,1,"[B0] false alarm (not astrophysical), 5.9 Re at 13.0 d",Potentially instrument noise; retired as TFOP FA,B0,SPOC,2,120,16.0,5
+TIC237184773,B,TOI-1152.01,FA,6.50119,,4501,5.55,109.4,8.03,5485.0,G,4,"[B0] false alarm (not astrophysical), unknown radius at 6.5 d",this star is a phantom; TOI has been rereleased on TIC 1715469662 as TOI 2183.01,B0,SPOC,7,120,56.0,2
+TIC71134735,B,TOI-3824.01,FA,2.33789,8.31,4971,2.52,13.8,13.04,6666.8,F,3,"[B0] false alarm (not astrophysical), 8.3 Re at 2.3 d",found in faint-star QLP search; Same signal as TOI-3777.01 but this star is a phantom; retired as TFOP FA,B0,SPOC,2,120,16.0,1
+TIC62301521,B,TOI-4341.01,FA,18.40433,1.28,9135,7.88,7.6,13.78,2891.0,M,2,"[B0] false alarm (not astrophysical), 1.3 Re at 18.4 d",even transit looks better than odd; low SNR,B0,SPOC,4,120,32.0,4
+TIC219380235,B,TOI-878.01,FA,3.97739,5.04,1134,2.82,14.0,10.82,5518.3,G,5,"[B0] false alarm (not astrophysical), 5.0 Re at 4.0 d",TFOP FP,B0,SPOC,4,120,32.0,5
+TIC16920150,B,TOI-1459.01,FA,9.15593,2.49,908,3.14,7.6,10.16,5219.0,G,1,"[B0] false alarm (not astrophysical), 2.5 Re at 9.2 d",,B0,SPOC,2,120,16.0,2
+TIC96097215,B,TOI-728.01,FA,1.60245,4.69,890,0.31,9.0,10.57,5648.0,G,1,"[B0] false alarm (not astrophysical), 4.7 Re at 1.6 d",low SNR; events reduced by systematics correction,B0,SPOC,2,120,16.0,3
+TIC402740809,B,TOI-6147.01,FA,1.58018,9.32,6187,0.65,11.0,12.95,4547.0,K,1,"[B0] false alarm (not astrophysical), 9.3 Re at 1.6 d",found in faint-star QLP search,B0,SPOC,1,120,8.0,5
+TIC234282389,B,TOI-2611.01,FA,0.73202,5.16,4520,2.58,16.0,13.53,5458.0,G,1,"[B0] false alarm (not astrophysical), 5.2 Re at 0.7 d",found in faint-star QLP search; ambiguous diff image,B0,SPOC,4,120,32.0,1
+TIC123958679,B,TOI-893.01,FA,5.61483,9.62,2300,3.83,8.0,11.48,9856.0,A+,2,"[B0] false alarm (not astrophysical), 9.6 Re at 5.6 d",,B0,SPOC,2,120,16.0,4
+TIC10974783,B,TOI-4020.01,FA,3.21744,,11555,3.89,30.4,11.85,,?,5,"[B0] false alarm (not astrophysical), unknown radius at 3.2 d",found in faint-star QLP search; TFOP FA/Phantom,B0,SPOC,2,120,16.0,5
+TIC76197937,B,TOI-2172.01,FA,1.78252,18.65,1920,2.73,12.0,10.86,5085.0,K,1,"[B0] false alarm (not astrophysical), 18.7 Re at 1.8 d",Likely EB; evolved star; asymmetric transit; a/Rs under 2,B0,SPOC,6,120,48.0,4
+TIC200807066,B,TOI-869.01,FA,26.25882,2.05,251,4.43,7.7,8.9,5908.0,G,4,"[B0] false alarm (not astrophysical), 2.1 Re at 26.3 d",Possible single event (second event is on momentum dump); first event could be systematic,B0,SPOC,4,120,32.0,2
+TIC343648136,B,TOI-1088.01,FA,1.15395,5.48,1550,2.24,8.0,10.46,6093.0,F,2,"[B0] false alarm (not astrophysical), 5.5 Re at 1.2 d",possible spot-crossing in transit,B0,SPOC,1,120,8.0,1
+TIC75656058,B,TOI-2171.01,FA,1.78166,13.91,8160,2.77,22.0,10.82,6528.0,F,1,"[B0] false alarm (not astrophysical), 13.9 Re at 1.8 d",Anti-depth aperture correlation; bright neighbor to NW,B0,SPOC,6,120,48.0,5
+TIC78154865,B,TOI-638.01,FA,0.49383,1.94,311,1.16,8.2,8.92,6030.0,F,1,"[B0] false alarm (not astrophysical), 1.9 Re at 0.5 d",not found in additional data; retired as TFOP FA; TIC 78154863 in same TESS pixel; Likely false alarm since TIC 344926234.01 (TOI 634.01) and TIC 286132427.01 (,B0,SPOC,2,120,16.0,1
+TIC320417762,B,TOI-692.01,FA,1.03604,3.53,250,1.85,11.0,9.02,9622.0,A+,1,"[B0] false alarm (not astrophysical), 3.5 Re at 1.0 d",low S/N transit; follow-up determines signal likely due to pulsations at half period,B0,SPOC,8,120,64.0,5
+TIC159244568,B,TOI-2078.01,FA,6.27725,2.54,911,1.53,7.4,11.04,5244.0,G,2,"[B0] false alarm (not astrophysical), 2.5 Re at 6.3 d",potential L1 candidate; low snr; crowded field,B0,SPOC,7,120,56.0,3
+TIC376168473,B,TOI-2247.01,FA,5.41402,15.96,7780,4.42,82.0,10.79,6394.3,F,1,"[B0] false alarm (not astrophysical), 16.0 Re at 5.4 d",phantom join with 1990842033; TFOP APC,B0,SPOC,2,120,16.0,2
+TIC270435047,B,TOI-3964.01,FA,1.8012,9.14,2280,3.23,10.0,12.81,7588.0,A+,2,"[B0] false alarm (not astrophysical), 9.1 Re at 1.8 d",found in faint-star QLP search,B0,SPOC,4,120,32.0,3
+TIC103604037,B,TOI-4583.01,FA,19.52024,,2962,4.1,11.2,10.57,5780.0,G,2,"[B0] false alarm (not astrophysical), unknown radius at 19.5 d",no stellar parameters,B0,SPOC,5,120,40.0,3
+TIC440100539,B,TOI-1548.01,FA,12.6017,3.34,800,4.83,10.0,8.73,5861.6,G,1,"[B0] false alarm (not astrophysical), 3.3 Re at 12.6 d",Potential level 1 candidate; could be half the period,B0,SPOC,2,120,16.0,3
+TIC54364414,B,TOI-2041.01,FP,1.37477,3.01,960,1.6,21.0,10.46,5825.0,G,1,"[B3] small-planet mimic, 3.0 Re at 1.4 d",potential L1 candidate,B3,TESS-SPOC,5,200/1800,10.0,5
+TIC326347927,B,TOI-5260.01,FP,7.26173,3.97,1310,6.26,9.0,11.96,4780.0,K,2,"[B3] small-planet mimic, 4.0 Re at 7.3 d",found in faint-star QLP search; potential L1 candidate,B3,SPOC,1,120,8.0,3
+TIC383723559,B,TOI-7065.01,FP,2.66675,3.01,190,2.59,12.0,9.59,6173.0,F,8,"[B3] small-planet mimic, 3.0 Re at 2.7 d",possible offset to E,B3,TESS-SPOC,8,200/600/1800,16.0,1
+TIC189013222,B,TOI-949.01,FP,1.32287,2.5,720,1.59,13.0,10.29,5136.1,K,2,"[B3] small-planet mimic, 2.5 Re at 1.3 d",Same as TOI 426.01; retired as duplicate/TFOP FP,B3,SPOC,3,120,24.0,4
+TIC143350972,B,TOI-440.01,FP,1.0817,2.08,342,1.59,26.0,7.68,5759.2,G,1,"[B3] small-planet mimic, 2.1 Re at 1.1 d",two stars in the same pixel;,B3,SPOC,3,120,24.0,3
+TIC93963408,B,TOI-994.01,FP,2.39672,3.84,385,3.95,9.6,10.03,10393.0,A+,1,"[B3] small-planet mimic, 3.8 Re at 2.4 d",,B3,SPOC,1,120,8.0,1
+TIC284747017,B,TOI-3746.01,FP,1.80127,3.2,1800,3.18,12.0,11.76,4570.0,K,1,"[B3] small-planet mimic, 3.2 Re at 1.8 d",found in faint-star QLP search,B3,SPOC,4,120,32.0,5
+TIC335996558,B,TOI-2027.01,FP,1.46329,3.55,750,2.43,24.0,10.5,6168.0,F,1,"[B3] small-planet mimic, 3.5 Re at 1.5 d",Possibly in the Neptune desert!,B3,TESS-SPOC,9,200/1800,18.0,5
+TIC327577308,B,TOI-2061.01,FP,1.45655,1.84,580,1.51,9.0,10.64,4475.0,K,1,"[B3] small-planet mimic, 1.8 Re at 1.5 d",weak signal; crowded field; potential secondary; possible depth-aperture correlation,B3,TESS-SPOC,2,1800,4.0,1
+TIC115564354,B,TOI-5418.01,FP,1.64218,2.54,1100,2.46,18.0,11.7,5627.0,G,4,"[B3] small-planet mimic, 2.5 Re at 1.6 d",found in faint-star QLP search,B3,SPOC,4,120,32.0,4
+TIC29374525,B,TOI-5440.01,FP,3.81381,3.44,2310,2.57,20.0,11.83,4689.0,K,3,"[B3] small-planet mimic, 3.4 Re at 3.8 d",found in faint-star QLP search,B3,SPOC,2,120,16.0,2
+TIC133505138,B,TOI-4359.01,FP,2.43608,2.47,350,2.5,14.0,9.51,6529.0,F,4,"[B3] small-planet mimic, 2.5 Re at 2.4 d",other dips in LC; possible SV or multi; slight depth aperture correlation,B3,SPOC,3,120,24.0,1
+TIC387603144,B,TOI-4032.01,FP,2.45671,3.05,530,1.72,9.0,11.05,6223.0,F,6,"[B3] small-planet mimic, 3.1 Re at 2.5 d",V-shaped; found in faint-star QLP search,B3,TESS-SPOC,6,1800,12.0,4
+TIC289316336,B,TOI-4091.01,FP,3.00387,3.45,760,3.24,9.0,11.28,6171.0,F,2,"[B3] small-planet mimic, 3.4 Re at 3.0 d",found in faint-star QLP search,B3,SPOC,2,120,16.0,4
+TIC136971594,B,TOI-1368.01,FP,1.25562,2.95,290,2.3,10.0,9.14,5717.0,G,2,"[B3] small-planet mimic, 3.0 Re at 1.3 d",Low SNR; some depth-aperture correlation,B3,SPOC,1,120,8.0,2
+TIC141616639,B,TOI-4126.01,FP,3.24287,2.32,1470,2.42,9.0,12.35,4016.0,K,3,"[B3] small-planet mimic, 2.3 Re at 3.2 d",found in faint-star QLP search,B3,SPOC,2,120,16.0,5
+TIC274122380,B,TOI-5262.01,FP,2.87314,3.97,1240,2.91,10.0,11.82,5856.0,G,3,"[B3] small-planet mimic, 4.0 Re at 2.9 d",found in faint-star QLP search; potential L1 candidate,B3,SPOC,4,120,32.0,5
+TIC147430118,B,TOI-2508.01,FP,1.69511,3.11,370,3.24,14.0,10.36,6796.0,F,3,"[B3] small-planet mimic, 3.1 Re at 1.7 d",found in faint-star QLP search,B3,SPOC,1,120,8.0,5
+TIC293708935,B,TOI-1969.01,FP,2.68559,3.57,488,2.05,9.4,8.59,5796.0,G,1,"[B3] small-planet mimic, 3.6 Re at 2.7 d",possible blend and likely FP; event is on 293708831,B3,SPOC,1,120,8.0,4
+TIC267489265,B,TOI-1132.01,FP,1.5503,3.35,411,2.94,29.0,9.23,7851.0,A+,7,"[B3] small-planet mimic, 3.3 Re at 1.6 d",TFOP FP,B3,SPOC,3,120,24.0,2
+TIC389371332,B,TOI-4346.01,FP,3.90771,1.57,600,9.53,10.3,12.44,3917.0,K,8,"[B3] small-planet mimic, 1.6 Re at 3.9 d",crowded field; potential L1 planet,B3,SPOC,11,120,88.0,1
+TIC309133240,B,TOI-7338.01,FP,3.38472,3.52,612,3.48,15.0,8.56,5199.0,K,3,"[B3] small-planet mimic, 3.5 Re at 3.4 d",V-shaped; possible offset; possible odd-even,B3,SPOC,1,120,8.0,3
+TIC100589632,B,TOI-2342.01,FP,3.94716,3.87,1880,1.7,27.0,11.16,4794.0,K,4,"[B3] small-planet mimic, 3.9 Re at 3.9 d",Crowded field; refer to 100589633/TOI 2726 as on-target; CTOI from Marco Montalto,B3,SPOC,1,120,8.0,1
+TIC61733521,B,TOI-2228.01,FP,3.36296,2.7,750,2.59,9.0,10.89,5420.0,G,2,"[B3] small-planet mimic, 2.7 Re at 3.4 d",,B3,TESS-SPOC,3,200/600/1800,6.0,5
+TIC439610306,B,TOI-2004.01,FP,1.79988,3.32,180,3.52,11.0,9.06,6136.9,F,1,"[B3] small-planet mimic, 3.3 Re at 1.8 d",,B3,SPOC,2,120,16.0,3
+TIC219338557,B,TOI-133.01,FP,8.19966,1.87,867,1.93,36.7,9.98,4028.0,K,4,"[B3] small-planet mimic, 1.9 Re at 8.2 d",increasing odd-even from ~ 2 sigma in spoc-s01-s36 TEC plots to ~4 to 7 sigma odd-even in spoc-s01-s69 TEC plots; retired as TFOP FP/EB,B3,SPOC,8,120,64.0,3
+TIC268405086,B,TOI-5574.01,FP,6.82429,2.24,700,2.79,9.0,11.66,3999.0,K,7,"[B3] small-planet mimic, 2.2 Re at 6.8 d",found in faint-star QLP search,B3,SPOC,11,120,88.0,2
+TIC267561446,B,TOI-1284.01,FP,1.28325,2.56,1961,2.01,11.7,12.53,3855.0,M,2,"[B3] small-planet mimic, 2.6 Re at 1.3 d",Potential L1 candidate; check 267561450,B3,SPOC,3,120,24.0,4
+TIC252537013,B,TOI-6895.01,FP,7.04697,3.77,1020,2.55,13.0,10.45,5940.0,G,5,"[B3] small-planet mimic, 3.8 Re at 7.0 d",possible offset to SW; no depth aperture correlation,B3,SPOC,2,120,16.0,1
+TIC345724317,B,TOI-7042.01,FP,2.81763,3.23,868,1.46,9.0,10.49,6320.6,F,3,"[B3] small-planet mimic, 3.2 Re at 2.8 d",slight depth aperture correlation; weak BLS; low SNR,B3,TESS-SPOC,3,200/600/1800,6.0,3
+TIC143994283,B,TOI-1021.01,FP,1.90879,3.35,618,1.91,14.0,10.56,6022.6,F,1,"[B3] small-planet mimic, 3.3 Re at 1.9 d",,B3,SPOC,2,120,16.0,2
+TIC71396541,B,TOI-4130.01,FP,6.26972,3.86,1240,3.7,12.0,10.74,4812.0,K,2,"[B3] small-planet mimic, 3.9 Re at 6.3 d",found in faint-star QLP search,B3,SPOC,1,120,8.0,2
+TIC268371979,B,TOI-977.01,FP,2.78102,2.24,749,1.66,10.0,10.52,4538.0,K,1,"[B3] small-planet mimic, 2.2 Re at 2.8 d",TFOP EB; Gaia suggests the star is evolved based on parallax and Teff,B3,SPOC,1,120,8.0,4
+TIC354600221,B,TOI-1534.01,FP,1.41853,3.93,560,2.73,13.0,9.87,6329.0,F,2,"[B3] small-planet mimic, 3.9 Re at 1.4 d",Secondary eclipse; likely EB,B3,TESS-SPOC,9,200/1800,18.0,3
+TIC35315453,B,TOI-4412.01,FP,2.03411,6.29,1091,3.39,25.8,10.3,6849.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 6.3 Re at 2.0 d",crowded field; possible odd-even; slight increase in flux imeadiately after transit; retired as TFOP FP/EB,B1,SPOC,3,120,24.0,5
+TIC9100874,B,TOI-307.01,FP,6.16683,17.02,13146,2.26,21.7,13.12,5747.0,G,3,"[B1] on-target eclipsing binary at giant-planet size, 17.0 Re at 6.2 d",~2000 ppm secondary in spoc-s01-s69; retired as TFOP FP/EB,B1,SPOC,3,120,24.0,5
+TIC176772671,B,TOI-2603.01,FP,1.33266,11.6,37286,1.6,46.3,13.9,3947.0,K,3,"[B1] on-target eclipsing binary at giant-planet size, 11.6 Re at 1.3 d",possibly synchronized; EB NGTS J0930-18 b (https://arxiv.org/abs/2008.07354); 85 Mjup; retired as TFOP FP/SEB1,B1,SPOC,4,120,32.0,2
+TIC7624182,B,TOI-412.01,FP,1.1097,9.34,620,2.1,45.0,8.79,8666.0,A+,4,"[B1] on-target eclipsing binary at giant-planet size, 9.3 Re at 1.1 d",,B1,SPOC,6,120,48.0,4
+TIC76420654,B,TOI-4462.01,FP,4.91331,13.7,4224,6.03,20.1,10.45,5918.0,G,6,"[B1] on-target eclipsing binary at giant-planet size, 13.7 Re at 4.9 d",TFOP FP(SEB1),B1,SPOC,2,120,16.0,4
+TIC190271688,B,TOI-1963.01,FP,12.65347,20.51,27095,4.1,224.5,10.16,5394.6,G,3,"[B1] on-target eclipsing binary at giant-planet size, 20.5 Re at 12.7 d",~12000 ppm secondary in SPOC s1-s65; retired as TFOP FP/SEB1,B1,SPOC,4,120,32.0,4
+TIC169532369,B,TOI-425.01,FP,3.60364,14.1,6281,3.73,68.0,11.58,6896.7,F,1,"[B1] on-target eclipsing binary at giant-planet size, 14.1 Re at 3.6 d",retired as SB1,B1,SPOC,2,120,16.0,2
+TIC82362447,B,TOI-639.01,FP,2.81982,22.76,183631,6.61,12.7,15.25,3601.0,M,1,"[B1] on-target eclipsing binary at giant-planet size, 22.8 Re at 2.8 d",Crowded field; likely EB off target to SSE; but check if nearby PC (not a cut and paste error; same comment as line 104).,B1,SPOC,4,120,32.0,1
+TIC339538183,B,TOI-1662.01,FP,2.60932,11.43,1984,1.18,49.0,9.71,7235.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 11.4 Re at 2.6 d",large;  non-synchronized stellar activity; secondary (200ppm); TFOP FP/EB,B1,TESS-SPOC,3,200,6.0,3
+TIC283015592,B,TOI-4000.01,FP,3.70272,22.54,12964,3.81,88.7,12.57,7493.0,A+,8,"[B1] on-target eclipsing binary at giant-planet size, 22.5 Re at 3.7 d",found in faint-star QLP search; retired as TFOP FP/SEB1,B1,SPOC,5,120,40.0,5
+TIC294283951,B,TOI-6084.01,FP,4.37224,8.17,1815,1.07,15.7,11.71,8096.0,A+,7,"[B1] on-target eclipsing binary at giant-planet size, 8.2 Re at 4.4 d",v-shaped; retired as TFOP FP/SEB1,B1,SPOC,7,120,56.0,3
+TIC28873762,B,TOI-3684.01,FP,3.10565,17.62,12400,2.0,34.0,13.35,6241.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 17.6 Re at 3.1 d",potential weak secondary; V-shaped; found in faint-star QLP search,B1,SPOC,5,120,40.0,2
+TIC127425841,B,TOI-1545.01,FP,1.51666,7.74,1590,1.61,40.0,9.83,6905.3,F,2,"[B1] on-target eclipsing binary at giant-planet size, 7.7 Re at 1.5 d",V-shaped; TFOP FP/EB,B1,TESS-SPOC,3,200/1800,6.0,1
+TIC286355915,B,TOI-1637.01,FP,4.07668,17.46,10463,4.39,156.5,10.65,6531.44,F,3,"[B1] on-target eclipsing binary at giant-planet size, 17.5 Re at 4.1 d",strong secondary; large; TFOP FP/SEB1,B1,SPOC,3,120,24.0,1
+TIC16187321,B,TOI-3542.01,FP,4.20221,14.86,9481,3.08,65.3,11.72,6702.0,F,6,"[B1] on-target eclipsing binary at giant-planet size, 14.9 Re at 4.2 d",found in faint-star QLP search; TFOP FP/SEB1,B1,SPOC,3,120,24.0,2
+TIC193628179,B,TOI-5198.01,FP,3.26234,13.48,8471,3.08,83.8,12.0,5957.4,G,7,"[B1] on-target eclipsing binary at giant-planet size, 13.5 Re at 3.3 d",found in faint-star QLP search; retired as TFOP FP/SEB1,B1,SPOC,4,120,32.0,2
+TIC238162973,B,TOI-3435.01,FP,11.88856,19.21,35450,2.57,66.0,13.39,4427.0,K,6,"[B1] on-target eclipsing binary at giant-planet size, 19.2 Re at 11.9 d",V-shaped; found in faint-star QLP search,B1,SPOC,2,120,16.0,1
+TIC2041563029,B,TOI-1427.01,FP,12.80758,11.42,27113,3.6,123.0,10.05,5094.4,K,1,"[B1] on-target eclipsing binary at giant-planet size, 11.4 Re at 12.8 d",could be a multi-planet system or an EB,B1,QLP,5,200/1800,10.0,4
+TIC470709084,B,TOI-1515.01,FP,3.66505,7.19,910,2.35,16.0,10.44,6370.0,F,3,"[B1] on-target eclipsing binary at giant-planet size, 7.2 Re at 3.7 d",Possible depth-aperture correlation,B1,SPOC,1,120,8.0,1
+TIC103245940,B,TOI-2967.01,FP,3.25179,13.69,18310,4.37,48.0,13.07,5824.0,G,3,"[B1] on-target eclipsing binary at giant-planet size, 13.7 Re at 3.3 d",V-shaped; found in faint-star QLP search,B1,SPOC,1,120,8.0,2
+TIC160268701,B,TOI-1143.01,FP,11.20718,17.5,3276,4.37,133.0,8.63,6152.0,F,9,"[B1] on-target eclipsing binary at giant-planet size, 17.5 Re at 11.2 d",TFOPWG FP Retired as SB1,B1,SPOC,4,120,32.0,1
+TIC357416482,B,TOI-2017.01,FP,5.49826,16.28,12929,2.04,159.0,8.21,6362.6,F,3,"[B1] on-target eclipsing binary at giant-planet size, 16.3 Re at 5.5 d",TIC match 357416480 (12.5 TESS mag star); TFOP FP as an EB with a low mass M dwarf companion,B1,SPOC,3,120,24.0,4
+TIC449050248,B,TOI-953.01,FP,2.96844,19.33,13028,3.66,209.0,9.87,5772.0,G,2,"[B1] on-target eclipsing binary at giant-planet size, 19.3 Re at 3.0 d",SB1 from WASP-South SB1 RV variation=30 km/s	,B1,SPOC,2,120,16.0,5
+TIC457138169,B,TOI-1770.01,FP,1.09245,6.59,875,1.22,22.7,9.22,6273.0,F,2,"[B1] on-target eclipsing binary at giant-planet size, 6.6 Re at 1.1 d",TIC 457138168 (Tmag ~13.915) nearby; v-shaped,B1,SPOC,2,120,16.0,3
+TIC63013648,B,TOI-5547.01,FP,19.6305,14.08,7652,3.21,42.9,10.85,5509.85,G,2,"[B1] on-target eclipsing binary at giant-planet size, 14.1 Re at 19.6 d",odd-even; V-shaped; Rv error ~2.77 km/s,B1,SPOC,4,120,32.0,4
+TIC49967354,B,TOI-2164.01,FP,1.09333,12.26,1250,1.98,12.0,10.88,5274.0,G,1,"[B1] on-target eclipsing binary at giant-planet size, 12.3 Re at 1.1 d",Likely EB; evolved star; a/Rs under 2; crowded field,B1,SPOC,2,120,16.0,4
+TIC135083444,B,TOI-1795.01,FP,2.79179,6.0,1019,1.47,9.6,10.07,6071.0,F,1,"[B1] on-target eclipsing binary at giant-planet size, 6.0 Re at 2.8 d",Possibly nearby EB; need SG1 to check,B1,SPOC,2,120,16.0,1
+TIC251878904,B,TOI-366.01,FP,1.70258,11.86,7467,1.85,14.0,13.55,5504.0,G,3,"[B1] on-target eclipsing binary at giant-planet size, 11.9 Re at 1.7 d",~2000 ppm secondary in spoc-s01-s69; retired as TFOP FP/EB,B1,SPOC,4,120,32.0,5
+TIC20182165,B,TOI-1830.01,FP,9.78156,18.2,20040,3.74,143.0,7.02,6327.16,F,3,"[B1] on-target eclipsing binary at giant-planet size, 18.2 Re at 9.8 d",TFOP FP; retired as SB1,B1,SPOC,5,120,40.0,5
+TIC77102895,B,TOI-4256.01,FP,1.09624,15.75,2460,2.34,17.0,12.72,6519.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 15.8 Re at 1.1 d",V-shaped; found in faint-star QLP search,B1,QLP,8,200/600/1800,16.0,2
+TIC81429971,B,TOI-598.01,FP,3.04324,11.9,1622,3.19,32.0,10.14,8000.0,A+,5,"[B1] on-target eclipsing binary at giant-planet size, 11.9 Re at 3.0 d",,B1,SPOC,2,120,16.0,5
+TIC311183180,B,TOI-550.02,FP,10.04325,16.68,21393,3.1,85.7,9.11,5076.0,K,1,"[B1] on-target eclipsing binary at giant-planet size, 16.7 Re at 10.0 d",Gaia DR2 R = 1 R_Sun; likely grazing eccentric binary with nearly equal brightness stars; TFOP EB secondary,B1,SPOC,2,120,16.0,3
+TIC112395568,B,TOI-1053.01,FP,5.74263,13.09,1106,2.86,11.8,8.88,5664.0,G,1,"[B1] on-target eclipsing binary at giant-planet size, 13.1 Re at 5.7 d",Crowded field,B1,SPOC,4,120,32.0,3
+TIC305550963,B,TOI-3957.01,FP,1.58916,12.59,3550,1.58,13.0,13.24,6227.0,F,5,"[B1] on-target eclipsing binary at giant-planet size, 12.6 Re at 1.6 d",found in faint-star QLP search,B1,SPOC,7,120,56.0,2
+TIC73104318,B,TOI-1674.01,FP,7.45494,15.19,2280,3.46,19.0,9.47,5029.7,K,2,"[B1] on-target eclipsing binary at giant-planet size, 15.2 Re at 7.5 d",could be 2x period; likely there is a background EB with distinctly shorter period from transiting event,B1,TESS-SPOC,1,200,2.0,4
+TIC189620016,B,TOI-2372.01,FP,1.17934,17.92,4010,1.26,20.0,12.22,6127.1,F,4,"[B1] on-target eclipsing binary at giant-planet size, 17.9 Re at 1.2 d",CTOI from Marco Montalto; ~5 sigma odd-even; possibly synchronized; retired as TFOP FP/EB,B1,SPOC,2,120,16.0,5
+TIC284305328,B,TOI-4019.01,FP,2.29638,20.92,7950,2.65,49.0,12.7,6620.0,F,5,"[B1] on-target eclipsing binary at giant-planet size, 20.9 Re at 2.3 d",V-shaped; found in faint-star QLP search; Gaia DR2 Rstar ~2.04 slightly larger than TIC value;  nearby TIC 284305330 (delta Tmag 3.2  separation 4.52''),B1,SPOC,2,120,16.0,4
+TIC362709886,B,TOI-4420.01,FP,4.72593,16.75,6310,2.77,88.8,9.55,6203.0,F,3,"[B1] on-target eclipsing binary at giant-planet size, 16.8 Re at 4.7 d",V-shaped; ~600 ppm secondary; possible offset to N; retired as TFOP FP/EB,B1,SPOC,7,120,56.0,4
+TIC193708920,B,TOI-3562.01,FP,1.32985,6.98,2190,3.01,18.0,11.96,5791.1,G,2,"[B1] on-target eclipsing binary at giant-planet size, 7.0 Re at 1.3 d",V-shaped; found in faint-star QLP search,B1,SPOC,1,120,8.0,5
+TIC49899799,B,TOI-416.01,FP,7.0114,18.14,8970,4.8,179.0,8.28,6084.8,F,2,"[B1] on-target eclipsing binary at giant-planet size, 18.1 Re at 7.0 d",tropical Jupiter,B1,SPOC,2,120,16.0,1
+TIC291732201,B,TOI-7418.01,FP,6.74153,15.35,23765,3.45,94.0,11.88,5896.0,G,3,"[B1] on-target eclipsing binary at giant-planet size, 15.3 Re at 6.7 d",found in faint-star QLP search;  retired as TFOP FP/SEB1,B1,QLP,3,200/1800,6.0,5
+TIC52548453,B,TOI-987.01,FP,5.21468,14.45,3754,4.98,49.0,10.19,6080.0,F,3,"[B1] on-target eclipsing binary at giant-planet size, 14.4 Re at 5.2 d",,B1,SPOC,1,120,8.0,3
+TIC73244652,B,TOI-6396.01,FP,8.21006,12.26,3707,1.3,14.4,11.84,6427.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 12.3 Re at 8.2 d",found in faint-star QLP search; varying transit depth and possible odd-even; retired as TFOP FP/SEB2,B1,SPOC,2,120,16.0,2
+TIC412014494,B,TOI-1111.01,FP,11.4757,14.11,8341,0.81,113.0,9.39,7262.0,F,3,"[B1] on-target eclipsing binary at giant-planet size, 14.1 Re at 11.5 d",TFOP FP/SB1,B1,SPOC,1,120,8.0,2
+TIC117689799,B,TOI-3504.01,FP,2.15705,14.59,17928,2.34,58.9,11.6,5863.0,G,3,"[B1] on-target eclipsing binary at giant-planet size, 14.6 Re at 2.2 d",found in faint-star QLP search; TFOP SB1/APC,B1,SPOC,2,120,16.0,3
+TIC199289712,B,TOI-7086.01,FP,1.00924,11.84,7501,1.47,18.0,13.37,5491.0,G,2,"[B1] on-target eclipsing binary at giant-planet size, 11.8 Re at 1.0 d",found in faint-star QLP search; possible slight odd-even,B1,QLP,3,200,6.0,2
+TIC321436679,B,TOI-3733.01,FP,2.12632,22.11,7318,2.62,15.2,12.64,6361.4,F,3,"[B1] on-target eclipsing binary at giant-planet size, 22.1 Re at 2.1 d",found in faint-star QLP search,B1,SPOC,2,120,16.0,2
+TIC101395259,B,TOI-623.01,FP,7.57467,13.41,6208,3.08,95.6,10.19,6422.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 13.4 Re at 7.6 d",retired as TFOP FP/SB1,B1,SPOC,6,120,48.0,3
+TIC294090620,B,TOI-587.01,FP,8.04424,15.18,4938,5.33,183.1,7.81,9333.0,A+,4,"[B1] on-target eclipsing binary at giant-planet size, 15.2 Re at 8.0 d",low-mass stellar companion from RVs; was FP now PC (for period refinement),B1,SPOC,4,120,32.0,4
+TIC41330864,B,TOI-1168.01,FP,2.13586,23.6,10325,1.56,123.0,10.38,5969.0,G,6,"[B1] on-target eclipsing binary at giant-planet size, 23.6 Re at 2.1 d",TFOP FP/EB/SB2,B1,SPOC,1,120,8.0,5
+TIC298495970,B,TOI-2157.01,FP,8.42492,17.03,19846,2.52,117.0,10.7,5756.0,G,4,"[B1] on-target eclipsing binary at giant-planet size, 17.0 Re at 8.4 d",retired as TFOP FP/SEB1,B1,SPOC,2,120,16.0,5
+TIC64531556,B,TOI-4477.01,FP,7.81279,22.88,8438,6.56,76.3,11.7,8451.0,A+,6,"[B1] on-target eclipsing binary at giant-planet size, 22.9 Re at 7.8 d",possibly too large for period/insolation; retired as TFOP SEB1/APC,B1,SPOC,4,120,32.0,2
+TIC416624606,B,TOI-1359.01,FP,2.51525,13.43,1870,2.39,48.0,10.27,5915.0,G,4,"[B1] on-target eclipsing binary at giant-planet size, 13.4 Re at 2.5 d",TFOP FP; retired as EB,B1,SPOC,1,120,8.0,1
+TIC245462406,B,TOI-1561.01,FP,2.27456,13.27,1020,3.32,16.0,10.29,6777.0,F,1,"[B1] on-target eclipsing binary at giant-planet size, 13.3 Re at 2.3 d",Slightly V-shaped,B1,TESS-SPOC,3,200/1800,6.0,4
+TIC198616607,B,TOI-4116.01,FP,3.63114,19.28,7611,2.92,50.4,12.46,5979.9,G,11,"[B1] on-target eclipsing binary at giant-planet size, 19.3 Re at 3.6 d",found in faint-star QLP search; retired as TFOP FP/SEB2,B1,SPOC,7,120,56.0,1
+TIC184679932,B,TOI-1645.01,FP,2.17214,18.09,17865,2.75,220.0,9.25,6198.0,F,1,"[B1] on-target eclipsing binary at giant-planet size, 18.1 Re at 2.2 d",synchronized; retired as SB1,B1,SPOC,3,120,24.0,3
+TIC66356824,B,TOI-315.01,FP,3.55562,11.17,2610,1.84,14.0,12.42,5671.0,G,3,"[B1] on-target eclipsing binary at giant-planet size, 11.2 Re at 3.6 d",odd-even; TFOP FP; retired as EB,B1,SPOC,2,120,16.0,1
+TIC78672342,B,TOI-648.01,FP,2.97954,13.05,1197,4.29,57.6,10.13,6492.5,F,3,"[B1] on-target eclipsing binary at giant-planet size, 13.0 Re at 3.0 d",possible odd-even; GAIA DR2 Teff = 4060 K and Rad = 10.8 Rsun,B1,TESS-SPOC,2,1800,4.0,1
+TIC146846569,B,TOI-734.01,FP,4.75354,12.19,225793,1.09,38.6,15.17,3010.0,M,4,"[B1] on-target eclipsing binary at giant-planet size, 12.2 Re at 4.8 d",~21000 ppm secondary in SPOC s1-s65; retired as TFOP FP/SEB1,B1,SPOC,5,120,40.0,3
+TIC96291218,B,TOI-1678.01,FP,13.70582,20.21,5788,2.6,54.0,10.36,8001.0,A+,5,"[B1] on-target eclipsing binary at giant-planet size, 20.2 Re at 13.7 d",strong secondary; phase modulations; v-shaped; large; TFOP EB/FP,B1,SPOC,3,120,24.0,1
+TIC9727392,B,TOI-236.01,FP,4.53445,23.18,23575,4.94,162.5,11.29,6421.5,F,1,"[B1] on-target eclipsing binary at giant-planet size, 23.2 Re at 4.5 d",1700 ppm secondary. Likely EB.,B1,SPOC,6,120,48.0,1
+TIC82707763,B,TOI-1991.01,FP,6.65708,14.89,7164,5.29,175.0,10.14,5805.6,G,4,"[B1] on-target eclipsing binary at giant-planet size, 14.9 Re at 6.7 d",TFOP FP; retired as SEB1	,B1,SPOC,1,120,8.0,4
+TIC104195270,B,TOI-6696.01,FP,3.686,23.32,12983,5.2,132.2,11.0,6731.3,F,1,"[B1] on-target eclipsing binary at giant-planet size, 23.3 Re at 3.7 d",Possible phase modulations; ~800 ppm secondary; Gaia DR3 RV error ~5 km/s; CTOI from Greg Olmschenk,B1,SPOC,1,120,8.0,3
+TIC122220263,B,TOI-1134.01,FP,18.69221,18.15,11126,7.76,36.0,9.04,6277.0,F,5,"[B1] on-target eclipsing binary at giant-planet size, 18.1 Re at 18.7 d",alerted as single; now have period but identified as SB1 by TFOP; retired as TFOP FP,B1,SPOC,4,120,32.0,1
+TIC453464017,B,TOI-1993.01,FP,3.94169,19.63,12840,2.54,78.0,10.25,6190.4,F,5,"[B1] on-target eclipsing binary at giant-planet size, 19.6 Re at 3.9 d",v-shaped; large; stellar variability; TFOP FP; retired as EB,B1,SPOC,2,120,16.0,4
+TIC73723286,B,TOI-665.01,FP,14.06611,21.57,16514,3.47,165.7,9.11,6157.0,F,2,"[B1] on-target eclipsing binary at giant-planet size, 21.6 Re at 14.1 d",TFOP FP; retired as SB1,B1,SPOC,5,120,40.0,4
+TIC22020459,B,TOI-2936.01,FP,1.3328,7.33,1960,2.75,14.0,12.6,6561.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 7.3 Re at 1.3 d",found in faint-star QLP search,B1,SPOC,1,120,8.0,5
+TIC159334269,B,TOI-4068.01,FP,1.15784,11.24,9660,1.36,45.0,13.37,6409.0,F,6,"[B1] on-target eclipsing binary at giant-planet size, 11.2 Re at 1.2 d",V-shaped; found in faint-star QLP search,B1,SPOC,3,120,24.0,5
+TIC420446142,B,TOI-3990.01,FP,5.84236,18.74,2280,2.42,10.0,11.67,8648.0,A+,3,"[B1] on-target eclipsing binary at giant-planet size, 18.7 Re at 5.8 d",V-shaped found in faint-star QLP search,B1,QLP,6,200/1800,12.0,3
+TIC319068154,B,TOI-1541.01,FP,3.79836,13.73,3194,1.59,40.0,9.74,9500.0,A+,4,"[B1] on-target eclipsing binary at giant-planet size, 13.7 Re at 3.8 d",Slight depth-aperture correlation; transit looks asymmetric; retired as TFOP FP/EB,B1,SPOC,1,120,8.0,1
+TIC38686737,B,TOI-432.01,FP,2.24704,18.18,18890,2.71,67.0,12.6,6846.0,F,1,"[B1] on-target eclipsing binary at giant-planet size, 18.2 Re at 2.2 d",,B1,SPOC,2,120,16.0,3
+TIC337274055,B,TOI-3311.01,FP,4.84357,15.38,6120,2.56,14.0,13.11,5552.0,G,2,"[B1] on-target eclipsing binary at giant-planet size, 15.4 Re at 4.8 d",found in faint-star QLP search; possible secondary at ~0.7 phase,B1,SPOC,2,120,16.0,1
+TIC273774284,B,TOI-5910.01,FP,17.21899,10.53,6399,10.05,11.7,13.42,6330.0,F,9,"[B1] on-target eclipsing binary at giant-planet size, 10.5 Re at 17.2 d",found in faint-star QLP search,B1,SPOC,4,120,32.0,5
+TIC29959761,B,TOI-2340.01,FP,1.64716,6.07,3880,1.03,40.0,11.8,5027.0,K,2,"[B1] on-target eclipsing binary at giant-planet size, 6.1 Re at 1.6 d",v-shaped; CTOI from Marco Montalto,B1,TESS-SPOC,2,600/1800,4.0,5
+TIC132534906,B,TOI-4849.01,FP,3.06174,8.08,6620,1.95,13.0,12.59,6783.0,F,5,"[B1] on-target eclipsing binary at giant-planet size, 8.1 Re at 3.1 d",found in faint-star QLP search,B1,SPOC,1,120,8.0,2
+TIC279605855,B,TOI-4048.01,FP,1.9724,14.73,7460,2.44,24.0,13.19,6184.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 14.7 Re at 2.0 d",potential weak secondary; found in faint-star QLP search,B1,SPOC,3,120,24.0,4
+TIC229285649,B,TOI-2591.01,FP,8.49303,20.98,20750,3.73,190.0,10.77,6287.0,F,3,"[B1] on-target eclipsing binary at giant-planet size, 21.0 Re at 8.5 d",potentially too large for reported period,B1,SPOC,3,120,24.0,2
+TIC160162987,B,TOI-2167.01,FP,23.05317,9.13,2940,1.23,21.0,10.78,5752.0,G,8,"[B1] on-target eclipsing binary at giant-planet size, 9.1 Re at 23.1 d",V-shaped; Gaia rv error = 3 km/s; large for its period; some odd-even; retired as TFOP EB/SB1,B1,SPOC,8,120,64.0,5
+TIC341729521,B,TOI-997.01,FP,8.41349,20.51,17480,3.56,177.7,9.77,5786.0,G,6,"[B1] on-target eclipsing binary at giant-planet size, 20.5 Re at 8.4 d",TFOP FP; retired as EB,B1,SPOC,4,120,32.0,3
+TIC354442783,B,TOI-3712.01,FP,1.52247,7.53,8545,1.34,12.8,13.44,4654.3,K,2,"[B1] on-target eclipsing binary at giant-planet size, 7.5 Re at 1.5 d",found in faint-star QLP search; potential secondary,B1,SPOC,2,120,16.0,4
+TIC428685938,B,TOI-4856.01,FP,14.48964,7.56,40070,1.9,15.0,14.38,3376.0,M,2,"[B1] on-target eclipsing binary at giant-planet size, 7.6 Re at 14.5 d",found in faint-star QLP search; slight depth aperture correlation; TFOP FP/retired as 27.884670 d EB,B1,SPOC,1,120,8.0,4
+TIC36574157,B,TOI-2775.01,FP,3.78047,17.92,22150,3.62,24.0,12.91,5112.0,K,2,"[B1] on-target eclipsing binary at giant-planet size, 17.9 Re at 3.8 d",V-shaped; found in faint-star QLP search,B1,QLP,3,200/600/1800,6.0,3
+TIC220518305,B,TOI-156.01,FP,14.15204,8.3,3180,3.14,180.8,10.29,5823.9,G,10,"[B1] on-target eclipsing binary at giant-planet size, 8.3 Re at 14.2 d",EB confirmed with CHIRON RVs,B1,SPOC,3,120,24.0,3
+TIC179033846,B,TOI-2675.01,FP,1.47687,13.22,2670,1.45,43.0,11.79,6712.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 13.2 Re at 1.5 d",V-shaped; found in faint-star QLP search,B1,TESS-SPOC,4,600/1800,8.0,3
+TIC138017750,B,TOI-1608.01,FP,2.47275,13.75,2961,2.41,117.7,7.43,6057.7,F,3,"[B1] on-target eclipsing binary at giant-planet size, 13.7 Re at 2.5 d",active star; retired as TFOP FP/SEB1,B1,SPOC,3,120,24.0,4
+TIC61980227,B,TOI-2316.01,FP,3.0959,19.24,10355,1.86,21.4,12.05,6764.0,F,1,"[B1] on-target eclipsing binary at giant-planet size, 19.2 Re at 3.1 d",possible synchronization; slight odd-even; large; also observed in S01,B1,SPOC,1,120,8.0,1
+TIC146836153,B,TOI-2879.01,FP,2.32529,12.88,29371,2.28,27.2,13.32,5744.0,G,4,"[B1] on-target eclipsing binary at giant-planet size, 12.9 Re at 2.3 d",found in faint-star QLP search; ~8000 ppm secondary in SPOC s61; v-shaped,B1,SPOC,1,120,8.0,2
+TIC289988797,B,TOI-4178.01,FP,2.20422,9.79,4250,1.01,14.0,10.04,5702.0,G,3,"[B1] on-target eclipsing binary at giant-planet size, 9.8 Re at 2.2 d",TFOP FP (SEB2),B1,SPOC,1,120,8.0,5
+TIC268042363,B,TOI-2828.01,FP,4.61413,10.8,4920,1.57,12.0,12.99,6888.0,F,7,"[B1] on-target eclipsing binary at giant-planet size, 10.8 Re at 4.6 d",found in faint-star QLP search; ~4000 ppm secondary at phase 0.41 in SPOC s61 and s62; retired as TFOP EB/VPC,B1,SPOC,2,120,16.0,5
+TIC309436531,B,TOI-3217.01,FP,3.21363,11.13,7810,1.88,65.0,12.33,6189.4,F,4,"[B1] on-target eclipsing binary at giant-planet size, 11.1 Re at 3.2 d",V-shaped; found in faint-star QLP search; TFOP FP; retired as EB,B1,SPOC,1,120,8.0,4
+TIC185226925,B,TOI-5257.01,FP,3.19796,18.75,3626,7.08,32.0,12.16,5990.0,G,9,"[B1] on-target eclipsing binary at giant-planet size, 18.7 Re at 3.2 d",found in faint-star QLP search; retired as TFOP FP/SEB1; phase modulations; synchronized,B1,SPOC,5,120,40.0,1
+TIC347011522,B,TOI-3996.01,FP,17.20457,21.51,3770,4.99,11.0,12.02,6278.0,F,2,"[B1] on-target eclipsing binary at giant-planet size, 21.5 Re at 17.2 d",V-shaped; found in faint-star QLP search,B1,SPOC,1,120,8.0,3
+TIC242460075,B,TOI-3236.01,FP,2.90984,13.28,9480,1.93,20.0,12.98,5955.0,G,1,"[B1] on-target eclipsing binary at giant-planet size, 13.3 Re at 2.9 d",found in faint-star QLP search; TFOP FP; retired as EB,B1,QLP,4,200/600/1800,8.0,1
+TIC419419534,B,TOI-3389.01,FP,1.68015,9.76,1420,1.22,18.0,10.91,5750.5,G,5,"[B1] on-target eclipsing binary at giant-planet size, 9.8 Re at 1.7 d",V-shaped; found in faint-star QLP search; ~800 ppm secondary in SPOC-s61; retired as TFOP FP/EB,B1,SPOC,1,120,8.0,2
+TIC20988926,B,TOI-5862.01,FP,5.31944,20.79,5532,5.24,42.0,12.1,6987.0,F,8,"[B1] on-target eclipsing binary at giant-planet size, 20.8 Re at 5.3 d",found in faint-star QLP search; retired as TFOP FP/SEB1,B1,SPOC,3,120,24.0,2
+TIC206466531,B,TOI-410.01,FP,1.42744,7.86,450,1.97,17.0,10.01,6000.2,F,3,"[B1] on-target eclipsing binary at giant-planet size, 7.9 Re at 1.4 d",Retired as FP by TFOP,B1,SPOC,4,120,32.0,4
+TIC4426490,B,TOI-6874.01,FP,2.66873,16.85,17905,2.89,39.8,12.16,5983.3,G,2,"[B1] on-target eclipsing binary at giant-planet size, 16.8 Re at 2.7 d",multiple stars in pixel; retired as TFOP FP/SEB1,B1,SPOC,2,120,16.0,2
+TIC304042899,B,TOI-775.01,FP,12.44587,21.08,7049,11.54,34.9,9.54,6746.0,F,2,"[B1] on-target eclipsing binary at giant-planet size, 21.1 Re at 12.4 d",likely EB; odd-even; large; v-shaped,B1,SPOC,3,120,24.0,5
+TIC459850897,B,TOI-3503.01,FP,1.18827,11.26,2801,1.96,127.2,10.27,8405.0,A+,5,"[B1] on-target eclipsing binary at giant-planet size, 11.3 Re at 1.2 d",10+ sigma odd-even in spoc-s01-s65; star is a pulsator; retired as TFOP FP/EB,B1,SPOC,6,120,48.0,5
+TIC219205407,B,TOI-946.01,FP,6.12531,22.99,39400,1.99,276.0,10.87,5008.3,K,10,"[B1] on-target eclipsing binary at giant-planet size, 23.0 Re at 6.1 d",TFOP FP; retired as SB2,B1,SPOC,5,120,40.0,2
+TIC399144800,B,TOI-1213.01,FP,27.21496,8.35,4731,3.72,49.7,10.64,6270.0,F,6,"[B1] on-target eclipsing binary at giant-planet size, 8.3 Re at 27.2 d",Possible EB; V-shaped; crowded field; Retired as TFOP SEB1/EB,B1,SPOC,6,120,48.0,1
+TIC151959065,B,TOI-673.01,FP,10.54263,22.01,16790,6.21,124.5,11.96,6114.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 22.0 Re at 10.5 d",GAIA DR2 R = 1.7 Rsolar; transiting object might be slightly bigger; TFOP FP/SB1,B1,SPOC,5,120,40.0,3
+TIC61117473,B,TOI-3122.01,FP,6.18362,13.56,10508,2.54,40.5,12.12,6504.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 13.6 Re at 6.2 d",found in faint-star QLP search; retired as TFOP FP/SEB1,B1,SPOC,2,120,16.0,3
+TIC354006740,B,TOI-1665.01,FP,1.76406,12.38,870,3.09,34.0,6.4,6481.7,F,2,"[B1] on-target eclipsing binary at giant-planet size, 12.4 Re at 1.8 d",very crowded field; v-shaped; matches to 723801895 which is 0.1 mag and 723801891 which is 1.8 mag fainter,B1,TESS-SPOC,2,200,4.0,2
+TIC121966220,B,TOI-1688.01,FP,6.71719,22.88,9139,7.5,91.5,10.8,5843.0,G,2,"[B1] on-target eclipsing binary at giant-planet size, 22.9 Re at 6.7 d",possibly too large for insolation,B1,SPOC,3,120,24.0,1
+TIC86280613,B,TOI-1786.01,FP,9.57355,15.61,2788,2.04,45.0,9.52,6505.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 15.6 Re at 9.6 d",v shaped; retired as TFOP FP/SEB1,B1,SPOC,2,120,16.0,1
+TIC22843856,B,TOI-1644.01,FP,1.84972,11.25,5750,1.76,107.0,9.82,6019.0,F,4,"[B1] on-target eclipsing binary at giant-planet size, 11.2 Re at 1.8 d",V-shaped; seems to be synchronized with variability; TFOP FP; retired as SB2,B1,SPOC,7,120,56.0,2
+TIC138497780,B,TOI-3808.01,FP,3.67548,22.35,9843,2.3,54.5,12.23,6305.0,F,5,"[B1] on-target eclipsing binary at giant-planet size, 22.3 Re at 3.7 d",found in faint-star QLP search; ~4 sigma odd-even in spoc-s14-s60 multisector,B1,SPOC,6,120,48.0,3
+TIC172754786,B,TOI-3561.01,FP,4.12735,20.14,18840,2.74,20.0,12.89,7795.0,A+,4,"[B1] on-target eclipsing binary at giant-planet size, 20.1 Re at 4.1 d",found in faint-star QLP search,B1,SPOC,6,120,48.0,4
+TIC39077574,B,TOI-3825.01,FP,7.1404,10.57,8300,1.72,10.0,13.3,5886.6,G,2,"[B1] on-target eclipsing binary at giant-planet size, 10.6 Re at 7.1 d",V-shaped; found in faint-star QLP search; eccentric EB,B1,SPOC,1,120,8.0,5
+TIC58474992,B,TOI-6921.01,FP,25.71425,15.83,33131,6.37,68.0,12.12,5677.8,G,4,"[B1] on-target eclipsing binary at giant-planet size, 15.8 Re at 25.7 d",found in faint-star QLP search; ~3200 ppm secondary at about 0.3 phase in SPOC s42-s46,B1,SPOC,2,120,16.0,5
+TIC322862882,B,TOI-3205.01,FP,1.23611,8.82,19760,1.14,51.0,13.36,4313.2,K,2,"[B1] on-target eclipsing binary at giant-planet size, 8.8 Re at 1.2 d",V-shaped; found in faint-star QLP search,B1,SPOC,1,120,8.0,4
+TIC461271719,B,TOI-838.01,FP,7.62462,14.5,1256,2.03,26.2,8.78,7313.0,A+,3,"[B1] on-target eclipsing binary at giant-planet size, 14.5 Re at 7.6 d",period updated to 7.62 days with s37 data; TFOP FP; retired as SB1,B1,SPOC,3,120,24.0,3
+TIC131081852,B,TOI-758.01,FP,13.27359,19.11,21147,6.7,253.8,9.96,6072.0,F,3,"[B1] on-target eclipsing binary at giant-planet size, 19.1 Re at 13.3 d",Possible EB; ~1000 ppm eccentric secondary near ~0.4 phase; retired as TFOP FP/EB,B1,SPOC,4,120,32.0,1
+TIC308050066,B,TOI-679.01,FP,11.17554,17.57,7873,5.48,121.0,9.99,6655.0,F,3,"[B1] on-target eclipsing binary at giant-planet size, 17.6 Re at 11.2 d",TFOP APC/SB1,B1,SPOC,5,120,40.0,5
+TIC427348923,B,TOI-484.01,FP,4.72868,8.96,9990,4.53,86.0,11.69,4425.0,K,2,"[B1] on-target eclipsing binary at giant-planet size, 9.0 Re at 4.7 d",could be on 427348561 which is 3x as large (2 Rsun) and 33% fainter; depth in 561 is 14.4 ppt so Rp=26 Re assuming Gaia lower percentile R* = 1.99.,B1,SPOC,2,120,16.0,4
+TIC269892793,B,TOI-1636.01,FP,1.77292,14.95,26694,1.83,148.4,11.91,4769.0,K,2,"[B1] on-target eclipsing binary at giant-planet size, 14.9 Re at 1.8 d",Large; v-shaped; ~12 sigma odd-even in spoc-s58-b0A; TFOP FP/EB,B1,SPOC,2,120,16.0,2
+TIC66497310,B,TOI-343.01,FP,1.75631,8.37,3477,1.85,17.1,12.41,5885.0,G,3,"[B1] on-target eclipsing binary at giant-planet size, 8.4 Re at 1.8 d",~8 sigma odd-even in SPOC s1-s69; retired as TFOP FP/EB,B1,SPOC,4,120,32.0,2
+TIC277871306,B,TOI-2664.01,FP,3.96028,24.45,6193,0.88,77.0,10.15,5863.0,G,5,"[B1] on-target eclipsing binary at giant-planet size, 24.4 Re at 4.0 d",v-shaped; possible odd-even; TFOP SB1/FP,B1,SPOC,4,120,32.0,3
+TIC90919952,B,TOI-1118.01,FP,4.13812,,5560,3.91,70.0,10.51,4898.4,K,1,[B5] eclipsing binary posing as a unknown radius planet at 4.1 d,Likely EB,B5,QLP,4,200/1800,8.0,5
+TIC330468175,B,TOI-1360.01,FP,0.70902,5.19,570,2.49,19.0,10.01,8999.0,A+,2,[B5] eclipsing binary posing as a 5.2 Re planet at 0.7 d,Raw light curve aperture 2 and 3 look like they have different depths. Possible depth/aperture correlation and EB.,B5,SPOC,1,120,8.0,4
+TIC74482749,B,TOI-584.01,FP,1.26227,28.25,3712,1.78,41.5,9.11,9255.0,A+,6,[B5] eclipsing binary posing as a 28.2 Re planet at 1.3 d,possibly too large; potential odd-even; possible synchronization; TFOP FP/EB,B5,SPOC,2,120,16.0,2
+TIC415969574,B,TOI-342.01,FP,10.45776,,8773,3.15,21.0,12.87,5800.0,G,1,[B5] eclipsing binary posing as a unknown radius planet at 10.5 d,TFOP FP; retired as SEB2,B5,SPOC,1,120,8.0,2
+TIC239372503,B,TOI-4502.01,FP,0.85603,3.16,247,1.59,20.0,8.72,11798.0,A+,4,[B5] eclipsing binary posing as a 3.2 Re planet at 0.9 d (blend noted),star is hot and variable; retired as TFOP NEB/FP,B5,SPOC,4,120,32.0,4
+TIC21755546,B,TOI-1146.01,FP,0.66018,6.17,473,1.63,12.0,8.4,8598.7,A+,3,[B5] eclipsing binary posing as a 6.2 Re planet at 0.7 d (blend noted),TFOP FP; retired as NEB,B5,SPOC,5,120,40.0,2
+TIC106114491,B,TOI-5876.01,FP,9.72114,8.61,1812,4.19,17.9,10.64,6702.0,F,7,[B5] eclipsing binary posing as a 8.6 Re planet at 9.7 d (blend noted),found in faint-star QLP search; retired as TFOP FP/NEB,B5,SPOC,4,120,32.0,1
+TIC324609476,B,TOI-5041.01,FP,0.73389,12.8,41804,0.97,24.3,14.93,3423.0,M,3,[B5] eclipsing binary posing as a 12.8 Re planet at 0.7 d,found in faint-star QLP search; ~8-10 sigma odd-even in SPOC s1-s69; v-shaped; retired as TFOP FP/EB,B5,SPOC,6,120,48.0,2
+TIC341444900,B,TOI-6023.01,FP,9.03304,7.35,227,5.96,17.0,8.63,7527.0,A+,6,[B5] eclipsing binary posing as a 7.4 Re planet at 9.0 d (blend noted),weak signal; evolved host star; possible SV; retired as TFOP FP/NEB,B5,SPOC,3,120,24.0,1
+TIC5024743,B,TOI-2805.01,FP,12.44988,20.06,1827,5.45,25.0,10.1,8469.0,A+,5,[B5] eclipsing binary posing as a 20.1 Re planet at 12.4 d (blend noted),TFOP NEB/FP,B5,TESS-SPOC,5,200/600/1800,10.0,1
+TIC126171392,B,TOI-5899.01,FP,0.78357,11.86,7440,1.09,18.0,12.94,5932.0,G,3,[B5] eclipsing binary posing as a 11.9 Re planet at 0.8 d,V-shaped; found in faint-star QLP search,B5,QLP,3,600/1800,6.0,2
+TIC461387302,B,TOI-1624.01,FP,5.80893,3.79,1111,5.14,29.0,10.28,6406.0,F,7,[B5] eclipsing binary posing as a 3.8 Re planet at 5.8 d (blend noted),Centroid offset; significant depth-aperture correlation; TFOP NEB,B5,TESS-SPOC,7,200/1800,14.0,2
+TIC468472950,B,TOI-1395.01,FP,0.98724,3.32,335,1.5,17.0,10.13,6301.3,F,7,[B5] eclipsing binary posing as a 3.3 Re planet at 1.0 d (blend noted),retired as TFOP FP/NEB; clear offset in recent TESS data,B5,SPOC,5,120,40.0,1
+TIC313761775,B,TOI-1526.01,FP,1.53098,6.01,654,1.37,21.0,9.69,6298.0,F,5,[B5] eclipsing binary posing as a 6.0 Re planet at 1.5 d (blend noted),retired as TFOP FP/NEB; Variable star; some depth-aperture correlation,B5,TESS-SPOC,6,200/1800,12.0,4
+TIC28643432,B,TOI-5184.01,FP,2.27509,13.41,4241,2.76,44.2,11.65,5810.0,G,6,[B5] eclipsing binary posing as a 13.4 Re planet at 2.3 d (blend noted),found in faint-star QLP search; retired as TFOP FP/NEB,B5,SPOC,3,120,24.0,2
+TIC430677414,B,TOI-1507.01,FP,0.46741,3.11,277,1.5,16.1,8.42,7960.5,A+,7,[B5] eclipsing binary posing as a 3.1 Re planet at 0.5 d (blend noted),high frequency variability in the star; TFOP FP/NEB; clear offset in recent TESS data,B5,SPOC,7,120,56.0,1
+TIC425163745,B,TOI-937.01,FP,0.27664,24.47,15669,0.72,121.0,10.86,5341.6,G,1,[B5] eclipsing binary posing as a 24.5 Re planet at 0.3 d (blend noted),V shaped; likely EB; retired as NEB,B5,TESS-SPOC,1,1800,2.0,2
+TIC305943739,B,TOI-4498.01,FP,5.30753,2.35,204,5.22,12.4,7.95,5821.4,G,4,[B5] eclipsing binary posing as a 2.3 Re planet at 5.3 d (blend noted),ambiguous centroid plot; potential L1 candidate; clear offset in recent TESS data; retired as TFOP FP/NEB,B5,SPOC,2,120,16.0,4
+TIC69838258,B,TOI-339.01,FP,6.73069,22.15,14722,3.5,61.0,12.09,6048.2,F,1,[B5] eclipsing binary posing as a 22.1 Re planet at 6.7 d (blend noted),WASP confirms NEB; TFOP FP,B5,TESS-SPOC,2,600/1800,4.0,1
+TIC175310067,B,TOI-1016.01,FP,12.68894,14.06,3233,7.92,13.1,10.63,7601.0,A+,1,[B5] eclipsing binary posing as a 14.1 Re planet at 12.7 d (blend noted),TFOP FP; retired as NEB,B5,SPOC,1,120,8.0,5
+TIC114103134,B,TOI-2829.01,FP,1.14687,11.73,2763,1.4,14.1,11.61,6755.0,F,3,[B5] eclipsing binary posing as a 11.7 Re planet at 1.1 d (blend noted),V-shaped; found in faint-star QLP search; retired as TFOP FP/NEB,B5,SPOC,1,120,8.0,3
+TIC256621916,B,TOI-1342.01,FP,1.41365,,2427,1.45,72.0,10.42,5869.0,G,9,[B5] eclipsing binary posing as a unknown radius planet at 1.4 d (blend noted),TFOP FP/NEB,B5,SPOC,3,120,24.0,4
+TIC320536216,B,TOI-986.01,FP,0.54767,9.87,2886,1.04,1166.1,10.18,8274.5,A+,9,[B5] eclipsing binary posing as a 9.9 Re planet at 0.5 d (blend noted),TFOP FP/EB/BEB; 8+ sigma odd-even from SPOC s1-s65,B5,SPOC,8,120,64.0,3
+TIC407146538,B,TOI-5055.01,FP,2.09156,14.3,2560,3.63,23.0,11.91,5551.0,G,5,[B5] eclipsing binary posing as a 14.3 Re planet at 2.1 d (blend noted),V-shaped; found in faint-star QLP search; retired as TFOP FP/NPC due to identification of true source of signal as TIC 1104064500,B5,SPOC,3,120,24.0,3
+TIC141631253,B,TOI-2987.01,FP,1.6709,5.37,1211,2.28,12.9,10.85,7051.0,F,3,[B5] eclipsing binary posing as a 5.4 Re planet at 1.7 d (blend noted),found in faint-star QLP search; centroid offset centered near other stars in spoc s61+s62; retired as TFOP FP/NEB,B5,SPOC,2,120,16.0,3
+TIC392112968,B,TOI-3174.01,FP,1.19601,15.48,11770,2.35,18.0,13.28,7108.0,F,6,[B5] eclipsing binary posing as a 15.5 Re planet at 1.2 d (blend noted),found in faint-star QLP search; v-shaped; possible centroid offset to SE,B5,SPOC,2,120,16.0,5
+TIC1133072,B,TOI-566.01,FP,0.84654,1.64,2525,2.41,9.5,12.62,3380.0,M,1,[B5] eclipsing binary posing as a 1.6 Re planet at 0.8 d (blend noted),Retired as NEB,B5,SPOC,3,120,24.0,5
+TIC29336129,B,TOI-2933.01,FP,1.63638,10.67,2384,5.28,12.8,12.52,6361.0,F,6,[B5] eclipsing binary posing as a 10.7 Re planet at 1.6 d (blend noted),found in faint-star QLP search; centroid offset near TIC 29336132 (Tmag~18.2) in SPOC multisector; retired as TFOP FP/NEB,B5,SPOC,2,120,16.0,2
+TIC284288080,B,TOI-889.01,FP,1.83485,5.9,1200,2.67,27.0,10.85,6466.0,F,4,[B5] eclipsing binary posing as a 5.9 Re planet at 1.8 d,blended with something faint; and the matches 284288094 or 284288093 is an EB but with the period 7.3 days,B5,SPOC,4,120,32.0,3
+TIC62530991,B,TOI-2585.01,FP,4.02665,1.9,754,2.31,13.0,9.9,5276.5,G,3,[B5] eclipsing binary posing as a 1.9 Re planet at 4.0 d (blend noted),TFOP FP; retired as NEB,B5,SPOC,2,120,16.0,4
+TIC399642071,B,TOI-4337.01,FP,2.28878,2.81,1891,4.86,13.4,11.16,3953.0,K,4,[B5] eclipsing binary posing as a 2.8 Re planet at 2.3 d (blend noted),low SNR; possible instrument systematics; v-shaped; retired as TFOP FP/NEB,B5,SPOC,4,120,32.0,5
+TIC445586472,B,TOI-967.01,FP,1.73936,5.12,429,3.61,8.7,10.57,7051.0,F,5,[B5] eclipsing binary posing as a 5.1 Re planet at 1.7 d (blend noted),TFOP FP; retired as NEB,B5,SPOC,5,120,40.0,3
+TIC175180796,B,TOI-816.01,FP,1.55747,3.8,3128,2.71,29.0,11.14,4146.6,K,2,[B5] eclipsing binary posing as a 3.8 Re planet at 1.6 d (blend noted),likely BEB on 175180784 (evolved star according to Gaia),B5,SPOC,3,120,24.0,1
+TIC331034236,B,TOI-1505.01,FP,3.42725,7.75,569,5.91,12.6,9.27,6338.0,F,4,[B5] eclipsing binary posing as a 7.8 Re planet at 3.4 d (blend noted),retired as TFOP FP/NEB,B5,SPOC,5,120,40.0,5
+TIC404610583,B,TOI-5966.01,FP,3.53823,12.16,11909,2.48,116.8,10.53,6084.0,F,2,[B5] eclipsing binary posing as a 12.2 Re planet at 3.5 d (blend noted),variable host; retired as TFOP FP/SEB1,B5,SPOC,2,120,16.0,3
+TIC120269103,B,TOI-886.01,FP,20.42767,19.96,2989,5.19,55.3,8.27,8844.0,A+,2,[B5] eclipsing binary posing as a 20.0 Re planet at 20.4 d (blend noted),TFOP FP; NEB,B5,SPOC,1,120,8.0,1
+TIC97158538,B,TOI-631.01,FP,2.59507,5.94,665,0.79,12.0,8.78,6852.0,F,3,[B5] eclipsing binary posing as a 5.9 Re planet at 2.6 d,synchronized; TFOP FP retired as EB,B5,SPOC,2,120,16.0,5
+TIC469184909,B,TOI-2953.01,FP,1.2927,,6460,2.59,33.0,12.48,,?,6,[B5] eclipsing binary posing as a unknown radius planet at 1.3 d,found in faint-star QLP search; slight depth aperture correlation; no stellar radius; ~1300 ppm secondary in spoc-s1-s65; retired as TFOP FP/EB,B5,SPOC,3,120,24.0,2
+TIC170103435,B,TOI-2510.01,FP,1.97852,2.7,500,1.28,14.0,10.09,6317.0,F,6,[B5] eclipsing binary posing as a 2.7 Re planet at 2.0 d (blend noted),TFOP FP/NEB,B5,SPOC,1,120,8.0,4
+TIC176778112,B,TOI-408.01,FP,1.33679,2.71,700,1.49,23.0,9.61,5600.0,G,2,[B5] eclipsing binary posing as a 2.7 Re planet at 1.3 d (blend noted),TFOP NEB,B5,SPOC,3,120,24.0,4
+TIC294500964,B,TOI-2550.01,FP,9.07025,5.74,3806,1.91,24.9,10.78,5509.1,G,6,[B5] eclipsing binary posing as a 5.7 Re planet at 9.1 d (blend noted),centroid offset on TIC 294500963; retired as TFOP NEB,B5,SPOC,8,120,64.0,5
+TIC169904935,B,TOI-1005.01,FP,4.55059,7.11,3731,2.65,69.0,9.13,5613.0,G,3,[B5] eclipsing binary posing as a 7.1 Re planet at 4.6 d (blend noted),TFOP FP; retired as NEB,B5,SPOC,1,120,8.0,2
+TIC124709665,B,TOI-1002.01,FP,1.86756,23.75,1500,1.41,28.0,9.3,8924.0,A+,2,[B5] eclipsing binary posing as a 23.8 Re planet at 1.9 d (blend noted),TFOP FP; retired as NEB,B5,SPOC,1,120,8.0,5
+TIC383666033,B,TOI-3008.01,FP,3.96781,2.82,760,4.24,11.0,11.21,6138.0,F,5,[B5] eclipsing binary posing as a 2.8 Re planet at 4.0 d (blend noted),found in faint-star QLP search; retired as TFOP FP/NEB,B5,TESS-SPOC,6,600/1800,12.0,3
+TIC312469860,B,TOI-1530.01,FP,0.50261,6.28,1120,1.13,31.0,9.95,6941.0,F,2,[B5] eclipsing binary posing as a 6.3 Re planet at 0.5 d,Significant secondary; likely EB; Slight depth-aperture correlation; variable star,B5,TESS-SPOC,2,200,4.0,3
+TIC274662200,B,TOI-1285.01,FP,1.22926,2.15,1194,1.61,29.5,10.93,3526.0,M,6,[B5] eclipsing binary posing as a 2.1 Re planet at 1.2 d (blend noted),TFOP FP/NEB; clear offset in recent TESS data,B5,SPOC,6,120,48.0,4
+TIC398733009,B,TOI-464.01,FP,0.81857,4.16,44712,0.98,10.5,15.61,31000.0,A+,2,[B5] eclipsing binary posing as a 4.2 Re planet at 0.8 d,hot subdwarf star; deep secondary; retired as TFOP FP/EB due to 11000 ppm secondary,B5,SPOC,3,120,24.0,3
+TIC344085117,B,TOI-2365.01,FP,0.65975,4.3,1138,0.67,10.5,11.97,5832.0,G,8,[B5] eclipsing binary posing as a 4.3 Re planet at 0.7 d (blend noted),v-shaped; low SNR; CTOI from Marco Montalto; multiple stars in pixel; retired as TFOP FP/NEB,B5,SPOC,5,120,40.0,2
+TIC139285736,B,TOI-377.01,FP,1.55028,14.72,23530,1.57,49.0,12.0,5039.5,K,1,[B5] eclipsing binary posing as a 14.7 Re planet at 1.6 d (blend noted),possible centroid offset; TFOP FP; retired as NPC,B5,TESS-SPOC,2,200/1800,4.0,4
+TIC65347776,B,TOI-2418.01,FP,25.86696,7.41,2240,4.92,11.0,10.92,5095.0,K,3,[B5] eclipsing binary posing as a 7.4 Re planet at 25.9 d (blend noted),Only two transits; one Y1 one Y3. 25.867 days is one of at least 27 possible period aliases; retired as TFOP FP/NEB,B5,SPOC,2,120,16.0,1
+TIC274942910,B,TOI-1325.01,FP,1.0793,3.31,1562,2.2,46.0,9.98,4349.3,K,4,[B5] eclipsing binary posing as a 3.3 Re planet at 1.1 d (blend noted),retired as TFOP FP/NEB,B5,SPOC,3,120,24.0,5
+TIC274170255,B,TOI-1380.01,FP,1.41072,8.5,500,2.62,14.0,9.33,5197.0,K,2,[B5] eclipsing binary posing as a 8.5 Re planet at 1.4 d (blend noted),TFOP FP; retired as NEB,B5,SPOC,1,120,8.0,3
+TIC187029841,B,TOI-1600.01,FP,0.36111,6.69,710,0.76,31.0,9.66,6056.9,F,1,[B5] eclipsing binary posing as a 6.7 Re planet at 0.4 d,a/Rs only slightly bigger than 1; short period; retired as TFOP FP/EB,B5,TESS-SPOC,3,200/1800,6.0,5
+TIC378355116,B,TOI-2054.01,FP,3.56845,5.88,939,2.93,14.0,10.76,8124.0,A+,4,[B5] eclipsing binary posing as a 5.9 Re planet at 3.6 d (blend noted),Check nearby stars - possible NEB but no odd-even; centroid; or depth aperture. Lightcurve shows variability; retired as TFOP FP/NEB,B5,SPOC,6,120,48.0,4
+TIC90544017,B,TOI-1038.01,FP,3.2236,5.51,680,2.16,23.0,8.72,8904.0,A+,3,[B5] eclipsing binary posing as a 5.5 Re planet at 3.2 d (blend noted),TFOP FP; retired as NEB,B5,SPOC,1,120,8.0,1
+TIC370745311,B,TOI-1047.01,FP,0.62627,5.72,1880,0.67,41.0,10.24,5622.0,G,3,[B5] eclipsing binary posing as a 5.7 Re planet at 0.6 d,Check 2 minute data for odd even,B5,SPOC,3,120,24.0,1
+TIC333821572,B,TOI-974.01,FP,2.82595,8.57,2206,2.41,29.0,10.43,8192.0,A+,3,[B5] eclipsing binary posing as a 8.6 Re planet at 2.8 d (blend noted),TFOP FP/NEB,B5,SPOC,1,120,8.0,4
+TIC113295476,B,TOI-4233.01,FP,1.82044,16.63,7330,2.64,10.0,13.57,6079.0,F,1,[B6] false positive of unstated cause posing as a 16.6 Re planet at 1.8 d,found in faint-star QLP search,B6,SPOC,2,120,16.0,2
+TIC6653897,B,TOI-5450.01,FP,0.88575,3.2,760,1.58,11.0,11.45,6238.2,F,3,[B6] false positive of unstated cause posing as a 3.2 Re planet at 0.9 d,found in faint-star QLP search,B6,SPOC,1,120,8.0,3
+TIC37575651,B,TOI-568.01,FP,9.5972,,601,2.94,9.8,8.29,5780.0,G,2,[B6] false positive of unstated cause posing as a unknown radius planet at 9.6 d,phase shift in odd & even events; GAIA Teff=9422K; likely large stellar radius; possibly double the period; SPOC is assuming solar radius,B6,SPOC,3,120,24.0,1
+TIC274762761,B,TOI-1256.01,FP,1.03324,4.09,26112,3.8,8.8,13.56,2972.0,M,2,[B6] false positive of unstated cause posing as a 4.1 Re planet at 1.0 d,TFOP FP,B6,SPOC,7,120,56.0,4
+TIC343442463,B,TOI-1387.01,FP,0.78381,3.9,426,1.44,18.0,8.96,7842.0,A+,1,[B6] false positive of unstated cause posing as a 3.9 Re planet at 0.8 d,,B6,SPOC,1,120,8.0,4
+TIC240613164,B,TOI-1377.01,FP,1.99143,,16746,4.14,65.0,10.14,9458.2,A+,1,[B6] false positive of unstated cause posing as a unknown radius planet at 2.0 d,no Rs; could be off target,B6,QLP,5,200/1800,10.0,4
+TIC126357909,B,TOI-4232.01,FP,1.2248,8.33,7640,1.65,12.0,13.52,5699.0,G,1,[B6] false positive of unstated cause posing as a 8.3 Re planet at 1.2 d,found in faint-star QLP search,B6,QLP,1,1800,2.0,1
+TIC98613492,B,TOI-6355.01,FP,1.06171,5.85,2369,1.07,22.0,11.83,5589.0,G,2,[B6] false positive of unstated cause posing as a 5.9 Re planet at 1.1 d,found in faint-star QLP search,B6,SPOC,2,120,16.0,3
+TIC285233023,B,TOI-6298.01,FP,2.8577,7.79,2695,2.26,11.0,12.45,6240.0,F,4,[B6] false positive of unstated cause posing as a 7.8 Re planet at 2.9 d,found in faint-star QLP search,B6,SPOC,1,120,8.0,5
+TIC192520375,B,TOI-4251.01,FP,0.91095,13.05,4720,1.47,21.0,12.54,9421.0,A+,3,[B6] false positive of unstated cause posing as a 13.1 Re planet at 0.9 d,found in faint-star QLP search,B6,SPOC,1,120,8.0,1
+TIC354594208,B,TOI-1492.01,FP,0.86673,3.55,663,1.09,9.0,9.76,5904.0,G,1,[B6] false positive of unstated cause posing as a 3.5 Re planet at 0.9 d,,B6,SPOC,2,120,16.0,5
+TIC467281353,B,TOI-1975.01,FP,2.83194,4.18,780,3.21,18.0,10.21,5408.7,G,3,[B6] false positive of unstated cause posing as a 4.2 Re planet at 2.8 d,crowded field,B6,SPOC,2,120,16.0,4
+TIC265077027,B,TOI-961.01,FP,4.79586,23.41,26891,2.13,84.0,10.66,5782.5,G,1,[B6] false positive of unstated cause posing as a 23.4 Re planet at 4.8 d,,B6,SPOC,1,120,8.0,2
+TIC274002141,B,TOI-6368.01,FP,1.6198,11.43,31095,0.95,12.0,14.59,3192.0,M,1,[B6] false positive of unstated cause posing as a 11.4 Re planet at 1.6 d,found in faint-star QLP search,B6,QLP,1,200,2.0,4
+TIC310267134,B,TOI-3319.01,FP,0.54388,6.47,3390,0.78,13.0,13.53,5259.0,G,2,[B6] false positive of unstated cause posing as a 6.5 Re planet at 0.5 d,found in faint-star QLP search,B6,SPOC,1,120,8.0,3
+TIC265887000,B,TOI-7314.01,FP,2.50341,,1877,3.42,19.0,12.17,,?,4,[B6] false positive of unstated cause posing as a unknown radius planet at 2.5 d,found in faint-star QLP search; no stellar radius; possible transit duration difference,B6,QLP,4,200/600/1800,8.0,4
+TIC122485078,B,TOI-1650.01,FP,9.1505,11.15,1370,2.99,13.0,10.01,7719.0,A+,2,[B6] false positive of unstated cause posing as a 11.1 Re planet at 9.2 d,,B6,SPOC,1,120,8.0,5
+TIC148233571,B,TOI-2754.01,FP,0.94226,3.75,1060,1.46,13.0,12.21,5544.7,G,3,[B6] false positive of unstated cause posing as a 3.8 Re planet at 0.9 d,found in faint-star QLP search,B6,SPOC,2,120,16.0,1
+TIC285674856,B,TOI-1570.01,FP,1.74626,5.63,1110,3.88,12.0,9.49,8348.0,A+,1,[B6] false positive of unstated cause posing as a 5.6 Re planet at 1.7 d,other features at different periods in the BLS,B6,TESS-SPOC,2,200/1800,4.0,5
+TIC253030300,B,TOI-3795.01,FP,2.83002,6.47,3790,1.65,12.0,12.24,6205.0,F,1,[B6] false positive of unstated cause posing as a 6.5 Re planet at 2.8 d,found in faint-star QLP search,B6,SPOC,2,120,16.0,2
+TIC452810327,B,TOI-2708.01,FP,2.35402,14.49,6660,2.36,27.0,12.54,6114.0,F,2,[B6] false positive of unstated cause posing as a 14.5 Re planet at 2.4 d,found in faint-star QLP search; CTOI from Olmschenk et al. (2021),B6,QLP,3,200/600/1800,6.0,1
+TIC132320310,B,TOI-3436.01,FP,1.39553,10.46,960,2.62,23.0,10.96,4957.2,K,4,[B6] false positive of unstated cause posing as a 10.5 Re planet at 1.4 d,found in faint-star QLP search,B6,TESS-SPOC,4,600/1800,8.0,1
+TIC348755723,B,TOI-633.01,FP,4.50364,11.2,12526,1.97,9.9,13.9,3267.0,M,1,[B6] false positive of unstated cause posing as a 11.2 Re planet at 4.5 d,Follow-up (Will Waalkes and Zach Berta-Thompson) ruled out a transit on TOI 633 but confirmed a 9.6 ppt event on 348755728; GAIA stellar parameters: Teff = 3414,B6,SPOC,2,120,16.0,3
+TIC435861696,B,TOI-3621.01,FP,5.69028,12.95,21290,2.34,74.0,12.0,5400.1,G,1,[B6] false positive of unstated cause posing as a 12.9 Re planet at 5.7 d,found in faint-star QLP search,B6,SPOC,1,120,8.0,3
+TIC273069412,B,TOI-7332.01,FP,3.53994,8.34,6448,3.44,26.0,12.37,5234.6,G,6,[B6] false positive of unstated cause posing as a 8.3 Re planet at 3.5 d,found in faint-star QLP search,B6,QLP,7,200/600/1800,14.0,3
+TIC414870287,B,TOI-1499.01,FP,4.95898,,230,1.83,10.0,7.82,3295.0,M,2,[B6] false positive of unstated cause posing as a unknown radius planet at 5.0 d,Likely giant; Rs < 10 Rsun will save it as a PC.,B6,TESS-SPOC,1,200,2.0,5
+TIC1976308113,B,TOI-3572.01,FP,2.75686,,18380,2.31,45.0,13.09,,?,2,[B6] false positive of unstated cause posing as a unknown radius planet at 2.8 d,found in faint-star QLP search,B6,QLP,7,200/1800,14.0,5
+TIC386297468,B,TOI-3005.01,FP,2.09581,7.64,2350,2.99,19.0,12.35,6793.0,F,5,[B6] false positive of unstated cause posing as a 7.6 Re planet at 2.1 d,found in faint-star QLP search,B6,SPOC,3,120,24.0,2
+TIC285666479,B,TOI-1569.01,FP,1.71614,14.13,681,2.04,13.0,10.42,5511.5,G,1,[B6] false positive of unstated cause posing as a 14.1 Re planet at 1.7 d,,B6,SPOC,2,120,16.0,5
+TIC166099360,B,TOI-7255.01,FP,1.68312,10.02,2192,1.38,12.0,12.62,6264.0,F,5,[B6] false positive of unstated cause posing as a 10.0 Re planet at 1.7 d,found in faint-star QLP search,B6,QLP,5,200/600,10.0,1
+TIC305026599,B,TOI-7245.01,FP,1.68776,5.77,1655,2.19,19.0,11.74,6599.0,F,5,[B6] false positive of unstated cause posing as a 5.8 Re planet at 1.7 d,found in faint-star QLP search,B6,TESS-SPOC,4,600/1800,8.0,2
+TIC438490744,B,TOI-529.01,FP,1.66588,6.98,85644,4.96,19.1,14.14,3021.0,M,1,[B6] false positive of unstated cause posing as a 7.0 Re planet at 1.7 d,,B6,SPOC,6,120,48.0,5
+TIC450327768,B,TOI-1788.01,FP,5.34326,10.42,6980,1.43,70.0,10.19,5776.0,G,1,[B6] false positive of unstated cause posing as a 10.4 Re planet at 5.3 d,,B6,SPOC,1,120,8.0,4
+TIC382331352,B,TOI-1093.01,FP,11.47606,,3050,6.08,24.0,10.01,,?,2,[B6] false positive of unstated cause posing as a unknown radius planet at 11.5 d,period could be 2 or 4x,B6,SPOC,1,120,8.0,5
+TIC40055053,B,TOI-5240.01,FP,4.17933,16.16,4900,5.16,26.0,11.69,7349.0,A+,3,[B6] false positive of unstated cause posing as a 16.2 Re planet at 4.2 d,found in faint-star QLP search,B6,SPOC,3,120,24.0,3
+TIC86005116,B,TOI-6157.01,FP,0.49164,11.78,29113,0.45,16.0,14.91,3522.0,M,2,[B6] false positive of unstated cause posing as a 11.8 Re planet at 0.5 d,found in faint-star QLP search,B6,SPOC,1,120,8.0,1
+TIC187861378,B,TOI-4216.01,FP,2.18168,,1280,3.83,16.0,11.25,8582.7,A+,2,[B6] false positive of unstated cause posing as a unknown radius planet at 2.2 d,found in faint-star QLP search,B6,QLP,3,200/600/1800,6.0,2
+TIC358072664,B,TOI-4902.01,FP,4.19349,9.49,2710,1.87,9.0,12.9,5541.0,G,5,[B6] false positive of unstated cause posing as a 9.5 Re planet at 4.2 d,found in faint-star QLP search,B6,SPOC,1,120,8.0,2
+TIC285677945,B,TOI-1571.01,FP,1.2427,6.05,664,1.56,11.0,10.24,5624.8,G,1,[B6] false positive of unstated cause posing as a 6.1 Re planet at 1.2 d,Possible depth aperture correlation,B6,SPOC,2,120,16.0,4
+TIC444977814,B,TOI-6999.01,FP,11.36898,9.9,5979,5.49,17.0,12.49,6076.0,F,3,[B6] false positive of unstated cause posing as a 9.9 Re planet at 11.4 d,found in faint-star QLP search; also a CTOI from Rafael Rodrigues (TESS Planet Hunters),B6,SPOC,1,120,8.0,3
+TIC69997672,B,TOI-1133.01,FP,1.80709,4.86,450,3.3,9.0,9.11,6244.0,F,1,[B6] false positive of unstated cause posing as a 4.9 Re planet at 1.8 d,,B6,SPOC,3,120,24.0,1
+TIC33091633,B,TOI-984.01,FP,7.52118,12.91,50623,6.13,103.0,10.28,6184.6,F,1,[B6] false positive of unstated cause posing as a 12.9 Re planet at 7.5 d,planet radius mass and Teff are inconsistent.,B6,SPOC,2,120,16.0,1
+TIC411347315,B,TOI-7352.01,FP,4.06624,10.98,6676,3.72,22.0,13.17,5689.0,G,2,[B6] false positive of unstated cause posing as a 11.0 Re planet at 4.1 d,found in faint-star QLP search,B6,QLP,2,200,4.0,4
+TIC422159302,B,TOI-7183.01,FP,10.57394,4.61,493,3.48,11.0,9.5,9088.0,A+,8,[B6] false positive of unstated cause posing as a 4.6 Re planet at 10.6 d,weak transit shape; possibly SV,B6,SPOC,1,120,8.0,4
+TIC22712134,B,TOI-6287.01,FP,1.64076,8.61,2129,1.33,11.0,12.65,6262.0,F,2,[B6] false positive of unstated cause posing as a 8.6 Re planet at 1.6 d,found in faint-star QLP search,B6,SPOC,1,120,8.0,5
+TIC206763148,B,TOI-7542.01,FP,8.94527,9.98,4260,3.08,24.3,12.15,7106.0,F,3,[B6] false positive of unstated cause posing as a 10.0 Re planet at 8.9 d,found in faint-star QLP search,B6,QLP,3,200/600/1800,6.0,3
+TIC256414077,B,TOI-1566.01,FP,3.01106,7.21,1617,3.07,18.0,10.59,6516.0,F,1,[B6] false positive of unstated cause posing as a 7.2 Re planet at 3.0 d,,B6,QLP,5,200/1800,10.0,2
+TIC445496795,B,TOI-3644.01,FP,1.83173,12.51,2188,2.01,11.0,12.15,7308.0,A+,2,[B6] false positive of unstated cause posing as a 12.5 Re planet at 1.8 d,found in faint-star QLP search,B6,SPOC,2,120,16.0,2
