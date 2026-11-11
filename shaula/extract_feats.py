@@ -1229,6 +1229,76 @@ def _recover_subthreshold_candidates(
     return recovered
 
 
+SHARED_EVENT_MAX_TRANSITS = 3
+
+
+def _event_centres(time, period, t0, duration):
+    """Predicted transit centres that fall on observed cadences."""
+    if not (np.isfinite(period) and np.isfinite(t0) and period > 0):
+        return np.empty(0)
+    first = np.ceil((time[0] - t0) / period)
+    last = np.floor((time[-1] - t0) / period)
+    centres = t0 + period * np.arange(first, last + 1)
+    if centres.size == 0:
+        return centres
+    nearest = np.clip(np.searchsorted(time, centres), 1, time.size - 1)
+    gap = np.minimum(
+        np.abs(time[nearest] - centres), np.abs(time[nearest - 1] - centres)
+    )
+    reach = max(0.5 * duration, 0.0) if np.isfinite(duration) else 0.0
+    return centres[gap <= reach]
+
+
+def _order_shared_events_by_transits(entries, time, threshold):
+    """Try a peak with more transits before a few-transit peak sharing one.
+
+    ``entries`` are dicts with ``period``, ``t0``, ``duration``, ``max_mes``
+    and ``n_events``, already in the order they would be tried. A peak with at
+    most ``SHARED_EVENT_MAX_TRANSITS`` transits gives way to a later peak that
+    passes ``threshold``, has more transits and puts one on the same event.
+    Periods in an integer or half-integer ratio are left alone: those are
+    aliases of one signal, which ``_reconcile_accepted_harmonic`` settles on
+    MES, not two signals. Returns the new order as indices.
+    """
+    time = np.asarray(time, dtype=float)
+    remaining = list(range(len(entries)))
+    ordered = []
+    while remaining:
+        head = entries[remaining[0]]
+        promoted = None
+        if 0 < head["n_events"] <= SHARED_EVENT_MAX_TRANSITS:
+            centres = _event_centres(
+                time, head["period"], head["t0"], head["duration"]
+            )
+            for position in remaining[1:]:
+                other = entries[position]
+                if not (
+                    other["n_events"] > head["n_events"]
+                    and np.isfinite(other["max_mes"])
+                    and other["max_mes"] >= threshold
+                    and np.isfinite(other["period"])
+                    and other["period"] > 0
+                ):
+                    continue
+                doubled = 2.0 * head["period"] / other["period"]
+                if abs(doubled - round(doubled)) < 0.03:
+                    continue
+                offset = np.abs(
+                    (centres - other["t0"] + 0.5 * other["period"]) % other["period"]
+                    - 0.5 * other["period"]
+                )
+                reach = 0.5 * max(head["duration"], other["duration"])
+                if np.any(offset <= reach):
+                    promoted = position
+                    break
+        if promoted is None:
+            ordered.append(remaining.pop(0))
+        else:
+            remaining.remove(promoted)
+            remaining.insert(0, promoted)
+    return ordered
+
+
 def _quick_candidate_diagnostics(time, flux, hint, gap_mask=None):
     period = float(hint.get("period", np.nan))
     duration = float(hint.get("duration", np.nan))
@@ -1364,6 +1434,37 @@ def extract_features_from_arrays(
             quick_cache[id(peak)] = quick_info
             scored.append((quick_info["max_mes"], order, (None, None, peak)))
         scored.sort(key=lambda item: (-np.nan_to_num(item[0], nan=-np.inf), item[1]))
+        if search_profile.prefer_shared_events_to_more_transits:
+            described = []
+            for quick_mes, _, (first_features, first_info, peak) in scored:
+                if peak is None:
+                    described.append(
+                        {
+                            "period": float(first_features.get("period_days", np.nan)),
+                            "t0": float(first_features.get("t0", np.nan)),
+                            "duration": float(
+                                first_features.get("duration_days", np.nan)
+                            ),
+                            "max_mes": quick_mes,
+                            "n_events": int(first_info.get("n_mes_events", 0)),
+                        }
+                    )
+                else:
+                    described.append(
+                        {
+                            "period": float(peak.get("period", np.nan)),
+                            "t0": float(peak.get("t0", np.nan)),
+                            "duration": float(peak.get("duration", np.nan)),
+                            "max_mes": quick_mes,
+                            "n_events": quick_cache[id(peak)]["n_mes_events"],
+                        }
+                    )
+            scored = [
+                scored[index]
+                for index in _order_shared_events_by_transits(
+                    described, time_values, MES_DETECTION_THRESHOLD
+                )
+            ]
         attempts = [entry for _, _, entry in scored]
 
         accepted = None

@@ -425,3 +425,49 @@ def test_gate_applies_the_leave_one_out_floor_only_when_the_profile_sets_it():
     assert extract_feats._candidate_passes_mes(features, info, min_events=2)
     assert DEFAULT_PROFILE.min_mes_without_strongest_event is None
     assert TESS_PROFILE.min_mes_without_strongest_event == 4.0
+
+
+def _queue_entry(period, t0, duration, max_mes, n_events):
+    return {
+        "period": period,
+        "t0": t0,
+        "duration": duration,
+        "max_mes": max_mes,
+        "n_events": n_events,
+    }
+
+
+def test_peak_with_more_transits_is_tried_before_a_pairing_that_shares_one():
+    from shaula.extract_feats import _order_shared_events_by_transits
+
+    time = np.arange(0.0, 60.0, 0.01)
+    planet = _queue_entry(8.0, 4.0, 0.06, 10.1, 7)
+    # Shares the planet's transit at t = 12 and nothing else.
+    pairing = _queue_entry(14.0, 12.0, 0.08, 10.4, 3)
+    unrelated = _queue_entry(13.0, 1.3, 0.08, 9.0, 4)
+
+    order = _order_shared_events_by_transits(
+        [pairing, unrelated, planet], time, threshold=7.1
+    )
+
+    assert order == [2, 0, 1]
+
+
+def test_shared_event_order_leaves_harmonics_and_weak_peaks_alone():
+    from shaula.extract_feats import _order_shared_events_by_transits
+
+    time = np.arange(0.0, 60.0, 0.01)
+    planet = _queue_entry(24.0, 4.0, 0.1, 12.0, 3)
+    half_period = _queue_entry(12.0, 4.0, 0.1, 8.5, 5)
+    weak_sharer = _queue_entry(10.0, 4.0, 0.1, 6.0, 6)
+
+    order = _order_shared_events_by_transits(
+        [planet, half_period, weak_sharer], time, threshold=7.1
+    )
+
+    assert order == [0, 1, 2]
+
+
+def test_only_the_tess_profile_reorders_shared_events():
+    assert TESS_PROFILE.prefer_shared_events_to_more_transits
+    assert not DEFAULT_PROFILE.prefer_shared_events_to_more_transits
