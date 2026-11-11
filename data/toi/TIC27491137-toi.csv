@@ -1,0 +1,4 @@
+target,period_days,t0,duration_days,duration_hours,depth_mean_per_transit,planet_to_star_radius_ratio,impact_parameter,inclination,scaled_semi_major_axis,eccentricity,planet_radius_rjup,stellar_radius,max_ses,max_mes,disposition,fp_flags,catalog
+TOI-2076.01,10.356359551487,2459675.695029,0.14506222135457458,3.48149331250979,0.000923942126996727,,,,,,0.21503439770851193,0.772148013114929,,,CONFIRMED,,toi
+TOI-2076.03,21.0153047,2459673.364369,0.17979166666666668,4.315,0.002072,,,,,,0.3374243911142832,0.77,,,CONFIRMED,,toi
+TOI-2076.02,35.1257472,2459675.93251,0.11829166666666667,2.839,0.002066,,,,,,0.2828271924346507,0.77,,,CONFIRMED,,toi
